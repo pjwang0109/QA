@@ -1,44 +1,107 @@
-DataTables warning: table id=myTable - Requested unknown parameter 'userid' for row 0, column 0. For more information about this error, please see https://datatables.net/tn/4
-哪裡有錯?
+我有做一個 java ，URL 是 http://localhost:8080/training/res/S010010002，當點擊 #addBtn [新增]按鈕時，可以加入資料到資料庫，請問怎麼寫?
 
-html:
-  <body>
-    <div class="container mt-5">
-      <label class="form-label h5 font-weight-bold" for="id-card"
-        >身分證字號</label
-      >
-      <input class="form-control" type="text" name="id-card" id="id-card" />
-      <button id="queryBtn">查詢</button>
-      <button id="addBtn">新增</button>
-      <table
-        id="myTable"
-        class="table table-striped table-bordered text-center"
-        style="width: 100%"
-      >
-        <thead>
-          <tr>
-            <th class="text-center">身分證字號</th>
-            <th class="text-center">姓名</th>
-            <th class="text-center">電話</th>
-            <th class="text-center">地址</th>
-            <th class="text-center">備註</th>
-          </tr>
-        </thead>
-      </table>
-    </div>
-  </body>
+以下是我的 html，有用 datatable 
+<div class="col-4 p-3">
+          <div class="mb-4">
+            <!-- 身分證字號 -->
+            <label class="form-label h5 font-weight-bold" for="id-card"
+              >身分證字號</label
+            >
+            <input
+              class="form-control"
+              type="text"
+              name="id-card"
+              id="id-card"
+            />
+            <span
+              ><b class="mt-1 text-danger">
+                提示 : <b>身份證字號檢碼不符</b>
+              </b></span
+            >
+          </div>
 
-JS:
+          <!-- 姓名 -->
+          <div class="mb-5">
+            <label class="form-label h5 font-weight-bold" for="name"
+              >姓名</label
+            >
+            <input class="form-control" type="text" name="name" id="name" />
+          </div>
+
+          <!-- 電話 -->
+          <div class="mb-5">
+            <label class="form-label h5 font-weight-bold" for="phone"
+              >電話</label
+            >
+            <input class="form-control" type="number" name="phone" id="phone" />
+          </div>
+
+          <!-- 地址 -->
+          <div class="mb-5">
+            <label class="form-label h5 font-weight-bold" for="address"
+              >地址</label
+            >
+            <input
+              class="form-control"
+              type="text"
+              name="address"
+              id="address"
+            />
+          </div>
+
+          <!-- 備註 -->
+          <div class="mb-5">
+            <label class="form-label h5 font-weight-bold" for="memo"
+              >備註</label
+            >
+            <input class="form-control" type="text" name="memo" id="memo" />
+          </div>
+
+          <!-- CRUD -->
+          <div class="mt-5">
+            <a href="#" id="queryBtn" class="btn btn-info"><b>查詢</b></a>
+            <a href="#" id="addBtn" class="btn btn-primary ml-3"><b>新增</b></a>
+            <a href="#" id="reviseBtn" class="btn btn-warning ml-3"
+              ><b>修改</b></a
+            >
+            <a href="#" id="deleteBtn" class="btn btn-danger ml-3"
+              ><b>刪除</b></a
+            >
+          </div>
+        </div>
+
+        <!-- right -->
+        <div class="col-8 p-3">
+          <table
+            id="myTable"
+            class="table table-striped table-bordered text-center"
+            style="width: 100%"
+          >
+            <thead>
+              <tr>
+                <th>身分證字號</th>
+                <th>姓名</th>
+                <th>電話</th>
+                <th>地址</th>
+                <th>備註</th>
+              </tr>
+            </thead>
+          </table>
+        </div>
+
+
+以下是我的 jquery
 $(document).ready(function () {
-  //屬性區塊
   let dataTable = $("#myTable").DataTable({
+    // 屬性
+
+    // 語言 (language)
     language: {
       lengthMenu: "顯示 _MENU_ 項結果",
       search: "搜尋:",
       info: "顯示 _START_ 到 _END_ 筆資料，共 _TOTAL_ 項",
     },
-
-    // 資料欄位區塊(columns)
+    // 資料欄位 (columns)
     columns: [
       { data: "userid", title: "身分證字號" },
       { data: "username", title: "姓名" },
@@ -47,39 +110,43 @@ $(document).ready(function () {
       { data: "memo", title: "備註" },
     ],
 
-    //語言區塊(language)
-    //欄位元素定義區塊(columnDefs)
-    //列元素區塊(rowCallback)
+    // 欄位元素 (columnDefs)
+
+    // 列元素 (rowCallback)
+
+    // 其他設定
   });
 
-  let inputId = $("#id-card").val;
-
-  // 查詢 btn
+  // 查詢 btn 點擊事件處理程序
   $("#queryBtn").click(function () {
+    // 獲取身分證字號
+    let inputId = $("#id-card").val();
+
+    // 使用Ajax向API發送請求
     $.ajax({
       url: "http://localhost:8080/training/res/S010010001",
       method: "POST",
       dataType: "json",
       contentType: "application/json",
-      data: JSON.stringify({ id: inputId }), // 可能需要根據您的需求調整傳遞的參數
+      data: JSON.stringify({ id: inputId }), // 根據需求調整傳遞的參數
       success: function (response) {
-        // 清空 DataTable 中的資料
+        // 如果API返回的資料中包含符合的身分證資料
         dataTable.clear().draw();
-
         // 將 API 返回的資料加入 DataTable 中
         dataTable.row
           .add({
-            "userid": response.result.userid,
-            "username": response.result.username,
-            "number": response.result.number,
-            "address": response.result.address,
-            "memo": response.result.memo,
+            userid: response.result.userid,
+            username: response.result.username,
+            number: response.result.number,
+            address: response.result.address,
+            memo: response.result.memo,
           })
           .draw();
-        console.log("成功:", response);
+
+        console.log("成功:", "userId:", response.result.userid);
       },
-      error: function (xhr, status, error) {
-        console.error("發生錯誤:", error);
+      error: function (error) {
+        console.log("發生錯誤:", error);
       },
     });
   });
