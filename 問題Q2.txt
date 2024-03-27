@@ -1,4 +1,4 @@
-我有做一個 java ，URL 是 http://localhost:8080/training/res/S010010002，當點擊 #addBtn [新增]按鈕時，可以加入資料到資料庫，請問怎麼寫?
+我有做一個 [新增]的 S010010002.java ，URL 是 http://localhost:8080/training/res/S010010002，當點擊 #addBtn [新增]按鈕時，可以加入資料到資料庫，請問怎麼寫?
 
 以下是我的 html，有用 datatable 
 <div class="col-4 p-3">
@@ -119,35 +119,99 @@ $(document).ready(function () {
 
   // 查詢 btn 點擊事件處理程序
   $("#queryBtn").click(function () {
+	  
+	 // 先清空 message 文字提示
+	 $("#message").text("")
     // 獲取身分證字號
     let inputId = $("#id-card").val();
 
-    // 使用Ajax向API發送請求
-    $.ajax({
-      url: "http://localhost:8080/training/res/S010010001",
-      method: "POST",
-      dataType: "json",
-      contentType: "application/json",
-      data: JSON.stringify({ id: inputId }), // 根據需求調整傳遞的參數
-      success: function (response) {
-        // 如果API返回的資料中包含符合的身分證資料
-        dataTable.clear().draw();
-        // 將 API 返回的資料加入 DataTable 中
-        dataTable.row
-          .add({
-            userid: response.result.userid,
-            username: response.result.username,
-            number: response.result.number,
-            address: response.result.address,
-            memo: response.result.memo,
-          })
-          .draw();
+    // 城市地區 英文轉換數字
+    const cityCode = {
+      A: 10,
+      B: 11,
+      C: 12,
+      D: 13,
+      E: 14,
+      F: 15,
+      G: 16,
+      H: 17,
+      J: 18,
+      K: 19,
+      L: 20,
+      M: 21,
+      N: 22,
+      P: 23,
+      Q: 24,
+      R: 25,
+      S: 26,
+      T: 27,
+      U: 28,
+      V: 29,
+      X: 30,
+      Y: 31,
+      W: 32,
+      Z: 33,
+      I: 34,
+      O: 35,
+    };
 
-        console.log("成功:", "userId:", response.result.userid);
-      },
-      error: function (error) {
-        console.log("發生錯誤:", error);
-      },
-    });
+    // 身分證檢驗
+    if (inputId.match(/^[A-Z][12][0-9]{8}$/)) {
+      // 身份證檢碼
+      const firstIdEn = inputId.charAt(0);
+      const otherIdNum = inputId.substring(1, 9);
+
+      let idSum =
+        (cityCode[firstIdEn] % 10) * 9 + Math.floor(cityCode[firstIdEn] / 10);
+      for (let i = 0; i < otherIdNum.length; i++) {
+        idSum += parseInt(otherIdNum.charAt(i)) * (8 - i);
+      }
+
+      const remainderId = idSum % 10;
+      const checkLastNum = remainderId === 0 ? 0 : 10 - remainderId;
+
+      if (checkLastNum === parseInt(inputId.charAt(9))) {
+        alert("符合身份證字號且檢碼正確");
+      } else {
+        alert("檢核碼錯誤，正確檢核碼為" + checkLastNum);
+      }
+
+      // 使用Ajax向API發送請求
+      $.ajax({
+        url: "http://localhost:8080/training/res/S010010001",
+        method: "POST",
+        dataType: "json",
+        contentType: "application/json",
+        data: JSON.stringify({ id: inputId }), // 根據需求調整傳遞的參數
+        success: function (response) {
+          // 清空 DataTable 資料
+          dataTable.clear().draw();
+          // 如果API返回的資料中包含符合的身分證資料
+          if (inputId === response.result.userid) {
+            // 將 API 返回的資料加入 DataTable 中
+            dataTable.row
+              .add({
+                userid: response.result.userid,
+                username: response.result.username,
+                number: response.result.number,
+                address: response.result.address,
+                memo: response.result.memo,
+              })
+              .draw();
+              
+            $("#message").text("yes 身份證字號與資料相符");
+            console.log("成功");
+            console.log("response:", response);
+            console.log("response 的 result:", response.result);
+            console.log("userId:", response.result.userid);
+          } else {
+            $("#message").text("no 身份證字號與資料不符");
+          }
+        },
+        error: function (error) {
+          console.log("發生錯誤:", error);
+        },
+      });
+    }
   });
 });
