@@ -1,73 +1,41 @@
-1：
-new DataTable("#myTable", {
-  //屬性區塊
-  language: {
-    lengthMenu: "顯示 _MENU_ 項結果",
-    search: "搜尋:",
-    info: "顯示 _START_ 到 _END_ 筆資料，共 _TOTAL_ 項",
-  },
+// 查詢 btn 點擊事件處理程序
+$("#queryBtn").click(function () {
+  // 獲取身分證字號
+  let inputId = $("#id-card").val();
 
-  //ajax區塊
-  ajax: {
-    url: 'http://localhost:8080/training/res/S010010001',
-    dataSrc: 'result', // API 回傳資料的屬性名稱
-    data: function(data) {
-      return { id: "A123456789" }; // 傳遞給 API 的參數
-    }
-  },
-  
-  // 資料欄位區塊(columns)
-  columns: [
-    { data: 'number', title: '身分證字號' },
-    { data: 'username', title: '姓名' },
-    { data: 'number', title: '電話' }, // 注意這裡的資料欄位名稱是否正確
-    { data: 'address', title: '地址' },
-    { data: 'memo', title: '備註' }
-  ],
-   
-  //語言區塊(language)
-  //欄位元素定義區塊(columnDefs)
-  //列元素區塊(rowCallback)
-});
-
-2：
-$(document).ready(function() {
-  var dataTable = $('#myTable').DataTable({
-    language: {
-      lengthMenu: "顯示 _MENU_ 項結果",
-      search: "搜尋:",
-      info: "顯示 _START_ 到 _END_ 筆資料，共 _TOTAL_ 項",
-    },
-    columns: [
-      { data: 'number', title: '身分證字號' },
-      { data: 'username', title: '姓名' },
-      { data: 'number', title: '電話' },
-      { data: 'address', title: '地址' },
-      { data: 'memo', title: '備註' }
-    ]
-  });
-
-  $('#queryBtn').click(function() {
-    $.ajax({
-      url: 'http://localhost:8080/training/res/S010010001',
-      method: 'GET',
-      dataType: 'json',
-      data: { id: 'A123456789' }, // 可能需要根據您的需求調整傳遞的參數
-      success: function(response) {
-        // 清空 DataTable 中的資料
-        dataTable.clear().draw();
-        
+  // 使用Ajax向API發送請求
+  $.ajax({
+    url: "http://localhost:8080/training/res/S010010001",
+    method: "POST",
+    dataType: "json",
+    contentType: "application/json",
+    data: JSON.stringify({ id: inputId }), // 根據需求調整傳遞的參數
+    success: function (response) {
+      // 如果API返回的資料中包含符合的身分證資料
+      if (response.result) {
         // 將 API 返回的資料加入 DataTable 中
         dataTable.row.add({
-          "number": response.result.number,
-          "username": response.result.username,
-          "address": response.result.address,
-          "memo": response.result.memo
+          userid: response.result.userid,
+          username: response.result.username,
+          number: response.result.number,
+          address: response.result.address,
+          memo: response.result.memo,
         }).draw();
-      },
-      error: function(xhr, status, error) {
-        console.error("發生錯誤:", error);
+
+        // 將姓名、電話、地址、備註的資料填入相應的 input 欄位
+        $("#name").val(response.result.username);
+        $("#phone").val(response.result.number);
+        $("#address").val(response.result.address);
+        $("#memo").val(response.result.memo);
+
+        console.log("成功:", "userid:", response.result.userid);
+      } else {
+        // 如果API返回的資料中不包含符合的身分證資料，則顯示自定義的訊息，而不是錯誤框
+        console.log("查無此身分證資料。");
       }
-    });
+    },
+    error: function (error) {
+      console.log("發生錯誤:", error);
+    },
   });
 });
