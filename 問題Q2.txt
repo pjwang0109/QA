@@ -90,7 +90,7 @@
         </div>
 
 
-以下是我的 jquery
+以下是我目前的 jquery
 $(document).ready(function () {
   let dataTable = $("#myTable").DataTable({
     // 屬性
