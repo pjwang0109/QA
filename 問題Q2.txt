@@ -1,96 +1,6 @@
-我有做一個 [新增]的 S010010002.java ，URL 是 http://localhost:8080/training/res/S010010002，當點擊 #addBtn [新增]按鈕時，可以加入資料到資料庫，請問怎麼寫?
-
-以下是我的 html，有用 datatable 
-<div class="col-4 p-3">
-          <div class="mb-4">
-            <!-- 身分證字號 -->
-            <label class="form-label h5 font-weight-bold" for="id-card"
-              >身分證字號</label
-            >
-            <input
-              class="form-control"
-              type="text"
-              name="id-card"
-              id="id-card"
-            />
-            <span
-              ><b class="mt-1 text-danger">
-                提示 : <b>身份證字號檢碼不符</b>
-              </b></span
-            >
-          </div>
-
-          <!-- 姓名 -->
-          <div class="mb-5">
-            <label class="form-label h5 font-weight-bold" for="name"
-              >姓名</label
-            >
-            <input class="form-control" type="text" name="name" id="name" />
-          </div>
-
-          <!-- 電話 -->
-          <div class="mb-5">
-            <label class="form-label h5 font-weight-bold" for="phone"
-              >電話</label
-            >
-            <input class="form-control" type="number" name="phone" id="phone" />
-          </div>
-
-          <!-- 地址 -->
-          <div class="mb-5">
-            <label class="form-label h5 font-weight-bold" for="address"
-              >地址</label
-            >
-            <input
-              class="form-control"
-              type="text"
-              name="address"
-              id="address"
-            />
-          </div>
-
-          <!-- 備註 -->
-          <div class="mb-5">
-            <label class="form-label h5 font-weight-bold" for="memo"
-              >備註</label
-            >
-            <input class="form-control" type="text" name="memo" id="memo" />
-          </div>
-
-          <!-- CRUD -->
-          <div class="mt-5">
-            <a href="#" id="queryBtn" class="btn btn-info"><b>查詢</b></a>
-            <a href="#" id="addBtn" class="btn btn-primary ml-3"><b>新增</b></a>
-            <a href="#" id="reviseBtn" class="btn btn-warning ml-3"
-              ><b>修改</b></a
-            >
-            <a href="#" id="deleteBtn" class="btn btn-danger ml-3"
-              ><b>刪除</b></a
-            >
-          </div>
-        </div>
-
-        <!-- right -->
-        <div class="col-8 p-3">
-          <table
-            id="myTable"
-            class="table table-striped table-bordered text-center"
-            style="width: 100%"
-          >
-            <thead>
-              <tr>
-                <th>身分證字號</th>
-                <th>姓名</th>
-                <th>電話</th>
-                <th>地址</th>
-                <th>備註</th>
-              </tr>
-            </thead>
-          </table>
-        </div>
+當我按下[新增]按鈕，可以把資料新增到資料庫，要怎麼修改程式?
 
 
-以下是我目前的 jquery
 $(document).ready(function () {
   let dataTable = $("#myTable").DataTable({
     // 屬性
@@ -117,13 +27,16 @@ $(document).ready(function () {
     // 其他設定
   });
 
-  // 查詢 btn 點擊事件處理程序
-  $("#queryBtn").click(function () {
-	  
-	 // 先清空 message 文字提示
-	 $("#message").text("")
-    // 獲取身分證字號
+  // 新增 btn 點擊事件處理程序
+   $("#addBtn").click(function () {
+    // 先清空 message 文字提示
+    $("#message").text("");
+    // 取得身分證字號、姓名、電話、地址、備註
     let inputId = $("#id-card").val();
+    let inputName = $("#name").val();
+    let phone = $("#phone").val();
+    let address = $("#address").val();
+    let memo = $("#memo").val();
 
     // 城市地區 英文轉換數字
     const cityCode = {
@@ -178,40 +91,47 @@ $(document).ready(function () {
 
       // 使用Ajax向API發送請求
       $.ajax({
-        url: "http://localhost:8080/training/res/S010010001",
+        url: "http://localhost:8080/training/res/S010010002",
         method: "POST",
         dataType: "json",
         contentType: "application/json",
-        data: JSON.stringify({ id: inputId }), // 根據需求調整傳遞的參數
+        data: JSON.stringify({
+          id: inputId,
+          username: inputName,
+          number: phone,
+          address: address,
+          memo: memo,
+        }), // 根據需求調整傳遞的參數
         success: function (response) {
           // 清空 DataTable 資料
           dataTable.clear().draw();
           // 如果API返回的資料中包含符合的身分證資料
           if (inputId === response.result.userid) {
+            alert("資料已有此身份證字號");
+          } else {
             // 將 API 返回的資料加入 DataTable 中
             dataTable.row
               .add({
-                userid: response.result.userid,
+                id: response.result.userid,
                 username: response.result.username,
                 number: response.result.number,
                 address: response.result.address,
                 memo: response.result.memo,
               })
               .draw();
-              
-            $("#message").text("yes 身份證字號與資料相符");
-            console.log("成功");
+
+            console.log("新增成功");
             console.log("response:", response);
             console.log("response 的 result:", response.result);
             console.log("userId:", response.result.userid);
-          } else {
-            $("#message").text("no 身份證字號與資料不符");
           }
         },
         error: function (error) {
           console.log("發生錯誤:", error);
+          console.log("新增失敗");
         },
       });
     }
   });
+
 });
