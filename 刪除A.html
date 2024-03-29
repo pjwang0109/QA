@@ -1,1 +1,64 @@
+/**
+ * 刪除
+ */
 
+@Path("/S010010002")
+public class S010010002 {
+    @Context
+    HttpServletRequest req;
+
+    private String rc = "M0000";
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON + " ;charset=UTF-8")
+    @Produces(MediaType.APPLICATION_JSON + " ;charset=UTF-8")
+    public Response proc(String jsonStr) throws SQLException {
+
+        JSONObject json = new JSONObject();
+
+        String msg = "";
+
+        try {
+            json = new JSONObject(jsonStr);
+            json.getString("userid");
+        } catch (Exception e) {
+            e.printStackTrace();
+            rc = "M9995";
+        }
+
+        if (rc.equals("M0000")) {
+            boolean success = doJob(json); // 主要程式 doJob
+            if (success) {
+                msg = "成功";
+            } else {
+                msg = "失敗";
+            }
+        } else {
+            msg = "失敗";
+        }
+
+        // 執行後端的輸出結果
+        JSONObject jsonOut = new JSONObject();
+        jsonOut.put("msg", msg);
+
+        return Response.status(200).entity(jsonOut.toString()).build();
+
+    }
+
+    private boolean doJob(JSONObject json) {
+
+        UserListDAO UserListDAO = new UserListDAO();
+
+        String userid = json.getString("userid");
+
+        int success = UserListDAO.delete(userid);
+
+        if (success == 0) {
+            rc = "M9999";
+            return false;
+        } else {
+            rc = "M0000";
+            return true;
+        }
+    }
+}
