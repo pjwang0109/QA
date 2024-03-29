@@ -1,8 +1,58 @@
-這是原先[查詢]的java 我想改成[列表]，當我按下[列表]按鈕時，會出現資料庫裡全部的內容，要怎麼修改程式碼?
+我完全不會java
 
+這是我 UserListDAO.java 的[列表]程式碼
+
+public List<UserListVO> select() {//列表
+		
+		DbUtil_JNDI du = new DbUtil_JNDI();
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		UserListVO vo = new UserListVO();
+		List<UserListVO> list = new ArrayList<>();
+		
+		try {
+			pstmt = du.conn.prepareStatement("SELECT * FROM USERLIST");
+			
+			rs = pstmt.executeQuery();
+			
+			while(rs.next()) {
+                vo = getVO(rs);
+                
+                list.add(vo);
+            }
+            
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			du.closeQuietly(rs);
+            du.closeQuietly(pstmt);
+            du.closeQuietly();
+		}
+		return list;
+	}
+
+以下是我 S010010005.java 的[列表]按鈕，程式碼，想問
+			[JSONArray arr = new JSONArray();
+    	
+    	UserListDAO UserListDAO = new UserListDAO();
+    	List<UserListVO> list = UserListDAO.select();
+    	
+
+    	JSONObject out = new JSONObject();
+    	out.put("userid", 	UserListVO.getUserid());
+    	out.put("username", UserListVO.getUsername());
+    	out.put("number", 	UserListVO.getNumber());
+    	out.put("address", 	UserListVO.getAddress());
+    	out.put("memo", 	UserListVO.getMemo());
+    	arr.put(out);
+    	
+    	return out;]這一段要怎麼修改?
+
+		
 package com.ubot.lis.function.training;
 
 import java.sql.SQLException;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
@@ -13,17 +63,18 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.ubot.lis.dbtraining.UserListDAO;
 import com.ubot.lis.dbtraining.UserListVO;
 
 /**
- * 查詢
+ * 列表
  */
 
-@Path("/S010010001")
-public class S010010001 {
+@Path("/S010010005")
+public class S010010005 {
 	@Context
     HttpServletRequest req;
 
@@ -61,18 +112,19 @@ public class S010010001 {
     
     private JSONObject doJob(String caseno) {
     	
-    	JSONObject out = new JSONObject();
+    	JSONArray arr = new JSONArray();
     	
     	UserListDAO UserListDAO = new UserListDAO();
-    	UserListVO UserListVO = UserListDAO.selectUserList(caseno);
+    	List<UserListVO> list = UserListDAO.select();
     	
-    	System.out.println("12321");
 
+    	JSONObject out = new JSONObject();
     	out.put("userid", 	UserListVO.getUserid());
     	out.put("username", UserListVO.getUsername());
     	out.put("number", 	UserListVO.getNumber());
     	out.put("address", 	UserListVO.getAddress());
     	out.put("memo", 	UserListVO.getMemo());
+    	arr.put(out);
     	
     	return out;
     }
