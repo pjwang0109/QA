@@ -1,1 +1,80 @@
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
+import org.json.JSONObject;
+
+/**
+ * 修改並更新資料庫
+ */
+@Path("/S010010003")
+public class S010010003 {
+
+    @Context
+    HttpServletRequest req;
+
+    private String rc = "M0000";
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON + ";charset=UTF-8")
+    @Produces(MediaType.APPLICATION_JSON + ";charset=UTF-8")
+    public Response updateData(String jsonStr) {
+        JSONObject json = new JSONObject(jsonStr);
+        JSONObject result = new JSONObject();
+
+        try {
+            // 解析 JSON 中的資料
+            String userId = json.getString("userid");
+            String username = json.getString("username");
+            String number = json.getString("number");
+            String address = json.getString("address");
+            String memo = json.getString("memo");
+
+            // 呼叫方法更新資料庫
+            boolean success = updateDatabase(userId, username, number, address, memo);
+            if (success) {
+                result.put("msg", "成功");
+            } else {
+                result.put("msg", "失敗");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.put("msg", "失敗");
+        }
+
+        return Response.status(200).entity(result.toString()).build();
+    }
+
+    // 更新資料庫的方法
+    private boolean updateDatabase(String userId, String username, String number, String address, String memo) {
+        String jdbcUrl = "jdbc:mysql://localhost:3306/your_database";
+        String jdbcUsername = "your_username";
+        String jdbcPassword = "your_password";
+        String sql = "UPDATE your_table SET username=?, number=?, address=?, memo=? WHERE userid=?";
+
+        try (Connection conn = DriverManager.getConnection(jdbcUrl, jdbcUsername, jdbcPassword);
+             PreparedStatement statement = conn.prepareStatement(sql)) {
+            statement.setString(1, username);
+            statement.setString(2, number);
+            statement.setString(3, address);
+            statement.setString(4, memo);
+            statement.setString(5, userId);
+
+            int rowsUpdated = statement.executeUpdate();
+            return rowsUpdated > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+}
