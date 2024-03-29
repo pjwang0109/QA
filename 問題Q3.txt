@@ -1,184 +1,93 @@
-在html 裡的input 的輸入框，當我輸入[身分證]欄位時，並按下[查詢]按鈕，可以查詢到符合此身分證的該筆資料，並顯示在datatable；但是我還想用jquery 的 ajax 找到資料庫的資料，並讓我的每個 input 對應的輸入框中，顯示出該筆資料的身分證、姓名、電話、地址、備註的文字，那要怎麼做?
+以下的程式碼原本是 [新增]的按鈕，想問[修改]的按鈕 要如何修改程式碼?
 
-這是目前的HTML，用datatable做的
-<label class="form-label h5 font-weight-bold" for="id-card"
-              >身分證字號</label
-            >
-            <input
-              class="form-control"
-              type="text"
-              name="id-card"
-              id="id-card"
-            />
-            <span
-              ><b class="mt-1 text-danger">
-                提示 : <b id="message"></b>
-              </b></span
-            >
-          </div>
+package com.ubot.lis.function.training;
 
-          <!-- 姓名 -->
-          <div class="mb-5">
-            <label class="form-label h5 font-weight-bold" for="name"
-              >姓名</label
-            >
-            <input class="form-control" type="text" name="name" id="name" />
-          </div>
+import java.sql.SQLException;
 
-          <!-- 電話 -->
-          <div class="mb-5">
-            <label class="form-label h5 font-weight-bold" for="phone"
-              >電話</label
-            >
-            <input class="form-control" type="number" name="phone" id="phone" />
-          </div>
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
-          <!-- 地址 -->
-          <div class="mb-5">
-            <label class="form-label h5 font-weight-bold" for="address"
-              >地址</label
-            >
-            <input
-              class="form-control"
-              type="text"
-              name="address"
-              id="address"
-            />
-          </div>
+import org.json.JSONObject;
 
-          <!-- 備註 -->
-          <div class="mb-5">
-            <label class="form-label h5 font-weight-bold" for="memo"
-              >備註</label
-            >
-            <input class="form-control" type="text" name="memo" id="memo" />
-          </div>
+import com.ubot.lis.dbtraining.UserListDAO;
+import com.ubot.lis.dbtraining.UserListVO;
 
-            <a href="#" id="queryBtn" class="btn btn-info"><b>查詢</b></a>
+/**
+ * 新增
+ */
 
+@Path("/S010010003")
+public class S010010003 {
+	@Context
+    HttpServletRequest req;
 
-這是目前的 jquery
-$(document).ready(function () {
-  let dataTable = $("#myTable").DataTable({
-    // 屬性
+    private String rc 		= "M0000" ;
 
-    // 語言 (language)
-    language: {
-      lengthMenu: "顯示 _MENU_ 項結果",
-      search: "搜尋:",
-      info: "顯示 _START_ 到 _END_ 筆資料，共 _TOTAL_ 項",
-    },
-    // 資料欄位 (columns)
-    columns: [
-      { data: "userid", title: "身分證字號" },
-      { data: "username", title: "姓名" },
-      { data: "number", title: "電話" },
-      { data: "address", title: "地址" },
-      { data: "memo", title: "備註" },
-    ],
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON + " ;charset=UTF-8")
+    @Produces(MediaType.APPLICATION_JSON + " ;charset=UTF-8")
+    public Response proc(String jsonStr) throws SQLException {
 
-    // 欄位元素 (columnDefs)
+        JSONObject json = new JSONObject();
 
-    // 列元素 (rowCallback)
+        String msg = "";
 
-    // 其他設定
-  });
+        try {
+            json = new JSONObject(jsonStr);
+            json.getString("userid");
+            json.getString("username");
+            json.getString("number");
+            json.getString("address");
+            json.getString("memo");
+        }catch(Exception e) {
+            e.printStackTrace();
+            rc = "M9995";
+        }
 
-  // 查詢 btn 點擊事件處理程序
-  $("#queryBtn").click(function () {
-	  
-	 // 先清空 message 文字提示
-	 $("#message").text("")
-    // 獲取身分證字號
-    let inputId = $("#id-card").val();
+        JSONObject arrayObj = new JSONObject();
 
-    // 城市地區 英文轉換數字
-    const cityCode = {
-      A: 10,
-      B: 11,
-      C: 12,
-      D: 13,
-      E: 14,
-      F: 15,
-      G: 16,
-      H: 17,
-      J: 18,
-      K: 19,
-      L: 20,
-      M: 21,
-      N: 22,
-      P: 23,
-      Q: 24,
-      R: 25,
-      S: 26,
-      T: 27,
-      U: 28,
-      V: 29,
-      X: 30,
-      Y: 31,
-      W: 32,
-      Z: 33,
-      I: 34,
-      O: 35,
-    };
+        if(rc.equals("M0000")) {
+        	arrayObj = doJob(json); //主要程式 doJob
+        	msg = "成功";
+        	if(rc.equals("M9999")) {
+        		msg = "失敗";
+        	}
+        } else msg = "失敗";
+        //執行後端的輸出結果
+        JSONObject jsonOut = new JSONObject();
+        jsonOut.put("msg"	, msg);
 
-    // 身分證檢驗
-    if (inputId.match(/^[A-Z][12][0-9]{8}$/)) {
-      // 身份證檢碼
-      const firstIdEn = inputId.charAt(0);
-      const otherIdNum = inputId.substring(1, 9);
+        if(arrayObj==null) jsonOut.put("result", "");
+        else jsonOut.put("result", arrayObj);
 
-      let idSum =
-        (cityCode[firstIdEn] % 10) * 9 + Math.floor(cityCode[firstIdEn] / 10);
-      for (let i = 0; i < otherIdNum.length; i++) {
-        idSum += parseInt(otherIdNum.charAt(i)) * (8 - i);
-      }
-
-      const remainderId = idSum % 10;
-      const checkLastNum = remainderId === 0 ? 0 : 10 - remainderId;
-
-      if (checkLastNum === parseInt(inputId.charAt(9))) {
-        alert("符合身份證字號且檢碼正確");
-      } else {
-        alert("檢核碼錯誤，正確檢核碼為" + checkLastNum);
-      }
-
-      // 使用Ajax向API發送請求
-      $.ajax({
-        url: "http://localhost:8080/training/res/S010010001",
-        method: "POST",
-        dataType: "json",
-        contentType: "application/json",
-        data: JSON.stringify({ id: inputId }), // 根據需求調整傳遞的參數
-        success: function (response) {
-          // 清空 DataTable 資料
-          dataTable.clear().draw();
-          // 如果API返回的資料中包含符合的身分證資料
-          if (inputId === response.result.userid) {
-            // 將 API 返回的資料加入 DataTable 中
-            dataTable.row
-              .add({
-                userid: response.result.userid,
-                username: response.result.username,
-                number: response.result.number,
-                address: response.result.address,
-                memo: response.result.memo,
-              })
-              .draw();
-              
-            $("#message").text("yes 身份證字號與資料相符");
-            console.log("成功");
-            console.log("response:", response);
-            console.log("response 的 result:", response.result);
-            console.log("userId:", response.result.userid);
-          } else {
-            $("#message").text("no 身份證字號與資料不符");
-          }
-        },
-        error: function (error) {
-          console.log("發生錯誤:", error);
-        },
-      });
+        return Response.status(200).entity(jsonOut.toString()).build();
+    
     }
-  });
-});
+    
+    private JSONObject doJob(JSONObject json) {
+    	
+    	JSONObject out = new JSONObject();
+    	
+    	UserListDAO UserListDAO = new UserListDAO();
+    	UserListVO UserListVO = new UserListVO();
+    	
+    	UserListVO.setUserid(json.getString("userid"));
+    	UserListVO.setUsername(json.getString("username"));
+    	UserListVO.setNumber(json.getString("number"));
+    	UserListVO.setAddress(json.getString("address"));
+    	UserListVO.setMemo(json.getString("memo"));
+    	
+    	int success = UserListDAO.insert(UserListVO);
+    	
+    	if(success == 0) rc = "M9999";
+    	else rc = "M0000";
+    	
+    	return out;
+    }
+}
