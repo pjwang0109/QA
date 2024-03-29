@@ -1,6 +1,63 @@
-當我按下[查詢]按鈕時，我要先檢驗輸入的身分證是否符合我設定的[身分證檢驗]，無論符合和不符合，都要有alert 顯示文字提示，再來才查詢我輸入的身分證，是否符合資料庫裡的資料，正確或錯誤，才會在 #message 顯示出來，要如何修改程式?
+在html 裡的input 的輸入框，當我輸入[身分證]欄位時，並按下[查詢]按鈕，可以查詢到符合此身分證的該筆資料，並顯示在datatable；但是我還想用jquery 的 ajax 找到資料庫的資料，並讓我的每個 input 對應的輸入框中，顯示出該筆資料的身分證、姓名、電話、地址、備註的文字，那要怎麼做?
 
-以下是我的 jquery 程式碼
+這是目前的HTML，用datatable做的
+<label class="form-label h5 font-weight-bold" for="id-card"
+              >身分證字號</label
+            >
+            <input
+              class="form-control"
+              type="text"
+              name="id-card"
+              id="id-card"
+            />
+            <span
+              ><b class="mt-1 text-danger">
+                提示 : <b id="message"></b>
+              </b></span
+            >
+          </div>
+
+          <!-- 姓名 -->
+          <div class="mb-5">
+            <label class="form-label h5 font-weight-bold" for="name"
+              >姓名</label
+            >
+            <input class="form-control" type="text" name="name" id="name" />
+          </div>
+
+          <!-- 電話 -->
+          <div class="mb-5">
+            <label class="form-label h5 font-weight-bold" for="phone"
+              >電話</label
+            >
+            <input class="form-control" type="number" name="phone" id="phone" />
+          </div>
+
+          <!-- 地址 -->
+          <div class="mb-5">
+            <label class="form-label h5 font-weight-bold" for="address"
+              >地址</label
+            >
+            <input
+              class="form-control"
+              type="text"
+              name="address"
+              id="address"
+            />
+          </div>
+
+          <!-- 備註 -->
+          <div class="mb-5">
+            <label class="form-label h5 font-weight-bold" for="memo"
+              >備註</label
+            >
+            <input class="form-control" type="text" name="memo" id="memo" />
+          </div>
+
+            <a href="#" id="queryBtn" class="btn btn-info"><b>查詢</b></a>
+
+
+這是目前的 jquery
 $(document).ready(function () {
   let dataTable = $("#myTable").DataTable({
     // 屬性
@@ -29,6 +86,9 @@ $(document).ready(function () {
 
   // 查詢 btn 點擊事件處理程序
   $("#queryBtn").click(function () {
+	  
+	 // 先清空 message 文字提示
+	 $("#message").text("")
     // 獲取身分證字號
     let inputId = $("#id-card").val();
 
@@ -78,9 +138,9 @@ $(document).ready(function () {
       const checkLastNum = remainderId === 0 ? 0 : 10 - remainderId;
 
       if (checkLastNum === parseInt(inputId.charAt(9))) {
-        $("#message").text("符合身份證字號且檢碼正確");
+        alert("符合身份證字號且檢碼正確");
       } else {
-        $("#message").text("檢核碼錯誤，正確檢核碼為" + checkLastNum);
+        alert("檢核碼錯誤，正確檢核碼為" + checkLastNum);
       }
 
       // 使用Ajax向API發送請求
@@ -105,15 +165,14 @@ $(document).ready(function () {
                 memo: response.result.memo,
               })
               .draw();
-
-            $("#message").text("yes 身份證字號檢碼符合");
-
+              
+            $("#message").text("yes 身份證字號與資料相符");
             console.log("成功");
             console.log("response:", response);
             console.log("response 的 result:", response.result);
             console.log("userId:", response.result.userid);
           } else {
-            $("#message").text("no 身份證字號檢碼不符");
+            $("#message").text("no 身份證字號與資料不符");
           }
         },
         error: function (error) {
