@@ -1,1 +1,79 @@
+這是原先[查詢]的java 我想改成[列表]，當我按下[列表]按鈕時，會出現資料庫裡全部的內容，要怎麼修改程式碼?
 
+package com.ubot.lis.function.training;
+
+import java.sql.SQLException;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
+import org.json.JSONObject;
+
+import com.ubot.lis.dbtraining.UserListDAO;
+import com.ubot.lis.dbtraining.UserListVO;
+
+/**
+ * 查詢
+ */
+
+@Path("/S010010001")
+public class S010010001 {
+	@Context
+    HttpServletRequest req;
+
+    private String rc 		= "M0000" ;
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON + " ;charset=UTF-8")
+    @Produces(MediaType.APPLICATION_JSON + " ;charset=UTF-8")
+    public Response proc(String jsonStr) throws SQLException {
+
+        JSONObject json = new JSONObject();
+
+        String id  = "";
+
+        try {
+            json = new JSONObject(jsonStr);
+            id = json.getString("id");
+        }catch(Exception e) {
+            e.printStackTrace();
+            rc = "M9995";
+        }
+
+        JSONObject arrayObj = new JSONObject();
+
+        if(rc.equals("M0000")) arrayObj = doJob(id); //主要程式 doJob
+        //執行後端的輸出結果
+        JSONObject jsonOut = new JSONObject();
+
+        if(arrayObj==null) jsonOut.put("result", "");
+        else jsonOut.put("result", arrayObj);
+
+        return Response.status(200).entity(jsonOut.toString()).build();
+    
+    }
+    
+    private JSONObject doJob(String caseno) {
+    	
+    	JSONObject out = new JSONObject();
+    	
+    	UserListDAO UserListDAO = new UserListDAO();
+    	UserListVO UserListVO = UserListDAO.selectUserList(caseno);
+    	
+    	System.out.println("12321");
+
+    	out.put("userid", 	UserListVO.getUserid());
+    	out.put("username", UserListVO.getUsername());
+    	out.put("number", 	UserListVO.getNumber());
+    	out.put("address", 	UserListVO.getAddress());
+    	out.put("memo", 	UserListVO.getMemo());
+    	
+    	return out;
+    }
+}
