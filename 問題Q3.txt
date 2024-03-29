@@ -1,4 +1,4 @@
-以下的程式碼原本是 [新增]的按鈕，想問[修改]的按鈕 要如何修改程式碼?
+要如何修改以下程式碼? 我的java程式碼是要能夠修改欄位，並將更新後的資料寫進資料庫裡!
 
 package com.ubot.lis.function.training;
 
@@ -19,20 +19,20 @@ import com.ubot.lis.dbtraining.UserListDAO;
 import com.ubot.lis.dbtraining.UserListVO;
 
 /**
- * 新增
+ * 修改
  */
 
 @Path("/S010010003")
 public class S010010003 {
-	@Context
+    @Context
     HttpServletRequest req;
 
-    private String rc 		= "M0000" ;
+    private String rc = "M0000";
 
     @POST
-    @Consumes(MediaType.APPLICATION_JSON + " ;charset=UTF-8")
-    @Produces(MediaType.APPLICATION_JSON + " ;charset=UTF-8")
-    public Response proc(String jsonStr) throws SQLException {
+    @Consumes(MediaType.APPLICATION_JSON + ";charset=UTF-8")
+    @Produces(MediaType.APPLICATION_JSON + ";charset=UTF-8")
+    public Response update(String jsonStr) throws SQLException {
 
         JSONObject json = new JSONObject();
 
@@ -45,49 +45,54 @@ public class S010010003 {
             json.getString("number");
             json.getString("address");
             json.getString("memo");
-        }catch(Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             rc = "M9995";
         }
 
         JSONObject arrayObj = new JSONObject();
 
-        if(rc.equals("M0000")) {
-        	arrayObj = doJob(json); //主要程式 doJob
-        	msg = "成功";
-        	if(rc.equals("M9999")) {
-        		msg = "失敗";
-        	}
-        } else msg = "失敗";
-        //執行後端的輸出結果
+        if (rc.equals("M0000")) {
+            arrayObj = doJob(json); // 主要程式 doJob
+            msg = "成功";
+            if (rc.equals("M9999")) {
+                msg = "失敗";
+            }
+        } else
+            msg = "失敗";
+        // 執行後端的輸出結果
         JSONObject jsonOut = new JSONObject();
-        jsonOut.put("msg"	, msg);
+        jsonOut.put("msg", msg);
 
-        if(arrayObj==null) jsonOut.put("result", "");
-        else jsonOut.put("result", arrayObj);
+        if (arrayObj == null)
+            jsonOut.put("result", "");
+        else
+            jsonOut.put("result", arrayObj);
 
         return Response.status(200).entity(jsonOut.toString()).build();
-    
+
     }
-    
+
     private JSONObject doJob(JSONObject json) {
-    	
-    	JSONObject out = new JSONObject();
-    	
-    	UserListDAO UserListDAO = new UserListDAO();
-    	UserListVO UserListVO = new UserListVO();
-    	
-    	UserListVO.setUserid(json.getString("userid"));
-    	UserListVO.setUsername(json.getString("username"));
-    	UserListVO.setNumber(json.getString("number"));
-    	UserListVO.setAddress(json.getString("address"));
-    	UserListVO.setMemo(json.getString("memo"));
-    	
-    	int success = UserListDAO.insert(UserListVO);
-    	
-    	if(success == 0) rc = "M9999";
-    	else rc = "M0000";
-    	
-    	return out;
+
+        JSONObject out = new JSONObject();
+
+        UserListDAO userListDAO = new UserListDAO();
+        UserListVO userListVO = new UserListVO();
+
+        userListVO.setUserid(json.getString("userid"));
+        userListVO.setUsername(json.getString("username"));
+        userListVO.setNumber(json.getString("number"));
+        userListVO.setAddress(json.getString("address"));
+        userListVO.setMemo(json.getString("memo"));
+
+        int success = userListDAO.update(userListVO); // 修改資料的方法名稱需替換成相應的方法
+
+        if (success == 0)
+            rc = "M9999";
+        else
+            rc = "M0000";
+
+        return out;
     }
 }
