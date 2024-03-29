@@ -1,5 +1,3 @@
-zzz
-
 package com.ubot.lis.function.training;
 
 import java.sql.SQLException;
@@ -40,59 +38,49 @@ public class S010010003 {
 
         try {
             json = new JSONObject(jsonStr);
-            json.getString("userid");
-            json.getString("username");
-            json.getString("number");
-            json.getString("address");
-            json.getString("memo");
+            String userId = json.getString("userid");
+            String username = json.getString("username");
+            String number = json.getString("number");
+            String address = json.getString("address");
+            String memo = json.getString("memo");
+
+            // 更新資料庫
+            boolean success = updateUser(userId, username, number, address, memo);
+
+            if (success) {
+                msg = "成功";
+            } else {
+                msg = "失敗";
+                rc = "M9999";
+            }
         } catch (Exception e) {
             e.printStackTrace();
             rc = "M9995";
+            msg = "失敗";
         }
 
-        JSONObject arrayObj = new JSONObject();
-
-        if (rc.equals("M0000")) {
-            arrayObj = doJob(json); // 主要程式 doJob
-            msg = "成功";
-            if (rc.equals("M9999")) {
-                msg = "失敗";
-            }
-        } else
-            msg = "失敗";
-        // 執行後端的輸出結果
         JSONObject jsonOut = new JSONObject();
         jsonOut.put("msg", msg);
-
-        if (arrayObj == null)
-            jsonOut.put("result", "");
-        else
-            jsonOut.put("result", arrayObj);
-
         return Response.status(200).entity(jsonOut.toString()).build();
-
     }
 
-    private JSONObject doJob(JSONObject json) {
-
-        JSONObject out = new JSONObject();
-
+    private boolean updateUser(String userId, String username, String number, String address, String memo) {
         UserListDAO userListDAO = new UserListDAO();
         UserListVO userListVO = new UserListVO();
 
-        userListVO.setUserid(json.getString("userid"));
-        userListVO.setUsername(json.getString("username"));
-        userListVO.setNumber(json.getString("number"));
-        userListVO.setAddress(json.getString("address"));
-        userListVO.setMemo(json.getString("memo"));
+        userListVO.setUserid(userId);
+        userListVO.setUsername(username);
+        userListVO.setNumber(number);
+        userListVO.setAddress(address);
+        userListVO.setMemo(memo);
 
-        int success = userListDAO.update(userListVO); // 修改資料的方法名稱需替換成相應的方法
-
-        if (success == 0)
-            rc = "M9999";
-        else
-            rc = "M0000";
-
-        return out;
+        // 調用 DAO 更新方法
+        try {
+            int success = userListDAO.update(userListVO);
+            return success > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 }
