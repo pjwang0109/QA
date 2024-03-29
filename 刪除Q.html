@@ -1,0 +1,76 @@
+這原先是新增到資料庫的 java內容，可以幫我修改程式碼為[刪除]，改成當我輸入框符合資料庫的資料時，刪除該筆資料庫的資料嗎
+
+
+/**
+ * 刪除
+ */
+
+@Path("/S010010002")
+public class S010010002 {
+	@Context
+    HttpServletRequest req;
+
+    private String rc 		= "M0000" ;
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON + " ;charset=UTF-8")
+    @Produces(MediaType.APPLICATION_JSON + " ;charset=UTF-8")
+    public Response proc(String jsonStr) throws SQLException {
+
+        JSONObject json = new JSONObject();
+
+        String msg = "";
+
+        try {
+            json = new JSONObject(jsonStr);
+            json.getString("userid");
+            json.getString("username");
+            json.getString("number");
+            json.getString("address");
+            json.getString("memo");
+        }catch(Exception e) {
+            e.printStackTrace();
+            rc = "M9995";
+        }
+
+        JSONObject arrayObj = new JSONObject();
+
+        if(rc.equals("M0000")) {
+        	arrayObj = doJob(json); //主要程式 doJob
+        	msg = "成功";
+        	if(rc.equals("M9999")) {
+        		msg = "失敗";
+        	}
+        } else msg = "失敗";
+        //執行後端的輸出結果
+        JSONObject jsonOut = new JSONObject();
+        jsonOut.put("msg"	, msg);
+
+        if(arrayObj==null) jsonOut.put("result", "");
+        else jsonOut.put("result", arrayObj);
+
+        return Response.status(200).entity(jsonOut.toString()).build();
+    
+    }
+    
+    private JSONObject doJob(JSONObject json) {
+    	
+    	JSONObject out = new JSONObject();
+    	
+    	UserListDAO UserListDAO = new UserListDAO();
+    	UserListVO UserListVO = new UserListVO();
+    	
+    	UserListVO.setUserid(json.getString("userid"));
+    	UserListVO.setUsername(json.getString("username"));
+    	UserListVO.setNumber(json.getString("number"));
+    	UserListVO.setAddress(json.getString("address"));
+    	UserListVO.setMemo(json.getString("memo"));
+    	
+    	int success = UserListDAO.insert(UserListVO);
+    	
+    	if(success == 0) rc = "M9999";
+    	else rc = "M0000";
+    	
+    	return out;
+    }
+}
