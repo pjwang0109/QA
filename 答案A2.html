@@ -1,6 +1,5 @@
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
+package com.ubot.lis.function.training;
+
 import java.sql.SQLException;
 
 import javax.servlet.http.HttpServletRequest;
@@ -14,12 +13,15 @@ import javax.ws.rs.core.Response;
 
 import org.json.JSONObject;
 
+import com.ubot.lis.dbtraining.UserListDAO;
+import com.ubot.lis.dbtraining.UserListVO;
+
 /**
- * 修改並更新資料庫
+ * 修改
  */
+
 @Path("/S010010003")
 public class S010010003 {
-
     @Context
     HttpServletRequest req;
 
@@ -28,50 +30,54 @@ public class S010010003 {
     @POST
     @Consumes(MediaType.APPLICATION_JSON + ";charset=UTF-8")
     @Produces(MediaType.APPLICATION_JSON + ";charset=UTF-8")
-    public Response updateData(String jsonStr) {
-        JSONObject json = new JSONObject(jsonStr);
-        JSONObject result = new JSONObject();
+    public Response update(String jsonStr) throws SQLException {
+
+        JSONObject json = new JSONObject();
+
+        String msg = "";
 
         try {
-            // 解析 JSON 中的資料
+            json = new JSONObject(jsonStr);
             String userId = json.getString("userid");
             String username = json.getString("username");
             String number = json.getString("number");
             String address = json.getString("address");
             String memo = json.getString("memo");
 
-            // 呼叫方法更新資料庫
-            boolean success = updateDatabase(userId, username, number, address, memo);
+            // 更新資料庫
+            boolean success = updateUser(userId, username, number, address, memo);
+
             if (success) {
-                result.put("msg", "成功");
+                msg = "成功";
             } else {
-                result.put("msg", "失敗");
+                msg = "失敗";
+                rc = "M9999";
             }
         } catch (Exception e) {
             e.printStackTrace();
-            result.put("msg", "失敗");
+            rc = "M9995";
+            msg = "失敗";
         }
 
-        return Response.status(200).entity(result.toString()).build();
+        JSONObject jsonOut = new JSONObject();
+        jsonOut.put("msg", msg);
+        return Response.status(200).entity(jsonOut.toString()).build();
     }
 
-    // 更新資料庫的方法
-    private boolean updateDatabase(String userId, String username, String number, String address, String memo) {
-        String jdbcUrl = "jdbc:mysql://localhost:3306/your_database";
-        String jdbcUsername = "your_username";
-        String jdbcPassword = "your_password";
-        String sql = "UPDATE your_table SET username=?, number=?, address=?, memo=? WHERE userid=?";
+    private boolean updateUser(String userId, String username, String number, String address, String memo) {
+        UserListDAO userListDAO = new UserListDAO();
+        UserListVO userListVO = new UserListVO();
 
-        try (Connection conn = DriverManager.getConnection(jdbcUrl, jdbcUsername, jdbcPassword);
-             PreparedStatement statement = conn.prepareStatement(sql)) {
-            statement.setString(1, username);
-            statement.setString(2, number);
-            statement.setString(3, address);
-            statement.setString(4, memo);
-            statement.setString(5, userId);
+        userListVO.setUserid(userId);
+        userListVO.setUsername(username);
+        userListVO.setNumber(number);
+        userListVO.setAddress(address);
+        userListVO.setMemo(memo);
 
-            int rowsUpdated = statement.executeUpdate();
-            return rowsUpdated > 0;
+        // 調用 DAO 更新方法
+        try {
+            int success = userListDAO.update(userListVO);
+            return success > 0;
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
