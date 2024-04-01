@@ -1,9 +1,1 @@
-我的 console.log(response.result); 會印出以下資料
-
-
-{users: Array(2)}
-0: {number: '982545656', address: '印度仔是我', memo: '6666', userid: 'A111111747', username: '小黃'}
-
-1: {number: '0915425632', address: '雲林縣', memo: '小明的老爸', userid: 'A132025684', username: '阿明'}
-
-要如何將以上 number. address, memo, userid, username 資料放到 datatable中?
+我目前是套用 bootstrap4 版本的datatable,然而在column 欄位有 userid, username, number, address, memo 而我的資料都正常顯示,只是我想讓每筆資料都水平置中,但唯獨number這格不行,請問是什麼原因
