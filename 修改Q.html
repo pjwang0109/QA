@@ -1,7 +1,62 @@
-請幫我解釋這每一段程式碼在幹嘛，因為我完全不會java
+我完全不會java
+
+這是我 UserListDAO.java 的[修改]程式碼
+
+public int update(UserListVO UserListVO) {//修改
+		
+		DbUtil_JNDI du = new DbUtil_JNDI();
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		
+		int insertCount = 0;
+
+		try {
+			pstmt = du.conn.prepareStatement("UPDATE USERLIST SET USERNAME=?,NUMBER=?,ADDRESS=?,MEMO=? WHERE USERID=?");
+			pstmt.setString(1, UserListVO.getUsername());
+			pstmt.setString(2, UserListVO.getNumber());
+			pstmt.setString(3, UserListVO.getAddress());
+			pstmt.setString(4, UserListVO.getMemo());
+			pstmt.setString(5, UserListVO.getUserid());
+			
+			insertCount = pstmt.executeUpdate();
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		finally {
+			du.closeQuietly(rs);
+            du.closeQuietly(pstmt);
+            du.closeQuietly();
+		}
+
+		return insertCount;
+	}
+
+以下是我 S010010003.java 的[修改]按鈕，程式碼，想問這一段要如何修改，可以讓按下[修改]按鈕時，能修改資料庫所對應的該筆資料，並存進資料庫中?
+
+package com.ubot.lis.function.training;
+
+import java.sql.SQLException;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
+import org.json.JSONObject;
+
+import com.ubot.lis.dbtraining.UserListDAO;
+import com.ubot.lis.dbtraining.UserListVO;
+
+/**
+ * 修改
+ */
 
 @Path("/S010010003")
-public class S010010003{
+public class S010010003 {
 	@Context
     HttpServletRequest req;
 
