@@ -1,0 +1,46 @@
+
+以下是我目前的 JS 列表
+// 列表 btn
+  $("#listBtn").click(function () {
+    // 先清空 message 文字提示
+    $("#message").text("");
+    // 取得身分證字號、姓名、電話、地址、備註
+    let inputId = $("#id-card").val();
+    let inputName = $("#name").val();
+    let phone = $("#phone").val();
+    let address = $("#address").val();
+    let memo = $("#memo").val();
+
+    $.ajax({
+      url: "http://localhost:8080/training/res/S010010005",
+      method: "POST",
+      dataType: "json",
+      contentType: "application/json",
+      data: JSON.stringify({
+        userid: inputId,
+        username: inputName,
+        number: phone,
+        address: address,
+        memo: memo,
+      }), // 根據需求調整傳遞的參數
+      success: function (response) {
+		  // 清空 DataTable 資料
+        dataTable.clear().draw();
+          // 將 API 返回的資料加入 DataTable 中
+          dataTable.row
+            .add({
+              userid: response.result.userid,
+              username: response.result.username,
+              number: response.result.number,
+              address: response.result.address,
+              memo: response.result.memo,
+            })
+            .draw();
+        console.log("列表新增成功");
+        console.log(response);
+      },
+      error: function (error) {
+        console.log("列表新增失敗");
+      },
+    });
+  });
