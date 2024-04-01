@@ -1,11 +1,6 @@
-她顯示這個錯誤，是哪裡要修改?
+我要按下列表按鈕，顯示所有資料庫的資料到對應的 datatable 上。而目前的 console.log(response.result);  可以印出資料庫的資料，但沒辦法顯示每一筆資料在datatable上，JS程式碼哪裡有誤?
 
-DataTables warning: table id=myTable - Requested unknown parameter 'userid' for row 0, column 0. For more information about this error.
-
-我要按下列表按鈕，顯示所有資料庫的資料到對應的 datatable 上，JS程式碼哪裡有誤?
-
-
-// 列表 btn
+ // 列表 btn
   $("#listBtn").click(function () {
     // 先清空 message 文字提示
     $("#message").text("");
@@ -22,7 +17,7 @@ DataTables warning: table id=myTable - Requested unknown parameter 'userid' for 
       dataType: "json",
       contentType: "application/json",
       data: JSON.stringify({
-            userid: inputId,
+            id: inputId,
             username: inputName,
             number: phone,
             address: address,
@@ -41,10 +36,10 @@ DataTables warning: table id=myTable - Requested unknown parameter 'userid' for 
               address: result.address,
               memo: result.memo,
             });
-		  })      
-            dataTable.draw();     
+		  })   
+		    dataTable.draw();
             console.log("列表新增成功");
-            console.log(response);     
+            console.log(response.result);     
       },
       error: function (error) {
         console.log("列表新增失敗");
