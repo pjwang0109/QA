@@ -1,18 +1,1 @@
-success: function (response) {
-  dataTable.clear().draw(); // 清空 DataTable 資料
-  if (response && response.users && Array.isArray(response.users)) {
-    response.users.forEach(function (user) {
-      dataTable.row.add({
-        userid: user.userid,
-        username: user.username,
-        number: user.number,
-        address: user.address,
-        memo: user.memo
-      }).draw();
-    });
-    console.log("列表新增成功");
-    console.log(response.result);
-  } else {
-    console.error("API 返回的資料格式不正確");
-  }
-},
+
