@@ -1,51 +1,44 @@
 我要按下列表按鈕，顯示所有資料庫的資料到對應的 datatable 上，JS程式碼哪裡有誤?
 
 
-$(document).ready(function () {
-  let dataTable = $("#myTable").DataTable({
-    // 屬性
-
-    // 語言 (language)
-    language: {
-      lengthMenu: "顯示 _MENU_ 項結果",
-      search: "搜尋:",
-      info: "顯示 _START_ 到 _END_ 筆資料，共 _TOTAL_ 項",
-    },
-    // 資料欄位 (columns)
-    columns: [
-      { data: "userid", title: "身分證字號" },
-      { data: "username", title: "姓名" },
-      { data: "number", title: "電話" },
-      { data: "address", title: "地址" },
-      { data: "memo", title: "備註" },
-    ],
-  });
-
-  // 列表 btn
+// 列表 btn
   $("#listBtn").click(function () {
     // 先清空 message 文字提示
     $("#message").text("");
+    // 取得身分證字號、姓名、電話、地址、備註
+    let inputId = $("#id-card").val();
+    let inputName = $("#name").val();
+    let phone = $("#phone").val();
+    let address = $("#address").val();
+    let memo = $("#memo").val();
 
     $.ajax({
       url: "http://localhost:8080/training/res/S010010005",
       method: "POST",
       dataType: "json",
       contentType: "application/json",
+      data: JSON.stringify({
+            userid: inputId,
+            username: inputName,
+            number: phone,
+            address: address,
+            memo: memo,
+          }),
       success: function (response) {
 		  // 清空 DataTable 資料
         dataTable.clear().draw();
           // 將 API 返回的資料加入 DataTable 中
-          response.forEach(function(result){
-			  dataTable.row
-            .add({
+          Object.keys(response).forEach(function (key){
+			  const result = response[key];
+			  dataTable.row.add({
               userid: result.userid,
               username: result.username,
               number: result.number,
               address: result.address,
               memo: result.memo,
-            })
-            .draw();		  
-            })            
+            });
+		  })      
+            dataTable.draw();     
             console.log("列表新增成功");
             console.log(response);     
       },
@@ -55,4 +48,3 @@ $(document).ready(function () {
       },
     });
   });
-});
