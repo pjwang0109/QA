@@ -1,3 +1,74 @@
+當我按下 [列表]按鈕時，可以把所有資料庫的資料都使用datatable顯示出來，請問 js 程式碼哪裡有錯?
+
+以下是我的 HTML 的 table 
+            <!-- 身分證字號 -->
+            <label class="form-label h5 font-weight-bold" for="id-card"
+              >身分證字號</label
+            >
+            <input
+              class="form-control"
+              type="text"
+              name="id-card"
+              id="id-card"
+            />
+            <span
+              ><b class="mt-1 text-danger">
+                提示 : <b id="message"></b>
+              </b></span
+            >
+          </div>
+
+          <!-- 姓名 -->
+          <div class="mb-5">
+            <label class="form-label h5 font-weight-bold" for="name"
+              >姓名</label
+            >
+            <input class="form-control" type="text" name="name" id="name" />
+          </div>
+
+          <!-- 電話 -->
+          <div class="mb-5">
+            <label class="form-label h5 font-weight-bold" for="phone"
+              >電話</label
+            >
+            <input class="form-control" type="number" name="phone" id="phone" />
+          </div>
+
+          <!-- 地址 -->
+          <div class="mb-5">
+            <label class="form-label h5 font-weight-bold" for="address"
+              >地址</label
+            >
+            <input
+              class="form-control"
+              type="text"
+              name="address"
+              id="address"
+            />
+          </div>
+
+          <!-- 備註 -->
+          <div class="mb-5">
+            <label class="form-label h5 font-weight-bold" for="memo"
+              >備註</label
+            >
+            <input class="form-control" type="text" name="memo" id="memo" />
+          </div>
+
+          <!-- CRUD -->
+          <div class="mt-5">
+            <a href="#" id="queryBtn" class="btn btn-info"><b>查詢</b></a>
+            <a href="#" id="addBtn" class="btn btn-primary ml-3"><b>新增</b></a>
+            <a href="#" id="reviseBtn" class="btn btn-warning ml-3"
+              ><b>修改</b></a>
+            <a href="#" id="deleteBtn" class="btn btn-danger ml-3"
+              ><b>刪除</b></a>
+            <a href="#" id="listBtn" class="btn btn-dark ml-3"
+              ><b>列表</b></a>
+          </div>
+        </div>
+
+
 
 以下是我目前的 JS 列表
 // 列表 btn
