@@ -1,117 +1,58 @@
-當我按下 [列表]按鈕時，可以把所有資料庫的資料都使用datatable顯示出來，請問 js 程式碼哪裡有錯?
-
-以下是我的 HTML 的 table 
-            <!-- 身分證字號 -->
-            <label class="form-label h5 font-weight-bold" for="id-card"
-              >身分證字號</label
-            >
-            <input
-              class="form-control"
-              type="text"
-              name="id-card"
-              id="id-card"
-            />
-            <span
-              ><b class="mt-1 text-danger">
-                提示 : <b id="message"></b>
-              </b></span
-            >
-          </div>
-
-          <!-- 姓名 -->
-          <div class="mb-5">
-            <label class="form-label h5 font-weight-bold" for="name"
-              >姓名</label
-            >
-            <input class="form-control" type="text" name="name" id="name" />
-          </div>
-
-          <!-- 電話 -->
-          <div class="mb-5">
-            <label class="form-label h5 font-weight-bold" for="phone"
-              >電話</label
-            >
-            <input class="form-control" type="number" name="phone" id="phone" />
-          </div>
-
-          <!-- 地址 -->
-          <div class="mb-5">
-            <label class="form-label h5 font-weight-bold" for="address"
-              >地址</label
-            >
-            <input
-              class="form-control"
-              type="text"
-              name="address"
-              id="address"
-            />
-          </div>
-
-          <!-- 備註 -->
-          <div class="mb-5">
-            <label class="form-label h5 font-weight-bold" for="memo"
-              >備註</label
-            >
-            <input class="form-control" type="text" name="memo" id="memo" />
-          </div>
-
-          <!-- CRUD -->
-          <div class="mt-5">
-            <a href="#" id="queryBtn" class="btn btn-info"><b>查詢</b></a>
-            <a href="#" id="addBtn" class="btn btn-primary ml-3"><b>新增</b></a>
-            <a href="#" id="reviseBtn" class="btn btn-warning ml-3"
-              ><b>修改</b></a>
-            <a href="#" id="deleteBtn" class="btn btn-danger ml-3"
-              ><b>刪除</b></a>
-            <a href="#" id="listBtn" class="btn btn-dark ml-3"
-              ><b>列表</b></a>
-          </div>
-        </div>
+我要按下列表按鈕，顯示所有資料庫的資料到對應的 datatable 上，JS程式碼哪裡有誤?
 
 
+$(document).ready(function () {
+  let dataTable = $("#myTable").DataTable({
+    // 屬性
 
-以下是我目前的 JS 列表
-// 列表 btn
+    // 語言 (language)
+    language: {
+      lengthMenu: "顯示 _MENU_ 項結果",
+      search: "搜尋:",
+      info: "顯示 _START_ 到 _END_ 筆資料，共 _TOTAL_ 項",
+    },
+    // 資料欄位 (columns)
+    columns: [
+      { data: "userid", title: "身分證字號" },
+      { data: "username", title: "姓名" },
+      { data: "number", title: "電話" },
+      { data: "address", title: "地址" },
+      { data: "memo", title: "備註" },
+    ],
+  });
+
+  // 列表 btn
   $("#listBtn").click(function () {
     // 先清空 message 文字提示
     $("#message").text("");
-    // 取得身分證字號、姓名、電話、地址、備註
-    let inputId = $("#id-card").val();
-    let inputName = $("#name").val();
-    let phone = $("#phone").val();
-    let address = $("#address").val();
-    let memo = $("#memo").val();
 
     $.ajax({
       url: "http://localhost:8080/training/res/S010010005",
       method: "POST",
       dataType: "json",
       contentType: "application/json",
-      data: JSON.stringify({
-        userid: inputId,
-        username: inputName,
-        number: phone,
-        address: address,
-        memo: memo,
-      }), // 根據需求調整傳遞的參數
       success: function (response) {
 		  // 清空 DataTable 資料
         dataTable.clear().draw();
           // 將 API 返回的資料加入 DataTable 中
-          dataTable.row
+          response.forEach(function(result){
+			  dataTable.row
             .add({
-              userid: response.result.userid,
-              username: response.result.username,
-              number: response.result.number,
-              address: response.result.address,
-              memo: response.result.memo,
+              userid: result.userid,
+              username: result.username,
+              number: result.number,
+              address: result.address,
+              memo: result.memo,
             })
-            .draw();
-        console.log("列表新增成功");
-        console.log(response);
+            .draw();		  
+            })            
+            console.log("列表新增成功");
+            console.log(response);     
       },
       error: function (error) {
         console.log("列表新增失敗");
+        console.log(error);
       },
     });
   });
+});
