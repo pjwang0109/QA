@@ -1,1 +1,43 @@
-我目前是套用 bootstrap4 版本的datatable,然而在column 欄位有 userid, username, number, address, memo 而我的資料都正常顯示,只是我想讓每筆資料都水平置中,但唯獨number這格不行,請問是什麼原因
+我目前是套用 bootstrap4 版本的datatable,然而在column 欄位有 userid, username, number, address, memo 而我的資料都正常顯示,只是我想讓每筆資料都水平置中,但唯獨[number]這格不行,請問要怎麼修改程式碼?
+
+這是我的 html 
+ <div class="col-8 p-3">
+          <table
+            id="myTable"
+            class="table table-striped table-bordered text-center"
+            style="width: 100%"
+          >
+            <thead>
+              <tr>
+                <th  class="text-center">身分證字號</th>
+                <th  class="text-center">姓名</th>
+                <th  class="text-center">電話</th>
+                <th  class="text-center">地址</th>
+                <th  class="text-center">備註</th>
+              </tr>
+            </thead>
+          </table>
+        </div>
+
+這是我的 jquery 
+$(document).ready(function () {
+  let dataTable = $("#myTable").DataTable({
+    // 屬性
+
+    // 語言 (language)
+    language: {
+      lengthMenu: "顯示 _MENU_ 項結果",
+      search: "搜尋:",
+      info: "顯示 _START_ 到 _END_ 筆資料，共 _TOTAL_ 項",
+    },
+    // 資料欄位 (columns)
+    columns: [
+      { data: "userid", title: "身分證字號" },
+      { data: "username", title: "姓名" },
+      { data: "number", title: "電話" },
+      { data: "address", title: "地址" },
+      { data: "memo", title: "備註" },
+    ],
+  });
+
+})
