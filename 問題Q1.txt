@@ -1,4 +1,4 @@
-當我的 lastSixNum 為 999999 時。輸入的帳號數(accountCount)只能為1；lastSixNum 為 999998 時。輸入的帳號數只能為2；lastSixNum 為 999997 時。輸入的帳號數只能為3；以此類推，直到 lastSixNum 為 990002 時。輸入的帳號數只能為9998，不過當 lastSixNum 為小於等於 990001 時。輸入的帳號數可以為 1 到 9999，這要怎麼寫?
+當我的 lastSixNum 為 999999 時。輸入的帳號數(accountCount)只能為1；lastSixNum 為 999998 時。輸入的帳號數只能為1到2；lastSixNum 為 999997 時。輸入的帳號數只能為1到3；以此類推，直到 lastSixNum 為 990002 時。輸入的帳號數只能為1 到 9998，不過當 lastSixNum 為小於等於 990001 時。輸入的帳號數可以為 1 到 9999，這要怎麼寫?
 
 這是我的 html
 <section id="pink">
