@@ -1,1 +1,147 @@
+當我的 lastSixNum 為 999999 時。輸入的帳號數(accountCount)只能為1；lastSixNum 為 999998 時。輸入的帳號數只能為2；lastSixNum 為 999997 時。輸入的帳號數只能為3；以此類推，直到 lastSixNum 為 990002 時。輸入的帳號數只能為9998，不過當 lastSixNum 為小於等於 990001 時。輸入的帳號數可以為 1 到 9999，這要怎麼寫?
 
+這是我的 html
+<section id="pink">
+      <!-- elevenAccount (11碼) -->
+      <div class="num">
+        <label for="startAccount">起始帳號 (11碼)：</label>
+        <input type="text" id="startAccount" name="startAccount" required />
+
+        <label for="accountCount">帳號數：</label>
+        <input
+          type="number"
+          id="accountCount"
+          name="accountCount"
+          min="1"
+          max="9999"
+          required
+        />
+
+        <label for="twelve">檢核帳號 (12碼)：</label>
+        <input type="text" id="twelve" name="twelve" required />
+
+        <label for="checkId">檢核帳號是否存在：</label>
+        <p id="checkId"></p>
+      </div>
+
+      <button class="btn" type="button">產生帳號</button>
+    </section>
+
+這是我的 jQuery
+$(document).ready(function () {
+        // Focus 起始帳號的輸入框
+        $("#startAccount").focus();
+
+        $(".btn").click(function () {
+          produceID();
+          checkID();
+        });
+
+        // 按下 Enter
+        $("body").keypress(function (e) {
+          if (e.which === 13) {
+            produceID();
+            checkID();
+          }
+        });
+      });
+
+      // 檢查:
+      // 假設起始帳號為(符合 a) 00240809876 -> 得到 002408098760 | 00240809877 -> 得到 002408098778 | 00240809878 -> 得到 002408098786
+      // 假設起始帳號為(符合 b) 00150123456 -> 得到 001501234569 | 00150123457 -> 得到 001501234577 | 00150123458 -> 得到 001501234585
+
+      // 11 碼帳號
+      function produceID() {
+        // 1 起始帳號的輸入值 2 當前後有多餘的空格時，將它去除
+        let startAccount = $("#startAccount").val().trim(); // string : 00230000147
+        console.log("11 碼的值為:", startAccount);
+
+        // 帳號數的輸入值
+        let accountCount = parseInt($("#accountCount").val()); // number : 3
+
+        // 檢查起始帳號長度
+        if (startAccount.length !== 11) {
+          alert("起始帳號(11碼)的長度錯誤");
+          return;
+        }
+
+        // 檢查起始帳號是否為數字
+        if (!/^\d+$/.test(startAccount)) {
+          alert("起始帳號(11碼)需為數字");
+          return;
+        }
+
+        // 分行別
+        let bankCode = startAccount.substring(0, 3); // string: 002
+
+        // 科目
+        let subject = startAccount.substring(3, 5); // string: 40
+
+        // 檢查分行別
+        if (!(bankCode >= "001" && bankCode <= "099") || bankCode === "019") {
+          alert("起始帳號(11碼)的分行別錯誤");
+          return;
+        }
+
+        // 檢查科目別
+        if (
+          !["10", "20", "30", "40", "50", "51", "66", "77", "88"].includes(
+            subject
+          )
+        ) {
+          alert("起始帳號(11碼)的科目別錯誤");
+          return;
+        }
+
+        // 檢查帳號數
+        if (accountCount < 1 || accountCount > 9999) {
+          alert("帳號數錯誤");
+          return;
+        }
+
+        let result = "";
+        let multiplyNum = [5, 4, 3, 2, 8, 7, 6, 5, 4, 3, 2];
+        let validSubject = ["30", "40", "66"];
+
+        // 輸入的 11 碼中，最後 6 個數字
+        let lastSixNum = startAccount.substring(5, 11); // string: 809876
+
+        for (let i = 0; i < accountCount; i++) {
+          let newAccount = "";
+          let y = 0;
+
+          if (
+            subject === "20" ||
+            (bankCode >= "001" &&
+              bankCode <= "007" &&
+              validSubject.includes(subject))
+          ) {
+            // Case (a) : 00240809876
+            newAccount = "00000" + lastSixNum; // 00000809876
+          } else {
+            // Case (b) : 00150123456
+            newAccount = startAccount; // 00150123456
+          }
+
+          // 算出檢查碼 Z
+          for (let j = 0; j < 11; j++) {
+            y += parseInt(newAccount[j]) * multiplyNum[j];
+          }
+
+          let x = y % 11;
+          let z = x === 0 ? 1 : x === 1 ? 0 : 11 - x;
+
+          let zeroBefore = newAccount.substring(0, 5); // "00000"
+          // 如果 newAccount 的前面5個數字為"0000"時，再把它改回原本輸入的值
+          if (zeroBefore === "00000") {
+            newAccount = startAccount;
+          }
+
+          newAccount += z;
+          result += newAccount + "<br>";
+          lastSixNum = String(parseInt(lastSixNum) + 1).padStart(6, "0"); // "809877" "809878"
+          startAccount = String(parseInt(startAccount) + 1).padStart(11, "0"); // "00150123457" "00150123458"
+        }
+
+        $("#result").html(result);
+      }
