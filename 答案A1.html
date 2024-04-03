@@ -1,1 +1,18 @@
+function getAccountCountRange(lastSixNum) {
+    let accountCountMin = 1;
+    let accountCountMax = 9999;
 
+    for (let i = 999999; i >= 990002; i--) {
+        if (lastSixNum === i) {
+            accountCountMax = 9999 - (999999 - lastSixNum);
+            break;
+        }
+    }
+
+    return [accountCountMin, accountCountMax];
+}
+
+// 示例用法
+let lastSixNum = 999995;
+let [min, max] = getAccountCountRange(lastSixNum);
+console.log("帐号数范围:", min, "到", max);
