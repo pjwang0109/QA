@@ -1,1 +1,52 @@
+$(document).ready(function () {
+    // Focus 起始帳號的輸入框
+    $("#startAccount").focus();
 
+    // 点击按钮或按下 Enter 时触发事件
+    $(".btn").click(function () {
+        produceID();
+        checkID();
+    });
+
+    $("body").keypress(function (e) {
+        if (e.which === 13) {
+            produceID();
+            checkID();
+        }
+    });
+
+    // 监听帐号数输入框的输入事件
+    $("#accountCount").on("input", function () {
+        let lastSixNum = parseInt($("#startAccount").val().trim().substring(5));
+        let accountCount = parseInt($(this).val());
+
+        // 获取帐号数范围
+        let [min, max] = getAccountCountRange(lastSixNum);
+
+        // 如果输入的帐号数超出范围，则提醒用户
+        if (accountCount < min || accountCount > max) {
+            alert("帐号数范围应在 " + min + " 到 " + max + " 之间");
+            $(this).val(""); // 清空输入框内容
+        }
+    });
+});
+
+// 获取帐号数范围的函数
+function getAccountCountRange(lastSixNum) {
+    let accountCountMin = 1;
+    let accountCountMax = 9999;
+
+    for (let i = 999999; i >= 990002; i--) {
+        if (lastSixNum === i) {
+            accountCountMax = 9999 - (999999 - lastSixNum);
+            break;
+        }
+    }
+
+    return [accountCountMin, accountCountMax];
+}
+
+// 11 碼帳號
+function produceID() {
+    // 其他逻辑...
+}
