@@ -1,1 +1,18 @@
+以下是我的 html，使用 bootstrap 做的，我想讓他在手機上時，[身份ID檢核]的文字大小要改小，input的寬度要調大，也要有RWD效果，該怎麼做
 
+<h1 class="text-center my-3">身份ID檢核</h1>
+    <div class="container d-flex justify-content-center p-2">
+      <input
+        class="w-25 p-2 border-2 border-dark rounded mx-2"
+        type="text"
+        id="idInput"
+        placeholder="請輸入檢測ID"
+      />
+      <button
+        class="mx-2 p-2 border-2 border-info bg-info text-white rounded"
+        id="checkBtn"
+      >
+        檢查
+      </button>
+    </div>
+    <p class="text-center mt-3 text-danger font-weight-bold h5" id="result"></p>
