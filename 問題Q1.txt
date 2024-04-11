@@ -488,15 +488,6 @@ $(document).ready(function () {
         console.log("無法顯示列表", error);
       },
     });
-
-    $("#reviseBtn").click(function () {
-      console.log("reviseBtn");
-    })
-
-    $("#deleteBtn").click(function () {
-      console.log("deleteBtn");
-      dataTable.row().data();
-    })
   
   });
 });
