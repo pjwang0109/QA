@@ -1,1 +1,119 @@
+// 新增 btn
+$("#addBtn").click(function () {
+    // 先清空 message 文字提示
+    $("#message").text("");
+    // 取得身分證字號、姓名、電話、地址、備註
+    let inputId = $("#id-card").val().toUpperCase().trim();
+    let inputName = $("#name").val().trim();
+    let phone = $("#phone").val().trim();
+    let address = $("#address").val().trim();
+    let memo = $("#memo").val().trim();
 
+    // 必填 姓名、電話、地址
+    let requireInput =
+        inputId.length !== 0 &&
+        inputName.length !== 0 &&
+        phone.length !== 0;
+
+    // 城市地區 英文轉換數字
+    const cityCode = {
+        A: 10, B: 11, C: 12, D: 13, E: 14, F: 15, G: 16, H: 17, J: 18, K: 19,
+        L: 20, M: 21, N: 22, P: 23, Q: 24, R: 25, S: 26, T: 27, U: 28, V: 29,
+        X: 30, Y: 31, W: 32, Z: 33, I: 34, O: 35
+    };
+
+    // 身分證檢驗
+    if (inputId.match(/^[A-Z][12][0-9]{8}$/)) {
+        // 身份證檢碼
+        const firstIdEn = inputId.charAt(0);
+        const otherIdNum = inputId.substring(1, 9);
+
+        let idSum =
+            (cityCode[firstIdEn] % 10) * 9 + Math.floor(cityCode[firstIdEn] / 10);
+        for (let i = 0; i < otherIdNum.length; i++) {
+            idSum += parseInt(otherIdNum.charAt(i)) * (8 - i);
+        }
+
+        const remainderId = idSum % 10;
+        const checkLastNum = remainderId === 0 ? 0 : 10 - remainderId;
+
+        if (checkLastNum === parseInt(inputId.charAt(9)) && requireInput) {
+            $("#message").text("符合身份證字號且檢碼正確");
+            // 新增 AJAX
+            $.ajax({
+                url: "http://localhost:8080/training/res/S010010002",
+                method: "POST",
+                dataType: "json",
+                contentType: "application/json",
+                data: JSON.stringify({
+                    userid: inputId,
+                    username: inputName,
+                    number: phone,
+                    address: address,
+                    memo: memo,
+                }),
+                success: function (response) {
+                    alert("新增" + response.msg);
+                    // 清空 DataTable 資料
+                    dataTable.clear().draw();
+                    if (response.msg === "失敗") {
+                        alert("已有相同的身份證在資料裡，請重新輸入");
+
+                        $("#name").val("");
+                        $("#phone").val("");
+                        $("#address").val("");
+                        $("#memo").val("");
+                    } else if (response.msg === "成功") {
+
+                        dataTable.row
+                            .add({
+                                userid: inputId,
+                                username: inputName,
+                                number: phone,
+                                address: address,
+                                memo: memo,
+                            })
+                            .draw();
+
+                        $("#name").val("");
+                        $("#phone").val("");
+                        $("#address").val("");
+                        $("#memo").val("");
+
+                        // 提示文字 清空
+                        $("#mesName").text("");
+                        $("#mesPhone").text("");
+                        $("#mesAddress").text("");
+
+                        // 如果已經按下了[清單]按鈕，則重新載入清單資料到DataTable中
+                        if ($("#listBtn").hasClass("active")) {
+                            $("#listBtn").trigger("click");
+                        }
+
+                    }
+                },
+                error: function (error) {
+                    console.log(error);
+                },
+            });
+        } else if (inputName.length === 0) {
+            alert("新增錯誤，姓名不得為空");
+            $("#mesName").text("請輸入姓名");
+            $("#name").focus();
+        } else if (phone.length === 0) {
+            alert("新增錯誤，電話不得為空");
+            $("#mesPhone").text("請輸入電話");
+            $("#phone").focus();
+        } else {
+            alert("檢核碼錯誤，正確檢核碼為" + checkLastNum);
+            $("#message").text("請輸入正確的身分證");
+        }
+    } else if (inputId.length === 0) {
+        alert("新增錯誤，身分證不得為空");
+        $("#message").text("請輸入身分證");
+        $("#id-card").focus();
+    } else {
+        alert("身分證格式錯誤，請重新輸入");
+        $("#message").text("總共10個字元");
+    }
+});
