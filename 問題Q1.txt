@@ -1,4 +1,8 @@
-這是我的 jquery， 當我按下[列表]按鈕之後，再按下[新增]按鈕時，可以將新增的資料馬上更新在 datatable上，該怎麼做?
+這是我的 jquery，目前的程式碼能夠: 當我按下[新增]按鈕時，而且[新增成功]時，datatable 會馬上列出該筆資料；
+原先的[新增]按鈕的設定不變，但想加入新的效果，我想設定的是: 當我先按下[列表]按鈕，再按下[新增]按鈕，且[新增成功]時，可以馬上在 datatable 中，加入這筆資料；
+舉例: 原先按下[列表]按鈕，會顯示 9 筆資料，再按下[新增]按鈕，且[新增成功]時，datatable 會馬上顯示這 10 筆資料
+這樣程式碼該怎麼改?
+
 
 $(document).ready(function () {
   let dataTable = $("#myTable").DataTable({
@@ -16,7 +20,8 @@ $(document).ready(function () {
       emptyTable: "尚未有資料存在",
     },
     // 定義列
-    columnDefs: [],
+    columnDefs: [
+	],
     // 資料欄位 (columns)
     columns: [
       {
@@ -31,14 +36,20 @@ $(document).ready(function () {
         className: "text-center",
         width: "15%",
       },
-      { data: "number", title: "電話", className: "text-center", width: "15%" },
+      { data: "number", 
+      title: "電話", 
+      className: "text-center", 
+      width: "15%" 
+      },
       {
         data: "address",
         title: "地址",
-        className: "text-center",
         width: "40%",
       },
-      { data: "memo", title: "備註", className: "text-center", width: "15%" },
+      { data: "memo", 
+      title: "備註", 
+      width: "15%" 
+      },
     ],
   });
   // focus 在身分證輸入框
@@ -477,10 +488,6 @@ $(document).ready(function () {
         console.log("無法顯示列表", error);
       },
     });
-  
-    $("#addBtn").click(function () {
-      console.log("addBtn");
-    })
 
     $("#reviseBtn").click(function () {
       console.log("reviseBtn");
@@ -488,6 +495,7 @@ $(document).ready(function () {
 
     $("#deleteBtn").click(function () {
       console.log("deleteBtn");
+      dataTable.row().data();
     })
   
   });
