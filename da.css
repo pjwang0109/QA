@@ -1,0 +1,116 @@
+:root {
+  /* 手機 */
+  --phone-h2: 2rem;
+  --phone-input: 1rem;
+  --phone-table: 1.2rem;
+
+  /* 平板直向 */
+  --stIpad-h2: 2.2rem;
+  --stIpad-input: 1.3rem;
+  --stIpad-table: 1.4rem;
+
+  /* 平板橫向 */
+  --hoIpad-h2: 2.5rem;
+  --hoIpad-input: 1.2rem;
+  --hoIpad-table: 1.2rem;
+
+  /* 電腦 */
+  --com-h2: 2.5rem;
+  --com-input: 1.2rem;
+  --com-table: 1.2rem;
+}
+
+table#myTable tbody tr td{
+	cursor: pointer;
+}
+
+h2.text-secondary {
+  font-size: var(--phone-h2);
+}
+label.form-label,
+input#id-card,
+input#name,
+input#phone,
+input#address,
+input#memo,
+span,
+#queryBtn,
+#addBtn,
+#reviseBtn,
+#deleteBtn,
+#listBtn {
+  font-size: var(--phone-input);
+}
+
+
+/* 平板直向 */
+@media screen and (min-width: 768px) {
+  h2.text-secondary {
+    font-size: var(--stIpad-h2);
+  }
+  label.form-label,
+  input#id-card,
+  input#name,
+  input#phone,
+  input#address,
+  input#memo,
+  span,
+  #queryBtn,
+  #addBtn,
+  #reviseBtn,
+  #deleteBtn,
+  #listBtn {
+    font-size: var(--stIpad-input);
+  }
+  table#myTable {
+    font-size: var(--stIpad-table);
+  }
+}
+
+/* 平板橫向 */
+@media screen and (min-width: 1024px) {
+  h2.text-secondary {
+    font-size: var(--hoIpad-h2);
+  }
+  label.form-label,
+  input#id-card,
+  input#name,
+  input#phone,
+  input#address,
+  input#memo,
+  span,
+  #queryBtn,
+  #addBtn,
+  #reviseBtn,
+  #deleteBtn,
+  #listBtn {
+    font-size: var(--hoIpad-input);
+  }
+  table#myTable {
+    font-size: var(--hoIpad-table);
+  }
+}
+
+/* 電腦 */
+@media screen and (min-width: 1200px) {
+  h2.text-secondary {
+    font-size: var(--com-h2);
+  }
+  label.form-label,
+  input#id-card,
+  input#name,
+  input#phone,
+  input#address,
+  input#memo,
+  span,
+  #queryBtn,
+  #addBtn,
+  #reviseBtn,
+  #deleteBtn,
+  #listBtn {
+    font-size: var(--com-input);
+  }
+  table#myTable {
+    font-size: var(--com-table);
+  }
+}
