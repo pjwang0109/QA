@@ -1,28 +1,362 @@
 這每一段程式碼是什麼意思?
 
-function copyGuarantees(target) {
-    let $target = $(target).closest("div");
-    let idList = $('.guarantees').map(function () {
-        return $(this).attr('id').match(/\d+$/)//提取序號的部分
-    }).get();
-    let textArr = [];
-    let textAreaVal = '';
-    $.each(idList, function (index, item) {
-        let $id = $('#guarantees' + item);
-        let owners = $id.find(".owners").val() || " ";
-        let collateral = $id.find(".collateral").val() || " ";
-        let order = $id.find(".order").val() || " ";
-        let amount = $id.find(".amount").val() || " ";
-        let copyGCtextrea = "徵提" + owners + "名下位於" + collateral + "之不動產，設定" + order + "順位抵押權新臺幣" + amount + "元。";
-        textArr.push(copyGCtextrea);
-    })
-    textArr.forEach(function (val) {
-        textAreaVal += val + '\n';
-    })
-    let guaOtherVal = $(".guaranteesOther").val()
-    if (guaOtherVal !== "" && guaOtherVal !== undefined) {
-        textAreaVal = textAreaVal + guaOtherVal;
+async function openOpSearchCaseWeb(obj, isJcClose = false) {
+    let userObj = getUidToken();
+    let uid = userObj.uid;
+    let token = userObj.token;
+    let table = $(obj).closest("table").DataTable();
+    let tr = $(obj).closest("tr");
+    let data = table.row(tr).data()[0];
+    let caseTypeValue = data.assign;
+    let ttypeList = data.ttype;
+    let caseno = data.cfid;
+    const branch = userObj.branch;
+    //超連結鎖定
+    $(obj).closest("#resualtTable").find("a").css({
+        "pointer-events": "none",
+        "color": "grey",
+    });
+    $("#searchANS").attr("opid", caseno);
+    $(obj).closest("table").find("tr").removeClass('table-warning')
+    $("#frontBody").empty();
+    $("#frontHeader").empty();
+    loadingShow("資料處理中......");//loading 畫面顯示
+    //揭露使用者是否有權限操作此案件。
+    let jsondata = "";
+    if (caseTypeValue != "11") {
+        jsondata = await apiS060001031(uid, token, caseno);
+    } else {
+        jsondata = await apiS060001036(uid, token, caseno);
     }
+    if (jsondata.rc == "M0000") {
+        tr.addClass('table-warning');
+        //作業中心
+        let url1v1Frame = ajaxhttpIPHostHtml("/opCenter/opCenter_openOpSearchCaseWeb.html");//分行畫面
+        let url1v1Frame2 = ajaxhttpIPHostHtml("/opCenter/opCenter_openOpCaseWeb.html");//作業中心畫面
+        // const frame = await $.ajax(url1v1Frame);
+        try {
+            res = await Promise.all([
+                $.ajax(url1v1Frame),
+                $.ajax(url1v1Frame2),
 
-    $target.find(".copyGCtextrea").val(textAreaVal);
+            ]);
+        } catch (e) {
+            console.error(e);
+        }
+        let html = res[0];
+        let html2 = res[1];
+
+        //1v1Frame
+        // let $frame2 = $(frame2);
+        // let $frame = $(frame);
+        let $frame = $(html);
+        let $frame2 = $(html2);
+
+        // 作業中心預設僅顯示作業中心資料
+        // $frame.find('.dataBlock').removeClass('show-all-type')
+        //     .addClass('show-type-2')
+
+        if (caseTypeValue == "11") {
+            //約據
+            //如果登入人是作業中心，給作業中心畫面
+            if (getUidToken().branch == "500") {
+                $frame2.find("#contractDiv").removeClass("hide");
+                $frame2.find(".btnS020050020").removeClass("hide");
+                $frame2.find(".btnS020050021").removeClass("hide");
+                //PDF按鈕不鎖(btnS020050020、btnS020050021)、上傳檔案功能不鎖(sendType)
+                $frame2.find("input,select,button,textarea").not(".btnS020050020,.btnS020050021,.sendType").prop("disabled", true);
+            } else {
+                $frame.find("#contractDiv").removeClass("hide");
+                $frame.find(".btnS020050020").removeClass("hide");
+                $frame.find(".btnS020050021").removeClass("hide");
+            }
+
+        } else if (caseTypeValue == "12") {
+            //建檔
+            $frame.find("#createFileDiv").removeClass("hide");
+        } else if (caseTypeValue == "13") {
+            //撥貸
+            $frame.find("#appropriationLoanDiv").removeClass("hide");
+        } else if (caseTypeValue == "14") {
+            //條件變更及報請總行
+            $frame.find("#conditionChangeDiv").removeClass("hide");
+        } else {
+            //其他案件
+            $frame.find("#otherDiv").removeClass("hide");
+        }
+
+        $frame.find(".btnOpDiv").attr("cfid", caseno);
+        $frame.find(".btnOpDiv").attr("cfType", caseTypeValue);
+
+        if (isJcClose) {
+            $("#frontHeader").empty().append($frame.html());
+        } else {
+            //隱藏功能列表
+            $("section .guideRight").addClass("hide");
+            $("section .guideRightUl").empty();
+
+            // 如果登入人是作業中心，給作業中心畫面
+            // 之後有暫存其他功能需比照辦理
+            if ($("#msg_branch").text() == "500" && caseTypeValue == "11") {
+                $("#frontBody").empty().append($frame2.html());
+            } else {
+                $("#frontBody").empty().append($frame.html());
+            }
+        }
+        //檔案上傳Type
+        if (jsondata.result && jsondata.result.fileType) {
+            $.each(jsondata.result.fileType, (i, v) => {
+                const $opt = $("<option>");
+                $opt.attr("value", v.code);
+                $opt.text(v.name);
+                $(".sendType").append($opt);
+            });
+        }
+
+        if (caseTypeValue != "11") {
+            //各個資料帶入
+            let classArray = [".acc", ".modalallowcode", ".subjectAmount", ".id", ".uid", ".name", ".allocationDate", ".amount", ".businessType", ".otherCaseType"];
+            $.each(classArray, (i, className) => {
+                let dataName = className.replace('.', '');
+                if (dataName != "acc") {
+                    $(className).val(jsondata.result[dataName]);
+                }
+                switch (dataName) {
+                    case "otherCaseType":
+                        let tmpOtherTypeName = "";
+                        if (jsondata.result && jsondata.result.otherCaseType == "1") {
+                            tmpOtherTypeName = "其他";
+                            $("#openOpSendDiv").find(".otherID").text("ID：");
+                            $("#openOpSendDiv").find(".otherAmountTittle").text("金額：");
+                            $("#openOpSendDiv").find(".otherAmountText").text("(移藉或催收回轉)");
+                            $("#otherDiv").find(".modalallowcodeDiv").removeClass("hide");
+                        } else if (jsondata.result && jsondata.result.otherCaseType == "2") {
+                            tmpOtherTypeName = "變更科子目";
+                            $("#openOpSendDiv").find(".otherID").text("ID：");
+                            $("#openOpSendDiv").find(".otherAmountTittle").text("金額：");
+                            $("#openOpSendDiv").find(".otherAmountText").text("(變更科子目金額)");
+                            $("#otherDiv").find(".modalallowcodeDiv").removeClass("hide");
+                        } else {
+                            tmpOtherTypeName = "撥佣(限車貸)";
+                            $("#openOpSendDiv").find(".otherID").text("業務員ID：");
+                            $("#openOpSendDiv").find(".otherAmountTittle").text("撥佣金額：");
+                            $("#openOpSendDiv").find(".otherAmountText").text("");
+                            $("#otherDiv").find(".modalallowcodeDiv").addClass("hide");
+                            $("#otherDiv").find(".idNameDiv").addClass("hide");
+                        }
+                        $("#openOpSendDiv").find(className).val(tmpOtherTypeName);
+                        break;
+                    case "acc":
+                        $("#openOpSendDiv").find(className).val(jsondata.result[dataName]);
+                        break;
+                    case "name":
+                        $("#openOpSendDiv").find(".idName").val(jsondata.result.name);
+                        break;
+                    case "subjectAmount":
+                        try {
+                            let tmpSubjectAmount = money_Thousands(jsondata.result[dataName]) || "";
+                            $(className).val(tmpSubjectAmount);
+                        } catch (e) { console.error(e) };
+                        break;
+                    case "businessType":
+                        $.each($(className).find("input"), (i, v) => {
+                            if ($(v).val() == jsondata.result[dataName]) {
+                                $(v).attr("checked", true);
+                            }
+                        });
+                        break;
+                    case "allocationDate":
+                        let date = jsondata.result[dataName].replace(/[/]/g, "-") || "";
+                        $(".allocationDate").val(date);
+                        break;
+                    case "amount":
+                        let engArr = ["D", "E", "F", "G", "H", "I", "J"];
+                        let sortArr = [];
+                        let $div;
+                        //排序
+                        $.each(jsondata.result[dataName], (k, v) => {
+                            if (engArr.indexOf(v.code) != -1) {
+                                sortArr.push(engArr.indexOf(v.code));
+                            }
+                        });
+                        sortArr.sort(function (a, b) {
+                            return a - b;
+                        });
+                        //先長欄位
+                        $.each(sortArr, (k, v) => {
+                            //+號鎖住
+                            if (v == 6) {
+                                $(".addAmount").prop('disabled', true);
+                            }
+                            $div = `
+                            <div class="questionStyleA appendEngDiv class_${engArr[v]}">
+                            <span><span class="addEn">${engArr[v]}</span>：</span>
+                            <input type="text" class="form-control" oninput="digitalboxHandler(this)" onblur="set_money_Thousands(this)" onfocus="cancel_money_Thousands(this)"disabled/>
+                            </div>
+                            `;
+                            $("#appropriationLoanDiv").find(".addAmountDiv").append($div);
+
+                        });
+                        //把值塞進去
+                        $.each(jsondata.result[dataName], (k, v) => {
+                            $.each($(".addEn"), (addEnI, addEnV) => {
+                                if (v.code == $(addEnV).text()) {
+                                    try {
+                                        let tmpVName = money_Thousands(v.name) || "";
+                                        $(addEnV).closest("div").find("input").val(tmpVName);
+                                    } catch (e) { console.error(e) };
+                                }
+                            });
+                        });
+                        break;
+                }
+            });
+            $(".idCode").val(jsondata.result.idCode);
+
+
+        } else {
+            if (jsondata.result) {
+                //約據回傳
+                agreementData(uid, token, data, jsondata, true);
+            }
+        }
+        //作業中心案件編號
+        $(".caseOpId").val(caseno);
+        //顯示回到搜尋頁面
+        // $("section .guideRight").removeClass("hide");
+        // $("section .guideRightUl").empty();
+        //$("#searchANS").addClass("hide");
+        //上傳列表
+        await apiOpS000040010(uid, token, "", jsondata.result.cfid).done(function (jsondata) {
+            $('#msg_token').text(jsondata.token);
+            if (jsondata.rc == "M0000") {
+                let $tableDiv = $('.uploadfileSelectDiv').next('.uploadfileDiv');
+                const $options = $('.uploadfileSelect').find('select option');
+                let selList = $options.map(function (item, option) {
+                    return $(option).text().trim();
+                }).get();
+                let endResult = jsondata.result.filter(function (item, index, array) {
+                    return selList.indexOf(item.file_type.trim()) > -1;
+                });
+                const table = '<table class="uploadfileTable table table-bordered table-hover text-center" style="table-layout:fixed;"></table>';
+                const thead = '<thead>' +
+                    '<th>筆數</th>' +
+                    '<th>選項</th>' +
+                    '<th>檔案</th>' +
+                    '<th>夾檔人員</th>' +
+                    '<th>夾檔時間</th>' +
+                    '<th>案件操作</th></thead>';
+                const tbody = '<tbody></tbody>';
+                $tableDiv.empty().append(table);
+                $tableDiv.find('table').append(thead).append(tbody);
+                $.each(endResult, function (item, result) {
+                    let tr = '<tr>' +
+                        '<td>uf_no</td>'.replace('uf_no', result.uf_no) +
+                        '<td title="tDemo">file_type</td>'.replace('file_type', result.file_type).replace('tDemo', result.uf_no) +
+                        '<td>filename_ori</td>'.replace('filename_ori', result.filename_ori) +
+                        '<td>uf_uid</td>'.replace('uf_uid', result.uf_uid) +
+                        '<td>uf_date</td>'.replace('uf_date', result.uf_date) +
+                        '<td>' +
+                        '<label class="cursor"><input type="button" class="hide" onclick="viewFile(this)"><i class="fas fa-file px-2"></i></label>' +
+                        '<label class="cursor"><input type="button" class="hide" onclick="delFile_AC(this)"><i class="fas fa-trash-alt px-2"></i></label>' +
+                        '</td></tr>';
+                    $tableDiv.find('tbody').append(tr);
+                });
+                let opt = {
+                    "searching": false,//取消搜尋欄位
+                    "bAutoWidth": true, //自適應寬度
+                    "bRetrieve": true,
+                    "bStateSave": false,
+                    "scrollCollapse": true,
+                    "autowidth": false,
+                    "language": {
+                        search: "搜尋表格:",
+                        info: "顯示第 _START_ 至 _END_ 筆結果，共 _TOTAL_ 筆",
+                        infoFiltered: "",
+                        infoEmpty: "無相關資料",
+                        zeroRecords: "沒有符合的資料",
+                        lengthMenu: "顯示 _MENU_ 筆",
+                        paginate: {
+                            "first": "第一頁",
+                            "previous": "上一頁",
+                            "next": "下一頁",
+                            "last": "最後一頁"
+                        },
+                    },
+                    "columnDefs": [
+                        { "targets": 0, "width": "8.5%", "visible": false, "orderable": false },
+                        { "targets": 1, "width": "8.5%" },
+                        { "targets": 2, "width": "8.5%" },
+                        { "targets": 3, "width": "8.5%" },
+                        { "targets": 4, "width": "12%" },
+                        { "targets": 5, "width": "8%", "orderable": false },
+                    ],
+                    "order": [1, 'asc']
+                };
+
+
+                let dataTable = $('.uploadfileTable').DataTable(opt);
+                $('.uploadfileTable').css('border', '1px solid #dee2e6').css('width', '');
+                $('.uploadfileTable').find('thead th').addClass('align-middle');
+                $('.uploadfileTable thead th').addClass('tableSort-top');
+                $('.uploadfileTable').closest('.container-fluid').addClass('px-0');
+                $(".col-sm-12").addClass('my-1');
+                $(".dataTables_info").addClass('pt-2');
+
+                let i = 0;
+                $.each(endResult, function (item, result) {
+                    dataTable.row(i).data()[0] = result;
+                    i++;
+                });
+            } else {
+                loadingHide();
+                apiErrorHandler(jsondata);
+            }
+        });
+        //上傳檔案鎖定
+        if (data.closeMark == "1") {
+            $(".uploadfileSelect input").prop("disabled", true);
+            $(".uploadfileSelect label").removeClass("btn-primary");
+            $(".uploadfileSelect label").removeClass("btn-info");
+            $(".uploadfileSelect label").addClass("btn-secondary");
+            //$("input[onclick='delFile_AC(this)']").prop("disabled", true);
+        }
+        //結案並且是上傳type有結案後掛檔 //是作業中心
+        if (data.closeMark == "1" && $(".sendType option[value='90']").length == 1 && getUidToken().branch == "500") {
+            $(".uploadfileSelect input").prop("disabled", false);
+            $(".uploadfileSelect label").removeClass("btn-secondary");
+            $(".uploadfileSelect label:nth-child(3)").addClass("btn-info");
+            $(".uploadfileSelect label:nth-child(4)").addClass("btn-primary");
+            $(".uploadfileSelect .sendType").val("90");
+            $(".uploadfileSelect .sendType option").prop("disabled", true);
+            $(".uploadfileSelect .sendType option[value='90']").prop("disabled", false);
+        }
+        //作業中心-約據-上傳檔案新增項目、不鎖上傳功能、改變按鈕顏色
+        if (caseTypeValue == "11" && getUidToken().branch == "500") {
+            $(".uploadfileSelect select").append('<option value="">約據完成</option>');
+            $(".uploadfileSelect input").prop("disabled", false);
+            $(".uploadfileSelect label").removeClass("btn-secondary");
+            $(".uploadfileSelect label:nth-child(3)").addClass("btn-info");
+            $(".uploadfileSelect label:nth-child(4)").addClass("btn-primary");
+        }
+
+        // 取得目標區塊的y座標 //滑到該位置
+        try {
+            let target_top = $("#openOpSendDiv").offset().top;
+            window.scrollTo({
+                top: target_top,
+                behavior: "smooth"
+            });
+        } catch (e) { console.error(e) };
+        loadingHide();//loading 畫面隱藏
+    } else {
+        $("#msg_token").text(jsondata.token);
+        apiErrorHandler(jsondata);
+        loadingHide();//loading 畫面隱藏
+    }
+    //超連結解除
+    $(obj).closest("#resualtTable").find("a").css({
+        "pointer-events": "auto",
+        "color": "#007bff",
+    });
 }
