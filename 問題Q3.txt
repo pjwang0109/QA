@@ -1,1 +1,60 @@
+這是我的 html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>0507</title>
+    <!-- jquery -->
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.js' integrity='sha512-+k1pnlgt4F1H8L7t3z95o3/KO+o78INEcXTbnoJQ/F2VqDVhWoaiVml/OEHv9HsVgxUaVW+IbiZPUJQfF/YxZw==' crossorigin='anonymous'></script>
+    <script src="./0507_1.js"></script>
+    <script src="./0507_2.js"></script>
+    <style>
+      body{
+          text-align: center;
+      }
+    </style>
+</head>
+<body>
+    <h3>0507 測試 Array</h3>
+    <hr>
+    <div>
+      <button id="btn1">Update</button>
+      <button id="btn2">New</button>
+    </div>
+</body>
+</html>
+
+以下是我的 0507_1.js
+$(document).ready(function () { 
+    let cashiers = [
+      {
+        no:"01", car:"RRR"
+      },
+      {
+        no:"02", car:"CC"
+      }
+    ]
+
+    console.log("原始:",cashiers);
+
+    $("#btn1").click(function () { 
+      let cashiers_length = cashiers.length;
+        for(let i = 0 ; i < cashiers_length ; i++){
+          cashiers[i].no = ""
+        }
+        console.log("更新:", cashiers);
+    })
+
+  });
+
+以下是我的 0507_2.js
+$(document).ready(function () { 
+    $("#btn2").click(function () { 
+        alert("gogo");
+       })
+})
+
+
+我想要當我按下 #btn1 時，偵測是否有先按下 #btn2，如果有先按下 #btn2，印出 hello，這程式碼要怎麼修改?
 
