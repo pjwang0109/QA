@@ -1,62 +1,12 @@
-wropCenterData: async function (target) {
-        let userObj = getUidToken();
-        let uid = userObj.uid;
-        let token = userObj.token;
-        let $id = $("#openOpSendDiv");
-
-        let dataTable = $('#oldcasenoTable').DataTable();
-        let data = "";
-
-        console.log("2引入舊案-確認");
-        let $contracts = $(`#contractsDiv`);
-        let findDiv = $contracts.find(".no").val("");//編號
-        console.log("findDiv:", findDiv);
-        let valueNO = $contracts.find(".no").val();
-        console.log("目前的no值為:",valueNO);
-
-        let oldcasenoCheck = $(target).closest('.modal-footer').prev().find('tbody').find('tr').map(function () {
-            if ($(this).find('input[type="checkbox"]').prop('checked')) {
-                data = dataTable.row(this).data()[0];
-                oldcaseno = data.cfid;
-            }
-            return $(this).find('input[type="checkbox"]').prop('checked');
-        }).get();
-
-        if (oldcasenoCheck.indexOf(true) <= -1) {
-            alert("請選擇引入案件");
-            return;
-        }
-        let json = await apiS060001036(uid, token, oldcaseno);
-        const opCenterSearchPage = ajaxhttpIPHostHtml("/opCenter/opCenter_openOpCaseWeb.html");
-
-        let res = [];
-        try {
-            res = await Promise.all([$.ajax(opCenterSearchPage)]);
-
-        } catch (e) {
-            console.error(e)
-        }
-
-        if (res.length > 0) {
-            let $credit = $(res[0]);
-            //約據回傳
-            agreementData(uid, token, data, json, false)
-
-            if ($credit) {
-                $('#opCenterModalB').modal('hide');
-            }
-        }
-    },
-
-
-
-上面的程式是 wropCenterData function ，我想確認有按下這個按鈕時，console.log("按下確認按鈕"); 請問哪裡有錯?
-
-if (contracts_length >= 1) {
-            $.each(contracts, function (item, val) {
-                let $contracts = $(`#contractsDiv`)
-                $contracts.find(".no").val(val.no);//編號
-
-                if(opCenterController.wropCenterData(this)){
-                    console.log("按下確認按鈕");
-                }
+這每一段的程式碼可以幫我解釋嗎?
+    let $ichtml = $(html);//保證人
+    let icHtml = $ichtml.html();
+    icHtml.replace(/demo_/g, "").replace(/opacity: 0/g, "");
+    $ichtml.prop("disabled", false);
+    let indivdualCCode = new Array;
+    $ichtml.find(".delBtn").prop("disabled", false);
+    $ichtml.find("#demo_checkboxBorrowerNum").prop("disabled", false);
+    indivdualCCode = digitalArrayHandler(".indivdualC_TableList");
+    let title = "本票及授權書" + item;
+    let num = item;
+    $('#indivdualC .indivdualCsection #indivdualCtableDiv').append($ichtml.html().replace(/demo_/g, '').replace(/Numtitle/g, title).replace(/Num/g, num).replace(/opacity: 0/g, ""));
