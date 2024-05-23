@@ -1,18 +1,47 @@
-棒球賽程:
+這是在同一個js 裡面
+1: wropCenterData
+        wropCenterData: async function (target) {
+        let userObj = getUidToken();
+        let uid = userObj.uid;
+        let token = userObj.token;
+        let $id = $("#openOpSendDiv");
 
-天母:
-18:35  5/08(三) 味全
-17:00  6/15(六) 味全
-17:00  6/16(日) 味全
+        let dataTable = $('#oldcasenoTable').DataTable();
+        let data = "";
 
-桃園:
-14:00  4/28(日) 雄鷹
-18:35  5/01(三) 富邦
-17:00  5/11(六) 統一
-17:00  5/12(日) 統一
-17:00  5/25(六) 味全
-17:00  5/26(日) 味全
-17:00  6/29(六) 雄鷹
-17:00  9/01(日) 雄鷹
-17:00  9/07(六) 味全
-17:00  9/08(日) 味全
+        let oldcasenoCheck = $(target).closest('.modal-footer').prev().find('tbody').find('tr').map(function () {
+            if ($(this).find('input[type="checkbox"]').prop('checked')) {
+                data = dataTable.row(this).data()[0];
+                oldcaseno = data.cfid;
+            }
+            return $(this).find('input[type="checkbox"]').prop('checked');
+        }).get();
+
+        if (oldcasenoCheck.indexOf(true) <= -1) {
+            alert("請選擇引入案件");
+            return;
+        }
+        let json = await apiS060001036(uid, token, oldcaseno);
+        const opCenterSearchPage = ajaxhttpIPHostHtml("/opCenter/opCenter_openOpCaseWeb.html");
+        json.result.cashiers
+        
+        let res = [];
+        try {
+            res = await Promise.all([$.ajax(opCenterSearchPage)]);
+
+        } catch (e) {
+            console.error(e)
+        }
+
+        if (res.length > 0) {
+            let $credit = $(res[0]);
+            //約據回傳
+            agreementData(uid, token, data, json, false)
+
+            if ($credit) {
+                $('#opCenterModalB').modal('hide');
+            }
+        }
+    }
+
+2:
