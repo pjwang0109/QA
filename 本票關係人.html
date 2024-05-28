@@ -1,0 +1,18 @@
+當我的 <select class="abc" required> 下拉式選單選到"發票人"時， .zzz 裡的下拉式選單不會有 <option value="2">1</option> 這個選項，該怎麼改程式? value 的值有需要改嗎?
+                                                                                                    
+
+<div class="form-group form-inline my-3">
+                        <select class="abc" required>
+                            <option value="1">請選擇</option>
+                            <option value="2">發票人</option>
+                            <option value="3">共同發票人</option>
+                        </select>
+                        <select class="zzz" required>
+                            <option value="1">請選擇</option>
+                            <option value="2">1</option>
+                            <option value="3">2</option>
+                            <option value="4">3</option>
+                            <option value="5">4</option>
+                        </select>
+                        <button type="button" class="btn btn-info mx-2" onclick="addRelation(this)">+</button>
+</div>
