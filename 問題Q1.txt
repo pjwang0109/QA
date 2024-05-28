@@ -1,12 +1,30 @@
-這每一段的程式碼可以幫我解釋嗎?
-    let $ichtml = $(html);//保證人
-    let icHtml = $ichtml.html();
-    icHtml.replace(/demo_/g, "").replace(/opacity: 0/g, "");
-    $ichtml.prop("disabled", false);
-    let indivdualCCode = new Array;
-    $ichtml.find(".delBtn").prop("disabled", false);
-    $ichtml.find("#demo_checkboxBorrowerNum").prop("disabled", false);
-    indivdualCCode = digitalArrayHandler(".indivdualC_TableList");
-    let title = "本票及授權書" + item;
-    let num = item;
-    $('#indivdualC .indivdualCsection #indivdualCtableDiv').append($ichtml.html().replace(/demo_/g, '').replace(/Numtitle/g, title).replace(/Num/g, num).replace(/opacity: 0/g, ""));
+這是原本的 html 程式
+<select class="invoicerName form-control mr-2" onchange="invoicerId(this)">
+  <option value="">請選擇</option>
+</select>
+
+有沒有辦法在 select.invoicerName 洗出其他的 option 選項，當我在select 設定 class="invoicerName" 後就能洗出後端的資料，最後顯示應為下面這樣，程式碼要如何改?
+<select class="invoicerName form-control mr-2" onchange="invoicerId(this)">
+  <option value="">請選擇</option>
+  <option value="1">AAA</option>
+  <option value="2">BBB</option>
+</select>
+
+後端的資料已經有給了，而只有當 type = 0時，不會洗出他的名字, 其餘都會
+
+{
+  "type": "0",
+  "typeCht": "借款人",
+  "name": "哈哈",
+},
+{
+  "type": "3",
+  "typeCht": "共同借款人",
+  "name": "AAA",
+},
+{
+  "type": "6",
+  "typeCht": "連帶保證人",
+  "name": "BBB",
+},
+
