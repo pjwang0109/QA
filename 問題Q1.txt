@@ -1,30 +1,15 @@
-這是原本的 html 程式
-<select class="invoicerName form-control mr-2" onchange="invoicerId(this)">
-  <option value="">請選擇</option>
-</select>
-
-有沒有辦法在 select.invoicerName 洗出其他的 option 選項，當我在select 設定 class="invoicerName" 後就能洗出後端的資料，最後顯示應為下面這樣，程式碼要如何改?
-<select class="invoicerName form-control mr-2" onchange="invoicerId(this)">
-  <option value="">請選擇</option>
-  <option value="1">AAA</option>
-  <option value="2">BBB</option>
-</select>
-
-後端的資料已經有給了，而只有當 type = 0時，不會洗出他的名字, 其餘都會
-
-{
-  "type": "0",
-  "typeCht": "借款人",
-  "name": "哈哈",
-},
-{
-  "type": "3",
-  "typeCht": "共同借款人",
-  "name": "AAA",
-},
-{
-  "type": "6",
-  "typeCht": "連帶保證人",
-  "name": "BBB",
-},
-
+這一段程式是什麼意思?
+function rateTypeGearing(){
+let rateEditoril = $(".rateEditoril");
+        
+    $(".indivdualC_TableList").find('#rateType').map(function(){
+        let $select = $(this)
+        $select.empty();
+        $.each(rateEditoril, function (i, val) {
+            i = i + 1;
+            let rateOption = $(`#rateEditoril${i}`).find("a").text();
+            let $option = `<option value="${i}">${rateOption}</option>`
+            $select.append($option);
+        })
+    })
+}
