@@ -1,145 +1,16 @@
-這是在同一個js 裡面，想問當我按下wropCenterData時，觸發 agreementData，要如何將原本存在的 #indivdualCtable${item} 清除?
-1: wropCenterData
-        wropCenterData: async function (target) {
-        let userObj = getUidToken();
-        let uid = userObj.uid;
-        let token = userObj.token;
-        let $id = $("#openOpSendDiv");
-
-        let dataTable = $('#oldcasenoTable').DataTable();
-        let data = "";
-
-        let oldcasenoCheck = $(target).closest('.modal-footer').prev().find('tbody').find('tr').map(function () {
-            if ($(this).find('input[type="checkbox"]').prop('checked')) {
-                data = dataTable.row(this).data()[0];
-                oldcaseno = data.cfid;
-            }
-            return $(this).find('input[type="checkbox"]').prop('checked');
-        }).get();
-
-        if (oldcasenoCheck.indexOf(true) <= -1) {
-            alert("請選擇引入案件");
-            return;
-        }
-        let json = await apiS060001036(uid, token, oldcaseno);
-        const opCenterSearchPage = ajaxhttpIPHostHtml("/opCenter/opCenter_openOpCaseWeb.html");
-        json.result.cashiers
+function aaa(){
         
-        let res = [];
-        try {
-            res = await Promise.all([$.ajax(opCenterSearchPage)]);
-
-        } catch (e) {
-            console.error(e)
-        }
-
-        if (res.length > 0) {
-            let $credit = $(res[0]);
-            //約據回傳
-            agreementData(uid, token, data, json, false)
-
-            if ($credit) {
-                $('#opCenterModalB').modal('hide');
-            }
-        }
-    }
-
-2: agreementData
-async function agreementData(uid, token, data, jsondata, isDisabled) {
-        //本票及授權書Start
-        let cashiers = jsondata.result.cashiers;
-        let cashiers_length = cashiers.length;
-        console.log("cashiers_length:", cashiers_length);
-
-        // 有cashiers資料
-        if (cashiers_length >= 1) {
-            $.each(cashiers, async function (item, val) {
-                let url = ajaxhttpIPHostHtml('/opCenter/opCenter_form_indivdualContratc.html');
-                let res = [];
-                item = item + 1;
-                try {
-                    res = await Promise.all([
-                        $.ajax(url),
-                    ]);
-                } catch (e) {
-                    console.error(e);
-                }
-
-                if (res.length > 0) {
-                    const html = res[0];
-                    // const respJson = res[1];
-                    let $ichtml = $(html);//保證人
-                    let icHtml = $ichtml.html();
-                    icHtml.replace(/demo_/g, "").replace(/opacity: 0/g, "");
-                    $ichtml.prop("disabled", false);
-                    let indivdualCCode = new Array;
-                    $ichtml.find(".delBtn").prop("disabled", false);
-                    $ichtml.find("#demo_checkboxBorrowerNum").prop("disabled", false);
-                    indivdualCCode = digitalArrayHandler(".indivdualC_TableList");
-                    let title = "本票及授權書" + item;
-                    let num = item;
-                    $('#indivdualC .indivdualCsection #indivdualCtableDiv').append($ichtml.html().replace(/demo_/g, '').replace(/Numtitle/g, title).replace(/Num/g, num).replace(/opacity: 0/g, ""));
-                    console.log("$ichtml:", $ichtml);
-                    //與貸放條件(核貸通知書)連動
-                    let accBDetailTbody = $(".accBDetailTbody");//抓貸放條件(核貸通知書)
-
-                    $(`#indivdualCtable${item}`).find(".quotaCheckbox label").remove();
-                    $.each(accBDetailTbody, function (i, accBDetail) {
-                        let quotaCode = $(accBDetail).find(".code").val();
-                        let currencyVal = $(accBDetail).find(".currency option:selected").val();
-                        let moneyVal = $(accBDetail).find(".money").val()
-
-                        $div = `<label class="form-check-label mr-3">
-                                    <input type="checkbox" class="form-check-input quota quota${quotaCode}" value="${quotaCode}" currency="${currencyVal}" money="${moneyVal}" onclick="quotaControl(this)">${quotaCode}
-                                </label>`
-                        $(`#indivdualCtable${item}`).find(".quotaCheckbox").append($div);//額度代號Checkbox連動(貸放條件(核貸通知書)有幾個額度代號這邊就要有幾個)
-
-                    })
-
-                    rateTypeGearing()//利率連動
-
-                    $("#indivdualC .indivdualCsection").collapse('show');
-                    $('#indivdualC .indivdualCsection .card-body:nth(0)').find('#indivdualCsectiontable' + num).collapse('show');
-
-                    let address = $(".address ").val();
-                    $(".indivdualCtable_address").val(address);
-                }
-
-                let $indivdual = $(`#indivdualCtable${item}`)
-                $indivdual.find(".no").val(val.no);//編號
-                let quota_Class = $indivdual.find(".quota");
-                //本票及授權書-選擇額度
-                $.each(val.quota, function (item, quotaVal) {
-                    $.each(quota_Class, function (item, quota) {
-                        let screenVal = $(quota).val();
-                        if (screenVal == quotaVal) {
-                            $(quota).prop("checked", true);
-                        }
-                    })
-                })
-                //本票及授權書-幣別
-                let $quotaChecked =  $indivdual.find(".quota:checked")
-                $.each($quotaChecked, function (i, input) {
-                    let currency = input.getAttribute("currency")
-                    $(`#indivdualCtable${item}`).find(".indivdualCurrency").val(currency)
-                });
-                $indivdual.find(".amount").val(val.amount);//幣別金額
-                $indivdual.find("#rateType").val(val.type);//利率型式
-                //本票及授權書-延遲利息計收費方式勾選項目
-                let mode_Class =  $indivdual.find(".delay_interest")
-                $.each(val.mode, function (item, modeVal) {
-                    $.each(mode_Class, function (item, mode) {
-                        let screenVal = $(mode).val();
-                        if (screenVal == modeVal) {
-                            $(mode).prop("checked", true);
-                        }
-                    })
-                })
-                $indivdual.find(".interest").val(val.interest);//延遲利息%
-                $indivdual.find(".other").val(val.other);//其他
-                $indivdual.find(".seal1").val(val.seal1);//本票簽章
-                $indivdual.find(".seal2").val(val.seal2);//授權書簽章
-            });
-        } 
 }
 
+
+function invoicerName() { 
+
+    // let userObj = getUidToken();
+    // let uid = userObj.uid;
+    // let token = userObj.token;
+    // let caseno = data.cfid[0]["code"];
+
+    // let jsondata = "";
+    apiS060001036().done(function (json) {
+        console.log("36:", json);
+    });
