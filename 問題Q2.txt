@@ -1,16 +1,28 @@
-function aaa(){
-        
-}
-
-
+這一段內容有錯嗎?
 function invoicerName() { 
+    let gccArr = []
+    $(".identities").map(function(index){
+        let $item = $(this)
+        let type = $item.find(".type").val()
+        let name = $item.find(".name").val()
 
-    // let userObj = getUidToken();
-    // let uid = userObj.uid;
-    // let token = userObj.token;
-    // let caseno = data.cfid[0]["code"];
+        if(type !== "0"){
+            gccArr.push({"type": type, "name": name})
+        }
+    })
+    
+        $.each(gccArr, function (i, val) {
+            // let name = gccArr[i].name
+            
+            // console.log("val", val);
+            console.log("val.name", val.name);
+            
+            i = i + 1;
+            console.log("i", i);
 
-    // let jsondata = "";
-    apiS060001036().done(function (json) {
-        console.log("36:", json);
-    });
+            let $option = `<option value="${i}">${val.name}</option>`
+            $("#invoicerName").append($option);
+        })
+    // })
+    
+}
