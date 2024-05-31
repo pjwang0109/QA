@@ -1,28 +1,29 @@
-這一段內容有錯嗎?
-function invoicerName() { 
-    let gccArr = []
-    $(".identities").map(function(index){
-        let $item = $(this)
-        let type = $item.find(".type").val()
-        let name = $item.find(".name").val()
+這是套用bootstrap 的html, 要怎麼讓 invoDiv2和invoDiv1 變成 block ，它會一行一行列下來，請幫我改程式!
 
-        if(type !== "0"){
-            gccArr.push({"type": type, "name": name})
-        }
-    })
-    
-        $.each(gccArr, function (i, val) {
-            // let name = gccArr[i].name
-            
-            // console.log("val", val);
-            console.log("val.name", val.name);
-            
-            i = i + 1;
-            console.log("i", i);
+<div class="form-group form-inline my-3 invoAllDiv">
+        <div id="invoDiv1" class="invoDiv">
+            <select class="form-control mr-2 invoType1">
+                <option value="">請選擇</option>
+                <option value="1">發票人</option>
+                <option value="2">共同發票人</option>
+            </select>
+            <!-- 發票人與共同發票人的名稱 -->
+            <select class="form-control mr-2" id="invoName1">
+                <option value="">請選擇</option>
+            </select>
+            <button type="button" class="btn btn-info mx-2" onclick="addRel(this)">+</button>
+        </div>
 
-            let $option = `<option value="${i}">${val.name}</option>`
-            $("#invoicerName").append($option);
-        })
-    // })
-    
-}
+        <div id="invoDiv2" class="invoDiv">
+            <select class="form-control mr-2 invoType1">
+                <option value="">請選擇</option>
+                <option value="1">發票人</option>
+                <option value="2">共同發票人</option>
+            </select>
+            <!-- 發票人與共同發票人的名稱 -->
+            <select class="form-control mr-2" id="invoName2">
+                <option value="">請選擇</option>
+            </select>
+            <button type="button" class="btn btn-info mx-2" onclick="addRel(this)">+</button>
+        </div>
+    </div>
