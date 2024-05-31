@@ -1,75 +1,23 @@
-這是網頁上顯示的html ，但我只想選到 #aaaa 去新增 .col-12.mt-3 以下那段html，要如何修改我的 js?
+這是我的html ，但我只想選到 #aaaa 去新增 .col-12.mt-3 以下那段html，要如何修改我的 js?
 
-<div id="aaaa">
-        <div class="form-group form-inline my-3 invoAllDiv">
-            <div class="row">
-                <div class="col-12">
-                    <div id="invoDiv1" class="invoDiv">
-                        <select class="form-control mr-2 invoType1">
-                            <option value="">請選擇</option>
-                            <option value="1">發票人</option>
-                            <option value="2">共同發票人</option>
-                        </select>
-                        <!-- 發票人與共同發票人的名稱 -->
-                        <select class="form-control mr-2" id="invoName1">
-                            <option value="">請選擇</option>
-                        </select>
-                        <button type="button" class="btn btn-info mx-2" onclick="addRel(this)">+</button>
+<div class="form-group form-inline my-3 invoAllDiv">
+                        <div class="row">
+                            <div class="col-12">
+                                <div id="invoDiv1" class="invoDiv">
+                                    <select class="form-control mr-2 invoType1">
+                                        <option value="">請選擇</option>
+                                        <option value="1">發票人</option>
+                                        <option value="2">共同發票人</option>
+                                    </select>
+                                    <!-- 發票人與共同發票人的名稱 -->
+                                    <select class="form-control mr-2" id="invoName1">
+                                        <option value="">請選擇</option>
+                                    </select>
+                                    <button type="button" class="btn btn-info mx-2" onclick="addRel(this)">+</button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div class="col-12 mt-3">
-                    <div id="invoDiv2" class="invoDiv">
-                        <select class="form-control mr-2 invoType1">
-                            <option value="">請選擇</option>
-                            <option value="1">發票人</option>
-                            <option value="2">共同發票人</option>
-                        </select>
-                        <!-- 發票人與共同發票人的名稱 -->
-                        <select class="form-control mr-2" id="invoName2">
-                            <option value="">請選擇</option>
-                        </select>
-                        <button type="button" class="btn btn-info mx-2" onclick="addRel(this)">+</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="bbbb">
-        <div class="form-group form-inline my-3 invoAllDiv">
-            <div class="row">
-                <div class="col-12">
-                    <div id="invoDiv1" class="invoDiv">
-                        <select class="form-control mr-2 invoType1">
-                            <option value="">請選擇</option>
-                            <option value="1">發票人</option>
-                            <option value="2">共同發票人</option>
-                        </select>
-                        <!-- 發票人與共同發票人的名稱 -->
-                        <select class="form-control mr-2" id="invoName1">
-                            <option value="">請選擇</option>
-                        </select>
-                        <button type="button" class="btn btn-info mx-2" onclick="addRel(this)">+</button>
-                    </div>
-                </div>
-                <div class="col-12 mt-3">
-                    <div id="invoDiv2" class="invoDiv">
-                        <select class="form-control mr-2 invoType1">
-                            <option value="">請選擇</option>
-                            <option value="1">發票人</option>
-                            <option value="2">共同發票人</option>
-                        </select>
-                        <!-- 發票人與共同發票人的名稱 -->
-                        <select class="form-control mr-2" id="invoName2">
-                            <option value="">請選擇</option>
-                        </select>
-                        <button type="button" class="btn btn-info mx-2" onclick="addRel(this)">+</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
 
 這是我的js:
 //本票及授權書-新增關係人選單
