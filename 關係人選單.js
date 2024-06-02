@@ -20,16 +20,12 @@ function addRel(obj) {
     `;
 
   $target.closest('.invoAllDiv').find('.row').append($div);
-
 }
 
 //本票及授權書-刪除關係人選單
 function delRel(target) {
   let $target = $(target);
-  console.log("$target:", $target);
   let invoID = $target.closest(`.invoDiv`).attr("id"); //invoDiv2,invoDiv3...
-
-  console.log("invoID:", invoID);
   $(`#${invoID}`).closest(".mt-3").remove();
 }
 
