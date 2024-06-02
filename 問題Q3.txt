@@ -1,4 +1,61 @@
-當我 按下 <button type="button" class="btn btn-info mx-2" onclick="addRel(this)">+</button>時，我只想針對按下的那個 id="table1" 或是 id="table2" 來增加新的選單，不要同時在#table1 和 #table2新增，要如何修改function addRel(obj)程式？
+當我按下 #table1 的button按鈕時，我只想針對按下的那個 id="table1" 加一個選單，內容為：
+ <div class="col-12 mt-3">
+        <div id="invoDiv2" class="invoDiv">
+            <select class="form-control mr-2 invoType2">
+                <option value="">請選擇</option>
+                <option value="1">發票人</option>
+                <option value="2">共同發票人</option>
+            </select>
+            <select class="form-control mr-2" id="invoName2">
+                <option value="">請選擇</option>
+            </select>
+            <button type="button" class="btn btn-danger mx-2" onclick="delRel(this)">&times;</button>
+        </div>
+    </div>
+
+ <div class="col-12 mt-3">
+        <div id="invoDiv3" class="invoDiv">
+            <select class="form-control mr-2 invoType3">
+                <option value="">請選擇</option>
+                <option value="1">發票人</option>
+                <option value="2">共同發票人</option>
+            </select>
+            <select class="form-control mr-2" id="invoName3">
+                <option value="">請選擇</option>
+            </select>
+            <button type="button" class="btn btn-danger mx-2" onclick="delRel(this)">&times;</button>
+        </div>
+    </div>
+當我按下 #table2 的button按鈕時，我只想針對按下的那個 id="table2" 加一個選單，內容為：
+ <div class="col-12 mt-3">
+        <div id="invoDiv2" class="invoDiv">
+            <select class="form-control mr-2 invoType2">
+                <option value="">請選擇</option>
+                <option value="1">發票人</option>
+                <option value="2">共同發票人</option>
+            </select>
+            <select class="form-control mr-2" id="invoName2">
+                <option value="">請選擇</option>
+            </select>
+            <button type="button" class="btn btn-danger mx-2" onclick="delRel(this)">&times;</button>
+        </div>
+    </div>
+
+ <div class="col-12 mt-3">
+        <div id="invoDiv3" class="invoDiv">
+            <select class="form-control mr-2 invoType3">
+                <option value="">請選擇</option>
+                <option value="1">發票人</option>
+                <option value="2">共同發票人</option>
+            </select>
+            <select class="form-control mr-2" id="invoName3">
+                <option value="">請選擇</option>
+            </select>
+            <button type="button" class="btn btn-danger mx-2" onclick="delRel(this)">&times;</button>
+        </div>
+    </div>
+
+這要如何修改function addRel(obj)程式？
 
 這是我的 html
 <body>
@@ -69,21 +126,5 @@ function addRel(obj) {
     </div>
     `;
 
-  let $target = $(obj);
-  let cc = $target.closest(`.indivdualC_TableList`).attr("id");
-  console.log("$target:", $target);
-  console.log("cc:", cc);
-
-  $(".invoAllDiv").find(".row").append($div);
+$target.closest('.invoAllDiv').find('.row').append($div);
 }
-
-//本票及授權書-刪除關係人選單
-function delRel(target) {
-  let $target = $(target);
-  console.log("$target:", $target);
-  let invoID = $target.closest(`.invoDiv`).attr("id"); //invoDiv2,invoDiv3...
-
-  console.log("invoID:", invoID);
-  $(`#${invoID}`).closest(".mt-3").remove();
-}
-
