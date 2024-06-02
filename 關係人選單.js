@@ -1,8 +1,9 @@
 //本票及授權書-新增關係人選單
-function addRel(obj) { 
-    let num = $(".invoDiv").length + 1
+function addRel(obj) {
+  let $target = $(obj);
+  let num = $target.closest(".invoAllDiv").find(".invoDiv").length + 1;
 
-    $div = `
+  $div = `
     <div class="col-12 mt-3">
         <div id="invoDiv${num}" class="invoDiv">
             <select class="form-control mr-2 invoType${num}">
@@ -18,42 +19,32 @@ function addRel(obj) {
     </div>
     `;
 
-    let $target = $(obj);
-    let cc = $target.closest(`.indivdualC_TableList`).attr("id");
-    console.log("$target:", $target);
-    console.log("cc:", cc);
+  $target.closest('.invoAllDiv').find('.row').append($div);
 
-
-    $(".invoAllDiv").find(".row").append($div);
 }
 
 //本票及授權書-刪除關係人選單
-function delRel(target) { 
-    let $target = $(target);
-    console.log("$target:", $target);
-    let invoID = $target.closest(`.invoDiv`).attr("id"); //invoDiv2,invoDiv3...
+function delRel(target) {
+  let $target = $(target);
+  console.log("$target:", $target);
+  let invoID = $target.closest(`.invoDiv`).attr("id"); //invoDiv2,invoDiv3...
 
-    console.log("invoID:", invoID);
-
-    if (invoID == "invoDiv3") {
-        $("#invoDiv3").remove();
-    }else if (invoID == "invoDiv5") {
-        $("#invoDiv5").remove();
-    }
+  console.log("invoID:", invoID);
+  $(`#${invoID}`).closest(".mt-3").remove();
 }
 
 //本票及授權書-關係人連動(下拉式選單)
 function invoicer(num) {
-    //取出名字
-    let nameArr = [];
-    $.each($(".identities"), function (i, v) {
-        if (i > 0) {
-            nameArr.push($(v).find(".name").val());
-        }
-    })
-    //塞入選單
-    $.each(nameArr, function (i, val) {
-        let $option = `<option value="${val}">${val}</option>`
-        $(`#indivdualCtable${num}`).find("#invoName").append($option);
-    })
+  //取出名字
+  let nameArr = [];
+  $.each($(".identities"), function (i, v) {
+    if (i > 0) {
+      nameArr.push($(v).find(".name").val());
+    }
+  });
+  //塞入選單
+  $.each(nameArr, function (i, val) {
+    let $option = `<option value="${val}">${val}</option>`;
+    $(`#indivdualCtable${num}`).find("#invoName").append($option);
+  });
 }
