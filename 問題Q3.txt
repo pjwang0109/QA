@@ -13,7 +13,7 @@
         </div>
     </div>
 
-當我按下 #table2 的button按鈕時，我只想針對按下的那個 id="table2" 加一個選單，內容為：
+當我再次按下 #table1 的button按鈕時，id="table1" 會增加為2個選單，內容為：
  <div class="col-12 mt-3">
         <div id="invoDiv2" class="invoDiv">
             <select class="form-control mr-2 invoType2">
@@ -27,6 +27,20 @@
             <button type="button" class="btn btn-danger mx-2" onclick="delRel(this)">&times;</button>
         </div>
     </div>
+ <div class="col-12 mt-3">
+        <div id="invoDiv3" class="invoDiv">
+            <select class="form-control mr-2 invoType3">
+                <option value="">請選擇</option>
+                <option value="1">發票人</option>
+                <option value="2">共同發票人</option>
+            </select>
+            <select class="form-control mr-2" id="invoName3">
+                <option value="">請選擇</option>
+            </select>
+            <button type="button" class="btn btn-danger mx-2" onclick="delRel(this)">&times;</button>
+        </div>
+    </div>
+
 每按下按鈕，${num}都會增加 1 ，這要如何修改function addRel(obj)程式？
 
 這是我的 html
