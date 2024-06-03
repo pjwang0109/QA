@@ -1,4 +1,4 @@
-
+請幫我修改程式，當我觸發function addRel(obj)時，新增的每一組下拉式選單 .zzxx 都可以顯示 $(`#${pageNum}`).find('.zzxx').append($option); 這段我想帶入的資料，該怎麼修改程式?
 
 這是我的js:
 
