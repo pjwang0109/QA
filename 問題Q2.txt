@@ -1,16 +1,47 @@
-這是我的html ，但我只想選到 #aaaa 去新增 .col-12.mt-3 以下那段html，要如何修改我的 js?
+我想要偵測，當我按下 addRel(obj) 幾下後，會有幾個 .zzxx 要怎麼改?
+例如:按下 addRel(obj) 3 次，總共會有 4 個 .zzxx (由於 html 已經有一個 .zzxx )
 
+js:
+//本票及授權書-新增關係人選單
+function addRel(obj) { 
+    let $target = $(obj);
+    let n = $target.closest(".invoAllDiv").find(".inPerson").length + 1;  //不會有1; 2, 3...
+
+    $div = `
+    <div class="col-12 mt-3 invoData">
+        <div class="invoDiv${n} inPerson">
+            <select class="form-control mr-2 invoType${n}">
+                <option value="">請選擇</option>
+                <option value="1">發票人</option>
+                <option value="2">共同發票人</option>
+            </select>
+            <select class="form-control mr-2 zzxx invoName${n}" id="voID">
+                <option value="">請選擇</option>
+            </select>
+            <button type="button" class="btn btn-danger mx-2" onclick="delRel(this)">&times;</button>
+        </div>  
+    </div>
+    `;
+
+    // let pageNum = $target.closest(".indivdualC_TableList").attr("id") // indivdualCtable1, indivdualCtable2...
+    let zzxxNum = $target.closest(".inPerson").find(".zzxx");
+    console.log("zzxxNum:", zzxxNum);
+
+    $target.closest('.invoAllDiv').find('.row').append($div);
+}
+
+ html:  
 <div class="form-group form-inline my-3 invoAllDiv">
                         <div class="row">
                             <div class="col-12">
-                                <div id="invoDiv1" class="invoDiv">
+                                <div class="invoDiv1 inPerson">
                                     <select class="form-control mr-2 invoType1">
                                         <option value="">請選擇</option>
                                         <option value="1">發票人</option>
                                         <option value="2">共同發票人</option>
                                     </select>
                                     <!-- 發票人與共同發票人的名稱 -->
-                                    <select class="form-control mr-2" id="invoName1">
+                                    <select class="form-control mr-2 zzxx invoName1" id="voID">
                                         <option value="">請選擇</option>
                                     </select>
                                     <button type="button" class="btn btn-info mx-2" onclick="addRel(this)">+</button>
@@ -18,27 +49,3 @@
                             </div>
                         </div>
                     </div>
-
-這是我的js:
-//本票及授權書-新增關係人選單
-function addRel(obj) { 
-    let num = $(".invoDiv").length + 1
-
-    $div = `
-    <div class="col-12 mt-3">
-        <div id="invoDiv${num}" class="invoDiv">
-            <select class="form-control mr-2 invoType${num}" value="">
-                <option value="">請選擇</option>
-                <option value="1">發票人</option>
-                <option value="2">共同發票人</option>
-            </select>
-            <select class="form-control mr-2 invoType${num}" value="">
-                <option value="">請選擇</option>
-            </select>
-            <button type="button" class="btn btn-danger mx-2" onclick="delRel(this)">&times;</button>
-        </div>
-    </div>
-    `;
-
-    $(".invoAllDiv").find(".row").append($div);
-}
