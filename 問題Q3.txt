@@ -1,21 +1,20 @@
 我想要在 function invoicer(num) 取出 function addRel(obj) 裡面的 let num 的值，我的程式碼應該如何修改?
 
-
 //本票及授權書-新增關係人選單
 function addRel(obj) { 
     let $target = $(obj);
-    let num = $target.closest(".invoAllDiv").find(".inPerson").length + 1;
-    window.numRel = num;
+    let n = $target.closest(".invoAllDiv").find(".inPerson").length + 1;
+    window.nRel = n;
 
     $div = `
     <div class="col-12 mt-3 invoData">
-        <div class="invoDiv${num} inPerson">
-            <select class="form-control mr-2 invoType${num}">
+        <div class="invoDiv${n} inPerson">
+            <select class="form-control mr-2 invoType${n}">
                 <option value="">請選擇</option>
                 <option value="1">發票人</option>
                 <option value="2">共同發票人</option>
             </select>
-            <select class="form-control mr-2 invoName${num}" id="voID">
+            <select class="form-control mr-2 invoName${n}" id="voID">
                 <option value="">請選擇</option>
             </select>
             <button type="button" class="btn btn-danger mx-2" onclick="delRel(this)">&times;</button>
@@ -36,12 +35,12 @@ function invoicer(num) {
         }
     })
 
-    let numRel = window.numRel;
-    // let num = $target.closest(".invoAllDiv").find(".inPerson").length + 1;
+    let nRel = window.nRel;
+    // let n = $target.closest(".invoAllDiv").find(".inPerson").length + 1;
     
     //塞入選單
     $.each(nameArr, function (i, val) {
         let $option = `<option value="${val}">${val}</option>`
-        $(`#indivdualCtable${num}`).find(`.invoName${numRel}`).append($option);
+        $(`#indivdualCtable${num}`).find(`.invoName${nRel}`).append($option);
     })
 }
