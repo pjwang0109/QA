@@ -1,4 +1,6 @@
-當我每次觸發 addRel(obj)時，他會新增新的下拉式選單，而新增後的每個選單中的  $(`#indivdualCtable${num}`).find(".zzxx").append($option); 我都想要給他帶入下拉式選單的選項，該怎麼修改程式?
+
+
+這是我的js:
 
 //本票及授權書-新增關係人選單
 function addRel(obj) { 
@@ -21,11 +23,8 @@ function addRel(obj) {
     </div>
     `;
 
-    $target.closest('.invoAllDiv').find('.row').append($div);
-}
+    let pageNum = $target.closest(".indivdualC_TableList").attr("id") // indivdualCtable1, indivdualCtable2...
 
-//本票及授權書-關係人連動(下拉式選單)
-function invoicer(num) {
     //取出名字
     let nameArr = [];
     $.each($(".identities"), function (i, v) {
@@ -37,6 +36,51 @@ function invoicer(num) {
     //塞入選單
     $.each(nameArr, function (i, val) {
         let $option = `<option value="${val}">${val}</option>`
-        $(`#indivdualCtable${num}`).find(".zzxx").append($option);
+        $(`#${pageNum}`).find('.zzxx').append($option);
     })
+
+    $target.closest('.invoAllDiv').find('.row').append($div);
 }
+
+//本票及授權書-刪除關係人選單
+function delRel(target) { 
+    $(target).closest(".invoData").remove();
+}
+
+//本票及授權書-關係人連動(下拉式選單)
+function invoicer(num) {
+    console.log("num:", num);
+    // //取出名字
+    // let nameArr = [];
+    // $.each($(".identities"), function (i, v) {
+    //     if (i > 0) {
+    //         nameArr.push($(v).find(".name").val());
+    //     }
+    // })
+    
+    // //塞入選單
+    // $.each(nameArr, function (i, val) {
+    //     let $option = `<option value="${val}">${val}</option>`
+    //     $(`#indivdualCtable${num}`).find(".zzxx").append($option);
+    // })
+}
+
+這是我的html:
+<div class="form-group form-inline my-3 invoAllDiv">
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="invoDiv1 inPerson">
+                                    <select class="form-control mr-2 invoType1">
+                                        <option value="">請選擇</option>
+                                        <option value="1">發票人</option>
+                                        <option value="2">共同發票人</option>
+                                    </select>
+                                    <!-- 發票人與共同發票人的名稱 -->
+                                    <select class="form-control mr-2 zzxx invoName1" id="voID">
+                                        <option value="">請選擇</option>
+                                    </select>
+                                    <button type="button" class="btn btn-info mx-2" onclick="addRel(this)">+</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
