@@ -1,5 +1,27 @@
-我已經差不多解決了，但是 $(`#${pageNum}`).find(`.invoName${n}`) 他無法找到這個下拉式選單，而且$(`#${pageNum}`).find(`.invoName${n}`).append(v); 的 v 是 object ，以上該如何修改?
+在按下 addRel(obj) 時， invoName${n} 裡的 option 要跟 invoName1  裡的 option一樣，該如何修改程式?
 
+
+html:
+<div class="form-group form-inline my-3 invoAllDiv">
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="invoDiv1 inPerson">
+                                    <select class="form-control mr-2 invoType1">
+                                        <option value="">請選擇</option>
+                                        <option value="1">發票人</option>
+                                        <option value="2">共同發票人</option>
+                                    </select>
+                                    <!-- 發票人與共同發票人的名稱 -->
+                                    <select class="form-control mr-2 zzxx invoName1">
+                                        <option value="">請選擇</option>
+                                    </select>
+                                    <button type="button" class="btn btn-info mx-2" onclick="addRel(this)">+</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+js:
 //本票及授權書-新增關係人選單
 function addRel(obj) { 
     let $target = $(obj);
@@ -21,16 +43,34 @@ function addRel(obj) {
     `;
 
     let pageNum = $target.closest(".indivdualC_TableList").attr("id") // indivdualCtable1, indivdualCtable2...
-    // let zzxxNum = $target.closest(".zzxx").length + 1;
-    console.log("pageNum:", pageNum);
+    let $op = $(`#${pageNum}`).find(".invoName1 option");
 
-    let $testA = $(`#${pageNum}`).find(".invoName1").find("option");
-    console.log("$testA:", $testA);
-
-    //塞入選單
-    $.each($testA, function (i, v) { 
-      $(`#${pageNum}`).find(`.invoName${n}`).append(v);
-    })
+    console.log("$op:", $op);
+    console.log("invoName${n}:", `invoName${n}`);
+    $(`#${pageNum}`).find(`.invoName${n}`).append($op);
     
     $target.closest('.invoAllDiv').find('.row').append($div);
+}
+
+//本票及授權書-刪除關係人選單
+function delRel(target) { 
+    $(target).closest(".invoData").remove();
+}
+
+//本票及授權書-關係人連動(下拉式選單)
+function invoicer(num) { //num => 本票及授權書1, 本票及授權書2...
+    console.log("num:", num);
+    //取出名字
+    let nameArr = [];
+    $.each($(".identities"), function (i, v) {
+        if (i > 0) {
+            nameArr.push($(v).find(".name").val());
+        }
+    })
+    
+    //塞入選單
+    $.each(nameArr, function (i, val) {
+        let $option = `<option value="${val}">${val}</option>`
+        $(`#indivdualCtable${num}`).find(".zzxx").append($option);
+    })
 }
