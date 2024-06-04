@@ -1,3 +1,6 @@
+目前的方法是只能在 .invoName2 的時候，才能加塞入 $op 選單，而且要按第2次，才會塞入選單，我想在按第1次時，就在.invoName2塞入選單，該怎麼更改
+
+//本票及授權書-新增關係人選單
 function addRel(obj) { 
     let $target = $(obj);
     let n = $target.closest(".invoAllDiv").find(".inPerson").length + 1;  //不會有1; 2, 3...
@@ -10,15 +13,19 @@ function addRel(obj) {
                 <option value="1">發票人</option>
                 <option value="2">共同發票人</option>
             </select>
-            <select class="form-control mr-2 zzxx invoName${n}" id="voID">
-                <option value="">請選擇</option>
+            <select class="form-control mr-2 zzxx invoName${n}">
             </select>
             <button type="button" class="btn btn-danger mx-2" onclick="delRel(this)">&times;</button>
         </div>  
     </div>
     `;
 
-let pageNum = $target.closest(".indivdualC_TableList").attr("id") // indivdualCtable1, indivdualCtable2...
+    let pageNum = $target.closest(".indivdualC_TableList").attr("id") // indivdualCtable1, indivdualCtable2...
+    console.log("pageNum:", pageNum);
 
+    let $op = $(`#${pageNum}`).find(".invoName1 option").clone();
+
+    $(`#${pageNum}`).find(`.invoName2`).empty().append($op);
+    
+    $target.closest('.invoAllDiv').find('.row').append($div);
 }
-我找到 pageNum 後，假設為 #indivdualCtable2 我要如何找到他底下的 `.invoName${n}`，該怎麼寫?
