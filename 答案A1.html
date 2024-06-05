@@ -1,13 +1,1 @@
-$(document).ready(function() {
-    $('.abc').change(function() {
-        var selectedValue = $(this).val();
-        if (selectedValue === "1" || selectedValue === "2") {
-            $('.zzz option[value="1"]').remove();
-        } else {
-            // 如果選擇了其他選項，確保選項存在
-            if ($('.zzz option[value="1"]').length === 0) {
-                $('.zzz').prepend('<option value="1">1</option>');
-            }
-        }
-    });
-});
+
