@@ -1,1 +1,17 @@
+let opIdArr = JSON.parse($(obj).attr("opId")) || "";
+以上這段會導致程式錯誤(undefined is not valid JSON)，這要如何修改?
 
+
+send: async function (obj) {
+        loadingShow("資料送出中");
+        console.log("test test");
+        //按鈕鎖定
+        $(obj).prop("disabled", true);
+        console.log("obj:", $(obj), typeof $(obj));
+        let data = {};
+        // let $this = $(obj).closest(".card-body");process-footer
+        let $this = $("#opCaseDiv");
+        let classArr = [".acc", ".modalallowcode", ".allocationDate", ".amount", ".subjectAmount", ".businessType", ".id", ".idCode", ".idName", ".otherCaseType"];
+        let opIdArr = $(obj).attr("opId") || "";
+        console.log("opIdArr:", opIdArr);
+        let caseTypeValue = $(".caseType").attr("value");
