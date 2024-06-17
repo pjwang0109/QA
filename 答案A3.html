@@ -1,1 +1,122 @@
+send: async function (obj) {
+    loadingShow("資料送出中");
+    console.log("test test");
 
+    // 按鈕鎖定
+    $(obj).prop("disabled", true);
+    console.log("obj:", $(obj), typeof $(obj));
+
+    let data = {};
+    let $this = $("#opCaseDiv");
+    let classArr = [".acc", ".modalallowcode", ".allocationDate", ".amount", ".subjectAmount", ".businessType", ".id", ".idCode", ".idName", ".otherCaseType"];
+    
+    let opIdArrStr = $(obj).attr("opId") || "";
+    let opIdArr = [];
+
+    if (opIdArrStr) {
+        try {
+            opIdArr = JSON.parse(opIdArrStr);
+        } catch (e) {
+            console.error("Invalid JSON:", opIdArrStr);
+        }
+    }
+
+    console.log("opIdArr:", opIdArr);
+    let caseTypeValue = $(".caseType").val();
+
+    $.each(classArr, function (i, className) {
+        let dataName = className.replace(".", "");
+        data[dataName] = $this.find(className).val() || "";
+
+        switch (dataName) {
+            case "acc":
+            case "modalallowcode":
+                let selectorMap = {
+                    "12": "#createFileDiv",
+                    "13": "#appropriationLoanDiv",
+                    "14": "#conditionChangeDiv"
+                };
+                if (selectorMap[caseTypeValue]) {
+                    data[dataName] = $this.find(selectorMap[caseTypeValue]).find(className).val() || "";
+                } else {
+                    $.each($this.find(className), function (a, b) {
+                        if ($(b).val() !== "") {
+                            data[dataName] = $(b).val() || "";
+                        }
+                    });
+                }
+                break;
+            case "subjectAmount":
+                $.each($this.find('.subjectAmount'), function (a, b) {
+                    if ($(b).val() !== "") {
+                        try {
+                            let tmpSubjectAmount = $(b).val() || "";
+                            data[dataName] = del_money_Thousands(tmpSubjectAmount);
+                        } catch (e) { console.error(e); }
+                    }
+                });
+                break;
+            case "amount":
+                let amountObj = {};
+                $.each($this.find('.amount input'), function (a, b) {
+                    let key = $this.find('.amount .addEn').eq(a).text();
+                    try {
+                        let tmpAmount = $(b).val() || "";
+                        amountObj[key] = del_money_Thousands(tmpAmount);
+                    } catch (e) { console.error(e); }
+                });
+                data[dataName] = amountObj;
+                break;
+            case "businessType":
+                data[dataName] = $this.find('input[name="typeRadio"]:checked').val() || "";
+                break;
+            case "allocationDate":
+                if (caseTypeValue !== "12" && caseTypeValue !== "14") {
+                    data[dataName] = $this.find(className).val().replace(/-/g, "/") || "";
+                } else {
+                    data[dataName] = "";
+                }
+                break;
+            case "otherCaseType":
+                if ($("#otherDiv").hasClass("hide")) {
+                    data[dataName] = "";
+                } else {
+                    data[dataName] = $("#otherDiv").find(".otherSelectGroup").val() || "";
+                }
+                break;
+            default:
+                data[dataName] = data[dataName];
+        }
+    });
+
+    let sendArr = [];
+    $.each(opIdArr, function (i, val) {
+        let valObj = {
+            cfid: val.code,
+            cfType: val.type
+        };
+        let valObj2 = Object.assign({}, valObj, data);
+        sendArr.push(valObj2);
+    });
+
+    let sendFid = $(".opCenterBranchSend").next("span").attr("sendFid");
+    let tmpBranch = "F" + getUidToken().branch;
+
+    await apiS060000015(getUidToken().uid, getUidToken().token, sendArr).done(function (json) {
+        if (json.rc === "M0000") {
+            alert("送出成功");
+            $("section").text("");
+            $(".breadcrumb").text("");
+            loadingHide();
+        } else {
+            apiErrorHandler(json);
+            loadingHide();
+        }
+    }).fail(function (error) {
+        console.error(error);
+        loadingHide();
+    }).always(function () {
+        // 按鈕解除
+        $(obj).prop("disabled", false);
+    });
+}
