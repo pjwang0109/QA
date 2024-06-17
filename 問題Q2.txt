@@ -12,6 +12,6 @@ send: async function (obj) {
         // let $this = $(obj).closest(".card-body");process-footer
         let $this = $("#opCaseDiv");
         let classArr = [".acc", ".modalallowcode", ".allocationDate", ".amount", ".subjectAmount", ".businessType", ".id", ".idCode", ".idName", ".otherCaseType"];
-        let opIdArr = $(obj).attr("opId") || "";
+        let opIdArr = JSON.parse($(obj).attr("opId")) || "";
         console.log("opIdArr:", opIdArr);
         let caseTypeValue = $(".caseType").attr("value");
