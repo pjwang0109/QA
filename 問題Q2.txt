@@ -1,6 +1,1 @@
-let $guaBtn = `<button type="button" class="btn btn-info my-2 mx-3 copyGCbtn" onclick="copyGuarantees(this)">複製擔保條件</button>
-                    <textarea class="form-control my-2 mx-3 col-11 copyGCtextrea" rows="4"></textarea>`
-        $("#guaranteesDiv").append($guaBtn)
 
-
-因為在網頁中，已經有一個 $guaBtn 存在，我要怎麼先清掉原本的  $guaBtn ，然後再增加  $("#guaranteesDiv").append($guaBtn) 這個，清問如何修改?
