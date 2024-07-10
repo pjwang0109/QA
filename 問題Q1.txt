@@ -1,1 +1,16 @@
+在暫存按鈕中有一個 saveOpJSON function，裡面有S1032 的API；在傳送按鈕中有一個 send function，裡面有S0015 的API，
 
+
+這是在 opCenter_btnProcess.js 裡的 暫存按鈕 程式碼
+
+這是在 opCenter_Branch.js 裡的 傳送按鈕 程式碼
+await apiS060000015(getUidToken().uid, getUidToken().token, sendArr).done(function (json) {
+            if (json.rc == "M0000") {
+                alert("送出成功");
+                $("section").text("");
+                $(".breadcrumb").text("");
+                loadingHide();
+            } else {
+                apiErrorHandler(json);
+                loadingHide();
+            }
