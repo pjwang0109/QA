@@ -2,6 +2,7 @@
 
 
 這是在 opCenter_btnProcess.js 裡的 暫存按鈕 程式碼
+getS060001032(uid, token, data)
 
 這是在 opCenter_Branch.js 裡的 傳送按鈕 程式碼
 await apiS060000015(getUidToken().uid, getUidToken().token, sendArr).done(function (json) {
@@ -14,3 +15,5 @@ await apiS060000015(getUidToken().uid, getUidToken().token, sendArr).done(functi
                 apiErrorHandler(json);
                 loadingHide();
             }
+
+我想要在按下 傳送按鈕時，不要打S0015 的API，而是可以觸發暫存按鈕S1032 的API，只要 S1032 成功，再接續做其他事情，這個程式碼該怎麼改?
