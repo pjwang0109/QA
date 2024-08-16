@@ -1,0 +1,19 @@
+// 個人戶/舊案:隱藏PDF
+    if(jsondata.result.identities[0]){
+        // 借款人的id
+        let borrowerId = jsondata.result.identities[0].id
+        if(borrowerId.length === 10){
+            console.log('個人戶');
+            $('.compositeBook').addClass('hide')
+        }else if(borrowerId.length === 8){
+            console.log('企業戶');
+        }else if(borrowerId.length === 0){
+            console.log('舊案，都未填');
+            $('.compositeBook').addClass('hide')
+            $('.authorizeBook').addClass('hide')
+        }
+    }else{
+        console.log('舊案，都未填');
+        $('.compositeBook').addClass('hide')
+        $('.authorizeBook').addClass('hide')
+    }
