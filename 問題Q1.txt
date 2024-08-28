@@ -1,1 +1,28 @@
+我只想取得我最後點選的option就好，並存放於 clauseArr，要怎麼修改?
+const classContractsArr = [".no", ".acc", ".clause", ".clauseType", ".year", ".moon", ".day", ".quality",
+            ".qualityType1", ".qualityCurrency1", ".qualityType2", ".qualityCurrency2", ".qualityType3", ".qualityCurrency3", ".otheClause",
+            ".guarantor", ".responsible", ".seal", ".sign"];
+        const contractsArr = new Array;
 
+        $this.find("#contractsDiv").find(".contracts").each(function (item, thisContracts) {
+            const contractsObj = new Object;
+            let clauseArr = new Array;
+            let clause = "";
+            let guaArr = new Array;
+            let resArr = new Array;
+            $.each(classContractsArr, function (item, classContracts) {
+                const dataContracts = classContracts.replace('.', '');
+                let classVal = $(thisContracts).find(classContracts).val() || "";
+                switch (dataContracts) {
+                    case "clause":  //個別授信約定條款
+                        $this.find(`.${dataContracts}`).each(function () {
+                            let $checkThis = $(this);
+                            if ($checkThis.prop("checked")) { 
+                                clause = $checkThis.val();
+                                console.log("@@", clause);
+                                clauseArr.push(clause);
+                                console.log("clauseArr", clauseArr);
+                            }
+                        })
+                        contractsObj[dataContracts] = clauseArr;
+                        break;
