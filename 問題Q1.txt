@@ -1,1 +1,9 @@
 
+function checkTax(taxId) {
+        var invalidList = "00000000,11111111";
+        if (/^\d{8}$/.test(taxId) == false || invalidList.indexOf(taxId) != -1) {
+            return false;
+        }
+}
+
+/^\d{8}$/.test(taxId) == false || invalidList.indexOf(taxId) != -1 這段是什麼意思?
