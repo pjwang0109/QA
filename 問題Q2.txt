@@ -10,3 +10,6 @@ let userObj = getUidToken();
     $.when($.ajax(s060001037)).done(function (jsondata) { 
 
 }
+
+
+那 apiS060001037(uid, token, caseno).done(function (jsondata) 和 $.when($.ajax(s060001037)).done(function (jsondata) 這兩個用法差在哪?
