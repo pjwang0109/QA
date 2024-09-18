@@ -1,4 +1,4 @@
- 這段【: let currencyType = item.currencyType // 幣別 】想把每一個 currencyType 的值帶入到每個 <select class="form-control guaCurrency" required="required"> 上，該怎麼修改?
+ 這段【let currencyType = item.currencyType // 幣別 】想把每一個 currencyType 的值帶入到每個 <select class="form-control guaCurrency" required="required"> 上，該怎麼修改?
 
             let checkNum = {}
             Object.entries(mergeResult).forEach(([index, item]) => {
