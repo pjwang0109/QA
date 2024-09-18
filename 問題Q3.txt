@@ -1,50 +1,69 @@
-目前的 guarSave 為 [
-            {currencyType: '2', type: '', code: 'A123456789', name: '123'},
-            {currencyType: '4', type: '', code: '00000000', name: '45'},
-            {currencyType: '8', type: '', code: '45670000', name: '66'},
-            {currencyType: '6', type: '', code: 'ASCF4578', name: '700'},
-        ]
+ 這段【: let currencyType = item.currencyType // 幣別 】想把每一個 currencyType 的值帶入到每個 <select class="form-control guaCurrency" required="required"> 上，該怎麼修改?
 
-gccArr 為 [
-        { id: "A123456789", type: "6", name: "hh", typeText: '連帶保證人'},
-        { id: "45670000", type: "6", name: "jjj", typeText: '連帶保證人'},
-        { id: "ASCF4578", type: "6", name: "abc", typeText: '連帶保證人'},
-        ]
-
-已知 guarSave為後端API 的資料，gccArr為畫面 $(".identities") 可以知道的資料!
-
-當 guarSave 的 code = gccArr 的 id 時，我想要得到  guarSave 最終結果為 [
-            {id: "A123456789", type: "6", name: "hh", typeText: '連帶保證人', currencyType: '2', type: '', code: 'A123456789', name: '123'},
-            {id: "45670000", type: "6", name: "jjj", typeText: '連帶保證人', currencyType: '8', type: '', code: '45670000', name: '66'},
-            {id: "ASCF4578", type: "6", name: "abc", typeText: '連帶保證人', currencyType: '6', type: '', code: 'ASCF4578', name: '700'},
-        ]
-
-這樣有辦法修改程式嗎
-
-    let userObj = getUidToken();
-    let uid = userObj.uid;
-    let token = userObj.token;
-    let branch = userObj.branch
-    let obj = $(".btnOpDiv")
-    let data = await saveOpJSON(obj);
-    apiS060001037(uid, token, branch, data).done(function (jsondata) { //傳送後端
-        if (jsondata.rc == "M0000") {
-            let guarSave = jsondata.result.contracts[0].guarantor;
-            console.log('!!!', guarSave);
-            
-
-            let gccArr = [];
-            let $gcc = $('#GCC');
-            $(".identities").map(function (index) {
-                let $item = $(this)
-                let id = $item.find(".id").val()
-                let type = $item.find(".type").val()
-                let name = $item.find(".name").val()
-                let typeText = $item.find(".type option:selected").text()
-                    
-                if (type === "6") { // 身份別為=>連帶保證人
-                    gccArr.push({ "id": id, "type": type, "name": name, "typeText": typeText })
+            let checkNum = {}
+            Object.entries(mergeResult).forEach(([index, item]) => {
+                let num = Number(index) + 1
+                let id = item.id
+                let name = item.name
+                let typeText = item.typeText
+                let currencyType = item.currencyType // 幣別
+                console.log('@@!', currencyType);
+                let money = item.money // 金額
+                checkNum[typeText] = (checkNum[typeText] || 0) + 1
+                if (mergeResult.length === 1) {
+                    let $gccDiv1 = `<div id="guarantor1" class="form-group form-inline guarantor"><span class="mr-2">保證人擔保額度：</span>
+                        <span class="mr-2">${typeText}1：</span>
+                        <input type="text" class="form-control principal" style="margin:0 20px;" value="${name}" disabled>
+                        <select class="form-control guaCurrency" required="required">
+                            <option value="">請選擇</option>
+                            <option value="1">美元</option>
+                            <option value="2">日圓</option>
+                            <option value="3">英磅</option>
+                            <option value="4">瑞郎</option>
+                            <option value="5">加幣</option>
+                            <option value="6">星幣</option>
+                            <option value="7">港幣</option>
+                            <option value="8">澳幣</option>
+                            <option value="9">紐幣</option>
+                            <option value="10">歐元</option>
+                            <option value="11">南非幣</option>
+                            <option value="12">人民幣</option>
+                            <option value="13">新臺幣</option>
+                        </select>
+                        <input type="text" class="form-control mx-2 gccMoney" placeholder="" value="${money}"
+                                onblur="set_money_Thousands(this)" onfocus="cancel_money_Thousands(this)"
+                                oninput=" digitalboxHandler(this)">
+                                <input type="hidden" class="code" name="code" value="${id}">
+                                <span>元</span></div>`;
+                    $('#GCC').find('#guarantor1').find('.guaCurrency').val(currencyType)
+                    $gcc.append($gccDiv1);
+                } else if (mergeResult.length > 1) {
+                        let $gccDivOther = `
+                        <div id="guarantor${num}" class="form-group form-inline my-2 guarantor" style="padding-left: 135px;">
+                            <span class="mr-2">${typeText}${checkNum[typeText]}：</span>
+                            <input type="text" class="form-control principal" style="margin:0 20px;" value="${name}" disabled>
+                            <select class="form-control guaCurrency" required="required">
+                                <option value="">請選擇</option>
+                                <option value="1">美元</option>
+                                <option value="2">日圓</option>
+                                <option value="3">英磅</option>
+                                <option value="4">瑞郎</option>
+                                <option value="5">加幣</option>
+                                <option value="6">星幣</option>
+                                <option value="7">港幣</option>
+                                <option value="8">澳幣</option>
+                                <option value="9">紐幣</option>
+                                <option value="10">歐元</option>
+                                <option value="11">南非幣</option>
+                                <option value="12">人民幣</option>
+                                <option value="13">新臺幣</option>
+                            </select>
+                            <input type="text" class="form-control mx-2 gccMoney" placeholder="" value="${money}"
+                            onblur="set_money_Thousands(this)" onfocus="cancel_money_Thousands(this)"
+                            oninput=" digitalboxHandler(this)">
+                            <input type="hidden" class="code" name="code" value="${id}">
+                            <span class="ml-1">元</span></div>`;
+                        $('#GCC').find('.guarantor').find('.guaCurrency').val(currencyType)
+                        $gcc.append($gccDivOther);
                 }
-                
-            })
-}
+            })     
