@@ -1,3 +1,5 @@
+這段【 let guaText = item.guaText // 幣別 】想把每一個 guaText 的值帶入到每個 <select class="form-control guaCurrency" required="required"> 上，該怎麼修改?
+
 function guaAmountDel(){ 
     let gccArr = [];
     $(".identities").map(function (index) {
