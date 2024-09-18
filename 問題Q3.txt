@@ -1,12 +1,50 @@
-推薦理由及評語：
+目前的 guarSave 為 [
+            {currencyType: '2', type: '', code: 'A123456789', name: '123'},
+            {currencyType: '4', type: '', code: '00000000', name: '45'},
+            {currencyType: '8', type: '', code: '45670000', name: '66'},
+            {currencyType: '6', type: '', code: 'ASCF4578', name: '700'},
+        ]
 
-近期工作事項 : 
-由於近期【LIS作業中心的約據案件，在身份別的前端程式邏輯判別有誤，因此修改】
-◆ 約據連帶保證人資料修正  進館 LIS113025
-◆ 修改【連帶保證人】的邏輯判別
-◆ 刪除【金額與負責人】欄位的連動
-◆ 共同發票人沒有負責人欄位  進館 LIS113026
-◆ 身分ID紅框檢驗 : 隱藏原本前端程式，在身份別的邏輯，改為打API去後端程式做判斷
-◆ 統一編號輸入框-新增 oninput 和修改 onblur 函式，讓【紅框檢驗】與【金額與負責人欄位的連動】有所分別
-目前只剩下: 【刪除金額與負責人欄位的連動】尚未完成，預計這周五能做好!
-分派給我的工作任務，都有立即了解並盡速完成，遇到不懂的地方，會向
+gccArr 為 [
+        { id: "A123456789", type: "6", name: "hh", typeText: '連帶保證人'},
+        { id: "45670000", type: "6", name: "jjj", typeText: '連帶保證人'},
+        { id: "ASCF4578", type: "6", name: "abc", typeText: '連帶保證人'},
+        ]
+
+已知 guarSave為後端API 的資料，gccArr為畫面 $(".identities") 可以知道的資料!
+
+當 guarSave 的 code = gccArr 的 id 時，我想要得到  guarSave 最終結果為 [
+            {id: "A123456789", type: "6", name: "hh", typeText: '連帶保證人', currencyType: '2', type: '', code: 'A123456789', name: '123'},
+            {id: "45670000", type: "6", name: "jjj", typeText: '連帶保證人', currencyType: '8', type: '', code: '45670000', name: '66'},
+            {id: "ASCF4578", type: "6", name: "abc", typeText: '連帶保證人', currencyType: '6', type: '', code: 'ASCF4578', name: '700'},
+        ]
+
+這樣有辦法修改程式嗎
+
+    let userObj = getUidToken();
+    let uid = userObj.uid;
+    let token = userObj.token;
+    let branch = userObj.branch
+    let obj = $(".btnOpDiv")
+    let data = await saveOpJSON(obj);
+    apiS060001037(uid, token, branch, data).done(function (jsondata) { //傳送後端
+        if (jsondata.rc == "M0000") {
+            let guarSave = jsondata.result.contracts[0].guarantor;
+            console.log('!!!', guarSave);
+            
+
+            let gccArr = [];
+            let $gcc = $('#GCC');
+            $(".identities").map(function (index) {
+                let $item = $(this)
+                let id = $item.find(".id").val()
+                let type = $item.find(".type").val()
+                let name = $item.find(".name").val()
+                let typeText = $item.find(".type option:selected").text()
+                    
+                if (type === "6") { // 身份別為=>連帶保證人
+                    gccArr.push({ "id": id, "type": type, "name": name, "typeText": typeText })
+                }
+                
+            })
+}
