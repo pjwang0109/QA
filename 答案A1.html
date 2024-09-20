@@ -1,1 +1,89 @@
+function responDel() { 
+    let idtArr = [];
+    let responsibleArr = [];
+    
+    // 先處理 .responsible，將每筆負責人資料收集起來
+    $(".responsible").each(function() {
+        let $item = $(this);
+        let resName = $item.find(".principal").val();
+        let resPerson = $item.find(".responsibleName").val();
+        
+        responsibleArr.push({ resName: resName, resPerson: resPerson });
+    });
 
+    // 迭代 .identities，處理每一筆資料
+    $(".identities").each(function() {
+        let $item = $(this);
+        let id = $item.find(".id").val();
+        let type = $item.find(".type").val();
+        let name = $item.find(".name").val();
+        let typeText = $item.find(".type option:selected").text();
+        
+        // 找出對應的 responsible 資料
+        let responsible = responsibleArr.find(r => r.resName === name);
+        
+        if (id.length === 8) { // 只有當 id 長度為 8 時，才會進行資料合併
+            if (responsible) {
+                // 若找到對應的 responsible 資料，將其合併到 identities
+                idtArr.push({
+                    id: id,
+                    type: type,
+                    name: name,
+                    typeText: typeText,
+                    resName: responsible.resName,
+                    resPerson: responsible.resPerson
+                });
+            } else {
+                // 若找不到，則將 resName 和 resPerson 設為空
+                idtArr.push({
+                    id: id,
+                    type: type,
+                    name: name,
+                    typeText: typeText,
+                    resName: "",
+                    resPerson: ""
+                });
+            }
+        }
+    });
+
+    // 排序
+    idtArr.sort((a, b) => a.type - b.type);
+
+    // 清除舊的 responsible 項目
+    $(".responsible").remove();
+    
+    let count = {};
+    idtArr.forEach((item, index) => {
+        let num = index + 1;
+        let id = item.id;
+        let type = item.type;
+        let name = item.name;
+        let typeText = item.typeText;
+        let resPerson = item.resPerson;
+        count[typeText] = (count[typeText] || 0) + 1;
+        
+        if (id.length === 8) {
+            if (type === '0') {
+                typeText = "立約人(即借款人)";
+                count[typeText] = "";
+            }
+
+            // 生成新的 responsible 元素
+            let $responsibleDiv = `<div id="responsible${num}" class="form-group form-inline responsible">
+                <span class="ml-5 mr-1">${typeText}${count[typeText]}：</span>
+                <input type="text" class="form-control principal" style="margin-left: 47px;" value="${name}" disabled>
+                <input type="hidden" class="code" name="code" value="${id}">
+                <div class="principalDiv ${resPerson ? '' : 'hide'}">
+                    <span class="ml-5">負責人：</span>
+                    <input type="text" class="form-control responsibleName" placeholder="" value="${resPerson}">
+                    <span>(自行輸入)</span>
+                </div>
+                <button type="button" class="btn btn-info principalbtn ml-5" onclick="principalBtn(this)">負責人</button>
+            </div>`;
+
+            // 將新的 responsible 加入到 DOM
+            $(".responsibleDiv").append($responsibleDiv);
+        }
+    });
+}
