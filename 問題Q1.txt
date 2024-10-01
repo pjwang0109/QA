@@ -1,18 +1,9 @@
 
 
 【$indivdual.find(".amount").val(val.amount);//幣別金額 】在幣別金額欄位，因為是 input text 所以這樣寫會帶入資料，沒問題
-【$indivdual.find("#rateType").val(val.type);//利率型式 】在利率型式欄位，因為是 select 裡的 option 所以會無法帶入正確資料，我應該如何修改呢?
+【$indivdual.find("#rateType").val(val.type);//利率型式 】在利率型式欄位，因為是 select 裡的 option 所以會帶錯資料
 
-select 包含以下資訊，
-
-<select id="rateType" class="form-control type">
-    <option value="1">利率TYPE1</option>
-    <option value="2">利率TYPE2</option>
-    <option value="3">利率TYPE3</option>
-    <option value="4">利率TYPE4</option>
-</select>
-
-而當 #indivdualCtable1  val.type 為 3 時
+當 #indivdualCtable1  val.type 為 3 時
 頁面上應該要被選擇為  <option value="3">利率TYPE3</option> 
 
 當 #indivdualCtable2  val.type 為 2 時
@@ -20,6 +11,8 @@ select 包含以下資訊，
 
 當 #indivdualCtable3  val.type 為 4 時
 頁面上應該要被選擇為  <option value="4">利率TYPE4</option>
+
+$indivdual.find("#rateType").val(val.type); 所以這一行改如何修改?
 
 
 以下是原始 JS 程式碼
