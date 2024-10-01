@@ -3,17 +3,18 @@
 【$indivdual.find(".amount").val(val.amount);//幣別金額 】在幣別金額欄位，因為是 input text 這樣寫會帶入每個輸入資料的值，沒問題
 【$indivdual.find("#rateType").val(val.type);//利率型式 】在利率型式欄位，因為是 select 的 option ，會帶錯選擇選項後的值
 
-若 val.type 為 2 3 1，那麼
-#indivdualCtable1  在頁面上 option 要被選擇為 利率2
-#indivdualCtable2  在頁面上 option 要被選擇為 利率3
-#indivdualCtable3  在頁面上 option 要被選擇為 利率1
-
-若 val.type 為 3 4，那麼
-#indivdualCtable1  在頁面上 option 要被選擇為 利率3
-#indivdualCtable2  在頁面上 option 要被選擇為 利率4
-
 
 所以程式碼應該如何修改?
+
+這是我目前想到的:
+Object.entries(val.type).forEach(([index, item])=>{
+                    console.log("AACC", index, item);
+                    let $rateTypeText = $indivdual.find("#rateType option:selected").val()
+                    console.log('EE', $rateTypeText);
+                    $indivdual.find("#rateType option").filter(function () { 
+                      return item == $rateTypeText
+                    }).prop("selected", true)
+                })
 
 
 以下是原始 JS 程式碼
