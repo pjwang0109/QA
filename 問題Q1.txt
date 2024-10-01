@@ -1,1 +1,20 @@
 
+
+【$indivdual.find(".amount").val(val.amount);//幣別金額 】在幣別金額欄位，因為是 input text 所以這樣寫沒問題
+【$indivdual.find("#rateType").val(val.type);//利率型式 】在利率型式欄位，因為是 option 所以會有錯，我應該如何修改呢?
+$indivdual.find("#rateType") 是他的 select
+
+
+
+以下是原始 JS 程式碼
+if (cashiers_length >= 1) {
+    $.each(cashiers, async function (item, val) {
+      ...... 其他程式碼
+
+      let $indivdual = $(`#indivdualCtable${item}`)
+
+      $indivdual.find(".amount").val(val.amount);//幣別金額
+      $indivdual.find("#rateType").val(val.type);//利率型式
+      let $indivRate = $indivdual.find("#rateType");
+
+})
