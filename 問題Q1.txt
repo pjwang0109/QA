@@ -2,8 +2,6 @@
 
 【$indivdual.find(".amount").val(val.amount);//幣別金額 】在幣別金額欄位，因為是 input text 所以這樣寫會帶入資料，沒問題
 【$indivdual.find("#rateType").val(val.type);//利率型式 】在利率型式欄位，因為是 select 裡的 option 所以會無法帶入正確資料，我應該如何修改呢?
-$indivdual.find("#rateType") 是他的 select，而每一個 $indivdual 會有不同的值
-
 
 select 包含以下資訊，
 
@@ -14,8 +12,7 @@ select 包含以下資訊，
     <option value="4">利率TYPE4</option>
 </select>
 
-
-當 #indivdualCtable1  val.type 為 3 時
+而當 #indivdualCtable1  val.type 為 3 時
 頁面上應該要被選擇為  <option value="3">利率TYPE3</option> 
 
 當 #indivdualCtable2  val.type 為 2 時
@@ -27,12 +24,126 @@ select 包含以下資訊，
 
 以下是原始 JS 程式碼
 if (cashiers_length >= 1) {
-    $.each(cashiers, async function (item, val) {
-      ...... 其他程式碼
+            $.each(cashiers, async function (item, val) {
+                let url = ajaxhttpIPHostHtml('/opCenter/opCenter_form_indivdualContratc.html');
+                let res = [];
+                item = item + 1;
+                try {
+                    res = await Promise.all([
+                        $.ajax(url),
+                    ]);
+                } catch (e) {
+                    console.error(e);
+                }
 
-      let $indivdual = $(`#indivdualCtable${item}`)
+                if (res.length > 0) {
+                    const html = res[0];
+                    let $ichtml = $(html);//保證人
+                    let icHtml = $ichtml.html();
+                    icHtml.replace(/demo_/g, "").replace(/opacity: 0/g, "");
+                    $ichtml.prop("disabled", false);
+                    let indivdualCCode = new Array;
+                    $ichtml.find(".delBtn").prop("disabled", false);
+                    $ichtml.find("#demo_checkboxBorrowerNum").prop("disabled", false);
+                    indivdualCCode = digitalArrayHandler(".indivdualC_TableList");
+                    let title = "本票及授權書" + item;
+                    let num = item;
+                    $('#indivdualC .indivdualCsection #indivdualCtableDiv').append($ichtml.html().replace(/demo_/g, '').replace(/Numtitle/g, title).replace(/Num/g, num).replace(/opacity: 0/g, ""));
 
-      $indivdual.find(".amount").val(val.amount);//幣別金額
-      $indivdual.find("#rateType").val(val.type);//利率型式
+                    let $identitiesAllDiv = $(`#indivdualCtable${num}`).find(".identitiesAllDiv");
 
-})
+                    //發票人或共同發票人開始
+
+                    identitiesSelect(num, 1); //塞入第一個選單 (取出ID並塞入選單方法)
+                    //將ID塞入選單並顯示指定之選項
+                    $.each(val.identities, function (i, v) {
+                        if (i > 0) {
+                            //判斷如果大於一筆時
+                            i++;
+                            let $div = `<div class="mt-2 identitiesSelectDiv${i}">
+                            <input type="hidden" class="identitiesNo" name="no" value="${v.code}">
+                            <select class="form-control mr-2 identitiesRoleSelect">
+                                <option value="">請選擇</option>
+                                <option value="1">發票人</option>
+                                <option value="2">共同發票人</option>
+                            </select>
+                            <select class="form-control mr-2 identitiesSelect">
+                                <option value="">請選擇</option>
+                            </select>
+                            <button type="button" class="btn btn-danger mr-2" onclick="delIdentitiescBtn(this)">×</button>
+                            </div>`;
+                            $identitiesAllDiv.append($div);
+                            identitiesSelect(num, i); //取出ID並塞入選單方法
+                            $identitiesAllDiv.find(`.identitiesSelectDiv${i}`).find(".identitiesRoleSelect").val(v.type);
+                            $identitiesAllDiv.find(`.identitiesSelectDiv${i}`).find(".identitiesSelect").val(v.name);
+                        } else {
+                            //第一筆
+                            $identitiesAllDiv.find(`.identitiesSelectDiv1`).find(".identitiesRoleSelect").val(v.type);
+                            $identitiesAllDiv.find(`.identitiesSelectDiv1`).find(".identitiesSelect").val(v.name);
+                            $identitiesAllDiv.find(`.identitiesSelectDiv1`).find(".identitiesNo").val(v.code);
+                        }
+                    });
+                    //發票人或共同發票人結束
+
+                    //與貸放條件(核貸通知書)連動
+                    let accBDetailTbody = $(".accBDetailTbody");//抓貸放條件(核貸通知書)
+
+                    $(`#indivdualCtable${item}`).find(".quotaCheckbox label").remove();
+                    $.each(accBDetailTbody, function (i, accBDetail) {
+                        let quotaCode = $(accBDetail).find(".code").val();
+                        let currencyVal = $(accBDetail).find(".currency option:selected").val();
+                        let moneyVal = $(accBDetail).find(".money").val()
+
+                        $div = `<label class="form-check-label mr-3">
+                                    <input type="checkbox" class="form-check-input quota quota${quotaCode}" value="${quotaCode}" currency="${currencyVal}" money="${moneyVal}" onclick="quotaControl(this)">${quotaCode}
+                                </label>`
+                        $(`#indivdualCtable${item}`).find(".quotaCheckbox").append($div);//額度代號Checkbox連動(貸放條件(核貸通知書)有幾個額度代號這邊就要有幾個)
+
+                    })
+
+                    rateTypeGearing()//利率連動
+
+                    $("#indivdualC .indivdualCsection").collapse('show');
+                    $('#indivdualC .indivdualCsection .card-body:nth(0)').find('#indivdualCsectiontable' + num).collapse('show');
+
+                    let address = $(".address ").val();
+                    $(".indivdualCtable_address").val(address);
+                }
+
+                let $indivdual = $(`#indivdualCtable${item}`)
+                $indivdual.find(".no").val(val.no);//編號
+                let quota_Class = $indivdual.find(".quota");
+                //本票及授權書-選擇額度
+                $.each(val.quota, function (item, quotaVal) {
+                    $.each(quota_Class, function (item, quota) {
+                        let screenVal = $(quota).val();
+                        if (screenVal == quotaVal) {
+                            $(quota).prop("checked", true);
+                        }
+                    })
+                })
+                //本票及授權書-幣別
+                let $quotaChecked = $indivdual.find(".quota:checked")
+                $.each($quotaChecked, function (i, input) {
+                    let currency = input.getAttribute("currency")
+                    $(`#indivdualCtable${item}`).find(".indivdualCurrency").val(currency)
+                });
+                $indivdual.find(".amount").val(val.amount);//幣別金額
+                $indivdual.find("#rateType").val(val.type);//利率型式                
+                
+                //本票及授權書-延遲利息計收費方式勾選項目
+                let mode_Class = $indivdual.find(".delay_interest")
+                $.each(val.mode, function (item, modeVal) {
+                    $.each(mode_Class, function (item, mode) {
+                        let screenVal = $(mode).val();
+                        if (screenVal == modeVal) {
+                            $(mode).prop("checked", true);
+                        }
+                    })
+                })
+                $indivdual.find(".interest").val(val.interest);//延遲利息%
+                $indivdual.find(".other").val(val.other);//其他
+                $indivdual.find(".seal1").val(val.seal1);//本票簽章
+                $indivdual.find(".seal2").val(val.seal2);//授權書簽章
+            });
+        }
