@@ -1,7 +1,7 @@
 
 
 【$indivdual.find(".amount").val(val.amount);//幣別金額 】在幣別金額欄位，因為是 input text 所以這樣寫會帶入資料，沒問題
-【$indivdual.find("#rateType").val(val.type);//利率型式 】在利率型式欄位，因為是 option 所以會無法帶入正確資料，我應該如何修改呢?
+【$indivdual.find("#rateType").val(val.type);//利率型式 】在利率型式欄位，因為是 select 裡的 option 所以會無法帶入正確資料，我應該如何修改呢?
 $indivdual.find("#rateType") 是他的 select，而每一個 $indivdual 會有不同的值
 
 
