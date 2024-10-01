@@ -3,14 +3,11 @@
 【$indivdual.find(".amount").val(val.amount);//幣別金額 】在幣別金額欄位，因為是 input text 所以這樣寫會帶入資料，沒問題
 【$indivdual.find("#rateType").val(val.type);//利率型式 】在利率型式欄位，因為是 select 的 option ，所以會帶錯資料
 
-當 #indivdualCtable1  val.type 為 3 時
-頁面上 option 要被選擇為 利率TYPE3
+若 val.type 為 2 3 1，那麼
+#indivdualCtable1  在頁面上 option 要被選擇為 2
+#indivdualCtable2  在頁面上 option 要被選擇為 3
+#indivdualCtable3  在頁面上 option 要被選擇為 1
 
-當 #indivdualCtable2  val.type 為 2 時
-頁面上 option 要被選擇為 利率TYPE2
-
-當 #indivdualCtable3  val.type 為 4 時
-頁面上 option 要被選擇為 利率TYPE4
 
 所以程式碼應該如何修改?
 
