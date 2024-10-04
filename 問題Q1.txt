@@ -4,17 +4,8 @@
 【$indivdual.find("#rateType").val(val.type);//利率型式 】在利率型式欄位，因為是 select 的 option ，會帶錯選擇選項後的值
 
 
-所以程式碼應該如何修改?
+我在想是否與rateTypeGearing 有關，所以程式碼應該如何修改?
 
-這是我目前想到的:
-Object.entries(val.type).forEach(([index, item])=>{
-                    console.log("AACC", index, item);
-                    let $rateTypeText = $indivdual.find("#rateType option:selected").val()
-                    console.log('EE', $rateTypeText);
-                    $indivdual.find("#rateType option").filter(function () { 
-                      return item == $rateTypeText
-                    }).prop("selected", true)
-                })
 
 
 以下是原始 JS 程式碼
@@ -142,3 +133,23 @@ if (cashiers_length >= 1) {
                 $indivdual.find(".seal2").val(val.seal2);//授權書簽章
             });
         }
+
+
+以上程式碼裡有一個 rateTypeGearing()//利率連動
+他的 function 為:
+function rateTypeGearing() {
+    let rateEditoril = $(".rateEditoril");
+
+    $(".indivdualC_TableList").find('#rateType').map(function () {
+        console.log("連動");
+        let $select = $(this)
+        $select.empty();
+        console.log('$select', $select);
+        $.each(rateEditoril, function (i, val) {
+            i = i + 1;
+            let rateOption = $(`#rateEditoril${i}`).find("a").text();
+            let $option = `<option value="${i}">${rateOption}</option>`
+            $select.append($option);
+        })
+    })
+}
