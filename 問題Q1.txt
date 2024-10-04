@@ -141,10 +141,8 @@ function rateTypeGearing() {
     let rateEditoril = $(".rateEditoril");
 
     $(".indivdualC_TableList").find('#rateType').map(function () {
-        console.log("連動");
         let $select = $(this)
         $select.empty();
-        console.log('$select', $select);
         $.each(rateEditoril, function (i, val) {
             i = i + 1;
             let rateOption = $(`#rateEditoril${i}`).find("a").text();
