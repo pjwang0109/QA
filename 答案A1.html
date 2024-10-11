@@ -1,1 +1,45 @@
+const opCenterBranchBtnCtrl = {
+    //建檔.撥貸.條件變更及報請總行.其他.
+    send: async function (obj) {
+        loadingShow("資料送出中");
+        //按鈕鎖定
+        $(obj).prop("disabled", true);
+        let data = {};
+        ...其他程式碼
 
+        try {
+            // 打 S060001032 API
+            let userObj = getUidToken();
+            let uid = userObj.uid;
+            let token = userObj.token;
+
+            // 假設 data 是你需要的資料
+            let saveOpResponse = await saveOpData(obj, false);
+
+            if (saveOpResponse) {
+                // S060001032 API 成功後，打 S060000015 API
+                await apiS060000015(uid, token, sendArr).done(function (json) {
+                    if (json.rc == "M0000") {
+                        alert("送出成功");
+                        $("section").text("");
+                        $(".breadcrumb").text("");
+                        loadingHide();
+                    } else {
+                        apiErrorHandler(json);
+                        loadingHide();
+                    }
+                });
+            } else {
+                throw new Error("S060001032 API 失敗");
+            }
+
+        } catch (error) {
+            console.error(error);
+            loadingHide();
+            alert("發生錯誤，請稍後再試");
+        } finally {
+            //按鈕解除
+            $(obj).prop("disabled", false);
+        }
+    }
+}
