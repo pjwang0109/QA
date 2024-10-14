@@ -1,1 +1,48 @@
 
+const opCenterBranchBtnCtrl = {
+    send: async function (obj) {
+        // 按鈕鎖定
+        $(obj).prop("disabled", true);
+        let data = {};
+        let userObj = getUidToken();
+        let uid = userObj.uid;
+        let token = userObj.token;
+
+        try {
+            // 先呼叫 openOpSendDiv 函數，並取得 s060000013 的資料
+            let openOpData = await openOpSendDiv(obj);
+            let s060000013Data = openOpData.s060000013Data; // 假設你從 openOpSendDiv 取得的資料是這樣結構化
+
+            // 呼叫 saveOpData API
+            let saveOpResponse = await saveOpData(obj, false);
+            if (saveOpResponse) {
+                // 呼叫 S060000032 API，並將 s060000013Data 傳入
+                let s060000032Response = await apiS060000032(uid, token, s060000013Data);
+                
+                if (s060000032Response.rc === "M0000") {
+                    // S060000032 成功後，呼叫 S060000015 API
+                    await apiS060000015(uid, token, sendArr).done(function (json) {
+                        if (json.rc == "M0000") {
+                            alert("送出成功");
+                            $("section").text("");
+                            $(".breadcrumb").text("");
+                        } else {
+                            apiErrorHandler(json);
+                        }
+                        loadingHide();
+                    });
+                } else {
+                    apiErrorHandler(s060000032Response);
+                    loadingHide();
+                }
+            }
+        } catch (error) {
+            console.error(error);
+            alert("發生錯誤，請稍後再試");
+            loadingHide();
+        } finally {
+            // 按鈕解除
+            $(obj).prop("disabled", false);
+        }
+    }
+};
