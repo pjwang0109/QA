@@ -1,3 +1,7 @@
+我想在 opCenterBranchBtnCtrl.send 打 S060000032 API 之前，得到 openOpSendDiv(obj)裡面的 s060000013 資料，也就是json，然後再把s060000013 得到的資料傳入S060000032 API，請問怎麼修改?
+
+
+
 在branch.js 744-909行 程式碼:
 const opCenterBranchBtnCtrl = {
     //建檔.撥貸.條件變更及報請總行.其他.
@@ -66,7 +70,11 @@ async function openOpSendDiv(obj) {
   } catch (e) {
       console.error(e);
   }
-  ... 其他程式碼
+
+    if (res.length > 0) {
+        const json = res[0];
+      ... 其他程式碼
+   }
   
 }
 
