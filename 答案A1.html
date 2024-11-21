@@ -1,3 +1,12 @@
-vue3: https://github.com/Panyue-genkiyo/vue3-learning
-vue2依据脚手架:https://github.com/Panyue-genkiyo/vue-advance
-vue基础不依赖脚手架:https://github.com/Panyue-genkiyo/vue-learning
+$(function () {
+    // 綁定事件給兩個 radio 按鈕
+    $("#checkRadioY, #checkRadioN").change(function () {
+        if ($("#checkRadioY").is(":checked")) {
+            // 當 checkRadioY 勾選時顯示 yesNoAbnormal
+            $("#yesNoAbnormal").show();
+        } else {
+            // 當 checkRadioN 勾選時隱藏 yesNoAbnormal
+            $("#yesNoAbnormal").hide();
+        }
+    });
+});
