@@ -1,1 +1,21 @@
-https://cdn.bootcdn.net/ajax/libs/dayjs/1.10.4/dayjs.min.js
+當 checkRadioY 勾選時，要把 yesNoAbnormal 打開，checkRadioN 勾選時，要把 yesNoAbnormal 隱藏，在branch.js要怎麼修改?
+
+branch.html:
+
+<span class="mr-4">聯徵本往檢核有無異常:</span>
+                  <label for="checkRadioY" class="mr-1">
+                    <input type="radio" id="checkRadioY">有
+                  </label>
+                  <label for="checkRadioN" class="mr-1">
+                    <input type="radio" id="checkRadioN">無
+                  </label>
+
+<div id="yesNoAbnormal" class="hide">
+...
+</div>
+
+branch.js:
+
+                    
+    
+ 
