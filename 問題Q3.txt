@@ -1,4 +1,4 @@
- 當我按下addHostTranCoData 按鈕時，我想要從 openOpSendDiv拿到 cid的值來用，怎麼寫?
+ 當我按下addHostTranCoData(obj) 按鈕時，我想要從 openOpSendDiv(obj)拿到 cid的值來用，怎麼寫?
 
 async function openOpSendDiv(obj) {
     const userObj = getUidToken();
