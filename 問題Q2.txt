@@ -20,3 +20,35 @@ function callApiS060000014(data, successCallback, errorCallback) {
         }
     });
 }
+
+
+function linkHostTranCoToCase(obj) {
+    const requestData = { action: 'linkHostTranCoToCase', details: $(obj).data() };
+    callApiS060000014(
+        requestData,
+        function (response) {
+            alert("連接成功！");
+            // 根據需求處理 response
+        },
+        function (error) {
+            alert("連接失敗，請稍後重試！");
+        }
+    );
+}
+
+function addTranReData(obj) {
+    const requestData = { action: 'addTranReData', details: $(obj).data() };
+    callApiS060000014(
+        requestData,
+        function (response) {
+            alert("新增成功！");
+            // 根據需求處理 response
+        },
+        function (error) {
+            alert("新增失敗，請稍後重試！");
+        }
+    );
+}
+
+
+
