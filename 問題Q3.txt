@@ -1,3 +1,3 @@
-假設我想給 .idNumber 一個val為'123'怎麼寫
+假設我想給 .idNumber 一個value為'123'怎麼寫
 
 <input type="text" readonly name="transWorkCoMedium" class="transWorkCoMedium idNumber form-control hide"/>
