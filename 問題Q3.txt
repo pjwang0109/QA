@@ -1,9 +1,22 @@
-補充教材的內容摘要
+這是一個datatable，當我在table中按下 openOpSendDiv 按鈕時，我想取得這一列中 '12346' 的值，又或是當我按下 openOpSendDiv 按鈕時，我想取得這一列中 '0000' 的值，該怎麼寫
 
-說謊確實是溝通的某種形式，雖然好多人都不認為是這樣，如果用語言表面來看句子所擁有的真理價值，那是什麼呢？是否會因為句子溝通的關係出現沒有結局的循環呢？雖然我們交換了句子的各種形式摘要，可是結尾依然不會改變，但確實是有許多多不一樣的意義。
+<tr class="odd">
+  <td class="text-center align-middle sorting_1">
+    <button class="btn btn-success btn-sm my-0" onclick="openOpSendDiv(this)"></button>
+  </td>
+  <td class=" text-center align-middle">華燈初上國際</td>
+  <td class=" text-center align-middle">企金</td>
+  <td class=" text-center align-middle">12346</td>
+  <td class=" text-center align-middle">fff</td>
+</tr>
 
-兩者的關係（Love Is a Fallacy)
 
-要認識這個充滿變化的世界和了解自己及別人的語言，就算內容通常都令人匪夷所思。我們可以了解文章以幽默的方式批判了人在追求愛情時的心態、以自己獨特的語言來追求真理，可是卻以失敗告終的故事。
-
-09621079 林采榆
+<tr class="even">
+  <td class="text-center align-middle sorting_1">
+    <button class="btn btn-success btn-sm my-0" onclick="openOpSendDiv(this)"></button>
+  </td>
+  <td class=" text-center align-middle">聯徵個人</td>
+  <td class=" text-center align-middle">消金</td>
+  <td class=" text-center align-middle">0000</td>
+  <td class=" text-center align-middle">cc</td>
+</tr>
