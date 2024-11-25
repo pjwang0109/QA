@@ -1,22 +1,28 @@
-這是一個datatable，當我在table中按下 openOpSendDiv 按鈕時，我想取得這一列中 '12346' 的值，又或是當我按下 openOpSendDiv 按鈕時，我想取得這一列中 '0000' 的值，該怎麼寫
+ 當我按下addHostTranCoData 按鈕時，我想要從 openOpSendDiv拿到 cid的值來用，怎麼寫?
 
-<tr class="odd">
-  <td class="text-center align-middle sorting_1">
-    <button class="btn btn-success btn-sm my-0" onclick="openOpSendDiv(this)"></button>
-  </td>
-  <td class=" text-center align-middle">華燈初上國際</td>
-  <td class=" text-center align-middle">企金</td>
-  <td class=" text-center align-middle">12346</td>
-  <td class=" text-center align-middle">fff</td>
-</tr>
+async function openOpSendDiv(obj) {
+    const userObj = getUidToken();
+    const uid = userObj.uid;
+    const token = userObj.token;
+    let rowTable = $(obj).closest("table").DataTable();
+    let tr = $(obj).closest("tr");
+    let cid = tr.find('td:eq(6)').text().trim();
+
+}
 
 
-<tr class="even">
-  <td class="text-center align-middle sorting_1">
-    <button class="btn btn-success btn-sm my-0" onclick="openOpSendDiv(this)"></button>
-  </td>
-  <td class=" text-center align-middle">聯徵個人</td>
-  <td class=" text-center align-middle">消金</td>
-  <td class=" text-center align-middle">0000</td>
-  <td class=" text-center align-middle">cc</td>
-</tr>
+async function addHostTranCoData(obj) {
+    const $btn = $(obj);
+    const $div = $btn.closest("#transWorkCoDiv");
+
+
+    try {
+        const res = await Promise.all(
+            [
+                apiS110010018(uid, token, cid, idCode),
+                $.get(ajaxhttpIPHostHtml("/acceptcase/creditCheckReport/page/component/queryCreditCheckDataModal.html"))
+            ]);
+        jsonData = res[0];
+        html = res[1];
+    } catch (e) { console.error(e) }
+}
