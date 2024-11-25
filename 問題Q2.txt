@@ -1,2 +1,22 @@
 寫一個新的方法，當 linkHostTranCoToCase(obj) 點擊後，觸發事件打API S060000014，若 addTranReData(obj)點擊後，同樣觸發事件打API S060000014，怎寫?
 
+function callApiS060000014(data, successCallback, errorCallback) {
+    $.ajax({
+        url: '/api/S060000014',
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(data),
+        success: function (response) {
+            console.log("API 呼叫成功:", response);
+            if (typeof successCallback === 'function') {
+                successCallback(response);
+            }
+        },
+        error: function (error) {
+            console.error("API 呼叫失敗:", error);
+            if (typeof errorCallback === 'function') {
+                errorCallback(error);
+            }
+        }
+    });
+}
