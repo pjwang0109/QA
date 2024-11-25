@@ -1,3 +1,2 @@
-.opCenterBranchSend 這顆按鈕，想在 n = 1時，將 '傳送'文字改為 '呈核'，js該怎麼寫?
 
-<button class="opCenterBranchSend">傳送</button>
+當 linkHostTranCoToCase(obj) 點擊後，觸發事件打API S060000014 怎寫
