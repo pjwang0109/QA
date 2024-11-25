@@ -1,1 +1,2 @@
 寫一個新的方法，當 linkHostTranCoToCase(obj) 點擊後，觸發事件打API S060000014，若 addTranReData(obj)點擊後，同樣觸發事件打API S060000014，怎寫?
+
