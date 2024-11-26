@@ -1,18 +1,1 @@
-那像這樣的寫法 有比較好嗎?
-
-function apiS100010008(uid, token, data) { //特約
-    let opt = getS100010008(uid, token, data);
-    return $.ajax(opt);
-}
-function getS100010008(uid, token, data) {
-    return {
-        url: ajaxhttpIPHost("/res/S100010008"),
-        type: "post",
-        contentType: "application/json",
-        data: JSON.stringify({
-            "uid": uid,
-            "token": token,
-            "data": data
-        })
-    };
-}
+我想寫一個方法，當 input.workco 裡面有value值時，先偵測 input.workre 有沒有value值，且無論 input.workre有沒有value值，都要打 S060000014 API，要怎麼寫?
