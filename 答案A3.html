@@ -1,45 +1,18 @@
-async function openOpSendDiv(obj) {
-    const userObj = getUidToken();
-    const uid = userObj.uid;
-    const token = userObj.token;
-    let rowTable = $(obj).closest("table").DataTable();
-    let tr = $(obj).closest("tr");
-    let rowData = rowTable.row(tr).data()[0];
-    let rowBusiness = rowData.business;
-    let caseno = rowData.caseNo;
-    let cfId = $(obj).attr("cfid") || "";
-    let caseTypeValue = $(".caseType").attr("value") || "";
-    let assign = rowData.assign;
-    let data = {};
-    data.cfid = cfId;
-    data.cfType = caseTypeValue;
-    data.fid = "F500";
-    const s060000013 = getS060000013(uid, token, data);
-    const s120010004 = apiACJController.getS120010004(uid, token);
-    let res = [];
-    let s060000013Data = null; // 用來儲存 s060000013 資料
+那像這樣的寫法 有比較好嗎?
 
-    try {
-        if (assign != "15") {
-            res = await Promise.all([
-                $.ajax(s060000013),
-                $.ajax(s120010004),
-                apiS120010001(uid, token, caseno), // 抓這支 API 裡的國別(nationSLT)
-            ]);
-        } else {
-            res = await Promise.all([
-                $.ajax(s060000013),
-            ]);
-        }
-    } catch (e) {
-        console.error(e);
-    }
-
-    if (res.length > 0) {
-        s060000013Data = res[0];  // 假設 s060000013 API 的回應在 res[0]
-    }
-
+function apiS100010008(uid, token, data) { //特約
+    let opt = getS100010008(uid, token, data);
+    return $.ajax(opt);
+}
+function getS100010008(uid, token, data) {
     return {
-        s060000013Data: s060000013Data, // 返回 s060000013 資料
+        url: ajaxhttpIPHost("/res/S100010008"),
+        type: "post",
+        contentType: "application/json",
+        data: JSON.stringify({
+            "uid": uid,
+            "token": token,
+            "data": data
+        })
     };
 }
