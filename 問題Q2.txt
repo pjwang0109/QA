@@ -1,54 +1,21 @@
-寫一個新的方法，當 linkHostTranCoToCase(obj) 點擊後，觸發事件打API S060000014，若 addTranReData(obj)點擊後，同樣觸發事件打API S060000014，怎寫?
+#yesNoAbnormal 是靠後端API 去判斷，符合就顯示 【 $('#yesNoAbnormal').removeClass('hide'); 】，而當 #yesNoAbnormal顯示時，使用者點選 agreeRadioY 時，就 console.log('111')，當 #yesNoAbnormal顯示時，使用者點選 agreeRadioN 時，就 console.log('222')，在branch.js要怎麼修改?
 
-function callApiS060000014(data, successCallback, errorCallback) {
-    $.ajax({
-        url: '/api/S060000014',
-        method: 'POST',
-        contentType: 'application/json',
-        data: JSON.stringify(data),
-        success: function (response) {
-            console.log("API 呼叫成功:", response);
-            if (typeof successCallback === 'function') {
-                successCallback(response);
-            }
-        },
-        error: function (error) {
-            console.error("API 呼叫失敗:", error);
-            if (typeof errorCallback === 'function') {
-                errorCallback(error);
-            }
-        }
-    });
-}
+branch.html:
 
+<div id="yesNoAbnormal" class="hide">
+    <div class="form-group form-inline">
+                    <span class="mr-4">是否同意撥貸:</span>
+                    <label for="agreeRadioY" class="mr-1">
+                      <input type="radio" name="agreeRadioYN" id="agreeRadioY" class="agreeRadioYN" value="1">是
+                    </label>
+                    <label for="agreeRadioN" class="mr-1">
+                      <input type="radio" name="agreeRadioYN" id="agreeRadioN" class="agreeRadioYN" value="0">否
+                    </label>
+                  </div>
+</div>
 
-function linkHostTranCoToCase(obj) {
-    const requestData = { action: 'linkHostTranCoToCase', details: $(obj).data() };
-    callApiS060000014(
-        requestData,
-        function (response) {
-            alert("連接成功！");
-            // 根據需求處理 response
-        },
-        function (error) {
-            alert("連接失敗，請稍後重試！");
-        }
-    );
-}
+branch.js:
 
-function addTranReData(obj) {
-    const requestData = { action: 'addTranReData', details: $(obj).data() };
-    callApiS060000014(
-        requestData,
-        function (response) {
-            alert("新增成功！");
-            // 根據需求處理 response
-        },
-        function (error) {
-            alert("新增失敗，請稍後重試！");
-        }
-    );
-}
-
-
-
+                    
+    
+ 
