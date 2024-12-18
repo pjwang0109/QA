@@ -1,12 +1,17 @@
-$(function () {
-    // 綁定事件給兩個 radio 按鈕
-    $("#checkRadioY, #checkRadioN").change(function () {
-        if ($("#checkRadioY").is(":checked")) {
-            // 當 checkRadioY 勾選時顯示 yesNoAbnormal
-            $("#yesNoAbnormal").show();
-        } else {
-            // 當 checkRadioN 勾選時隱藏 yesNoAbnormal
-            $("#yesNoAbnormal").hide();
-        }
+// 運算千分位符號，處理文字中數字的千分位
+function money_Thousands(input) {
+    if (!input) return input;
+
+    // 使用正則表達式匹配數字（含小數）
+    return input.replace(/(\d+)(\.\d+)?/g, function (match) {
+        // 將整數和小數部分分開處理
+        const [integer, decimal] = match.split(".");
+        const formattedInteger = integer.replace(/(\d)(?=(?:\d{3})+$)/g, '$1,');
+        return decimal ? `${formattedInteger}.${decimal}` : formattedInteger;
     });
-});
+}
+
+// 在輸入框失焦時處理千分位顯示
+function set_money_Thousands(obj) {
+    obj.value = money_Thousands(obj.value);
+}
