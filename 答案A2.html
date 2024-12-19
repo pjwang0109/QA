@@ -1,27 +1,28 @@
-async function checkAbnormalAndHandle() {
-    // 假設您有一個後端 API 返回是否需要顯示 #yesNoAbnormal
-    try {
-        const apiResponse = await apiS060000014(uid, token, cfid, jcic, host); // 替換為實際 API 請求
-        if (apiResponse.rc === "M0000" && apiResponse.result.abnormal === "1") {
-            // 顯示 #yesNoAbnormal
-            $('#yesNoAbnormal').removeClass('hide');
-            console.log("異常，顯示 #yesNoAbnormal");
-
-            // 監聽 agreeRadioYN 的點擊事件
-            $('input[name="agreeRadioYN"]').off('change').on('change', function () {
-                if ($(this).val() === "1") {
-                    console.log('111'); // agreeRadioY 被點擊
-                } else if ($(this).val() === "0") {
-                    console.log('222'); // agreeRadioN 被點擊
-                }
-            });
-        } else {
-            console.log("無異常，#yesNoAbnormal 不顯示");
-        }
-    } catch (error) {
-        console.error("API 請求失敗:", error);
+// 運算千分位符號，處理整數和小數點
+function formatNumberWithThousands(number) {
+    if (number.indexOf('.') !== -1) {
+        // 分割整數和小數部分
+        const splitArr = number.split(".");
+        const formattedInteger = splitArr[0].replace(/(\d)(?=(?:\d{3})+$)/g, '$1,');
+        return `${formattedInteger}.${splitArr[1]}`;
+    } else {
+        // 處理純整數
+        return number.replace(/(\d)(?=(?:\d{3})+$)/g, '$1,');
     }
 }
 
-// 調用該函數
-checkAbnormalAndHandle();
+// 處理輸入內容，將文字和數字分開處理
+function processTextAndNumbers(input) {
+    if (input === "") return input;
+
+    return input.replace(/(\d+(\.\d+)?)/g, function (match) {
+        return formatNumberWithThousands(match);
+    });
+}
+
+// 設置千分位符號
+function set_money_Thousands(obj) {
+    if (obj.value !== "") {
+        obj.value = processTextAndNumbers(obj.value);
+    }
+}
