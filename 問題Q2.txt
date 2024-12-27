@@ -1,12 +1,1 @@
-可以寫成這樣的程式嗎?
-function money_Thousands(money) {
-    if (money != "") {
-        return ...
-    } else {
-        return money;
-    }
-    //整數及小數點
-    function splitMoney(thousand) {
-       ...
-    }
-}
+
