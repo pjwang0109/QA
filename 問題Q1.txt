@@ -1,9 +1,1 @@
 
-我在html 有一個 searchdate_str，我想將js取到的searchDate_str值放入html的searchdate_str裡面，該如何修改js?
-
-html:
-<input type="date" class="form-control searchdate_str" name="searchdate_str" />
-
-js:
-let searchDate_str = new Date().toISOString().substring(0, 10).replace(/-/g, "/");
- $('.searchdate_str').text(searchDate_str)
