@@ -16,4 +16,4 @@ let dataTable = $('#resualtTable_' + sid).DataTable(opt);
             });
 
             dataTable.draw();
-我想要判斷，當 obj.flag == "ES"時，onclick="openEsgCaseWeb(this)" ，當 obj.flag == "TCFD"時，onclick="openEsgTCFDCaseWeb(this)" 
+我想要判斷，當 obj.flag == "ES"時，onclick="openEsgCaseWeb(this)" ，當 obj.flag == "TCFD"時，onclick="openEsgTCFDCaseWeb(this)" ，要怎麼修改?
