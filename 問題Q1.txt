@@ -1,1 +1,19 @@
 
+這是 js ，且利用 dataTable 產生的表格
+let dataTable = $('#resualtTable_' + sid).DataTable(opt);
+            $.each(list, function (item, obj) {
+                dataTable.row.add([
+                    obj,
+                    obj.createDate,//申請日期
+                    obj.flag,//類型
+                    `<a href="javascript: void(0)" onclick="openEsgCaseWeb(this)">${obj.caseno} </a>`,//案件編號，改成獨立視窗 openOpCenterWeb
+                    obj.business,//業務別
+                    //obj.branch,//分行別
+                    obj.id,//ID
+                    obj.idName,//企業名
+                ]
+                )
+            });
+
+            dataTable.draw();
+我想要判斷，當 obj.flag == "ES"時，onclick="openEsgCaseWeb(this)" ，當 obj.flag == "TCFD"時，onclick="openEsgTCFDCaseWeb(this)" 
