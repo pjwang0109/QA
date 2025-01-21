@@ -1,1 +1,7 @@
+這段程式是什麼意思?
 
+let i = 0;
+ $.each(endResult, function (item, result) {
+  dataTable.row(i).data()[0] = result;
+  i++;
+ });
