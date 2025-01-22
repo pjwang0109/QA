@@ -1,180 +1,34 @@
-  <!-- 待辦 -->
-  <div id="allShowTCFDCase" class="card hide">
-    <!-- TCFD頁面 -->
-    <div class="card-header justify-content-between form-group form-inline">
-      <h5 class="mb-0">
-        <a data-toggle="collapse" href="#TCFDCaseDiv">TCFD案件</a>
-      </h5>
-    </div>
-    <div id="TCFDCaseDiv" class="collapse show" role="tabpanel">
-      <div class="card-body">
+// 完成
+async function btnFinishTCFD(obj) {
+    loadingShow("資料處理中");
+    try {
+        // 取得 uid 和 token
+        let userObj = getUidToken();
+        let uid = userObj.uid;
+        let token = userObj.token;
 
-        <div class="form-group form-inline my-3">
-          <span class="questionStyleA">日期：</span>
-          <div class="input-group">
-            <input type="text" class="form-control getTime" readonly="">
-          </div>
-        </div>
+        // 組裝資料
+        let data = {};
+        let caseNo = $('.caseClimateId').val() || "";
+        data.caseno = caseNo;
+        data.uf_no = '';
 
-        <div class="form-group form-inline my-3">
-          <span class="questionStyleA">分行別：</span>
-          <div class="input-group ">
-            <input type="text" class="form-control branch" readonly="">
-          </div>
-        </div>
+        // 先打暫存 API
+        await btnStoreTCFD(obj);
 
-        <div class="form-group form-inline my-3">
-          <span class="questionStyleA">業務別：</span>
-          <div class="input-group">
-            <select class="form-control business">
-              <option value="">請選擇...</option>
-            </select>
-          </div>
-          <span class="text-danger mx-2"></span>
-
-        </div>
-
-        <div class="form-group form-inline my-3">
-          <span class="questionStyleA">ID：</span>
-          <div class="input-group">
-            <input type="text" class="form-control accBuildID" maxlength="8" placeholder="請輸入統一編號">
-            <select class="idcode form-control accID hide" style="flex:0.2 0.2 auto;" disabled="">
-              <option value="A">A</option>
-              <option value="B">B</option>
-              <option value="C">C</option>
-            </select>
-            <div class="input-group-btn mx-2">
-              <button type="button" class="btn btn-info btnNameDisabled" onclick="esgFindName()">帶入戶名</button>
-            </div>
-          </div>
-          <div class="input-group mx-2">
-            <i class="mt-1 fas"></i>
-            <span class="text-danger mx-2"></span>
-          </div>
-        </div>
-
-        <div class="form-group form-inline my-3">
-          <span class="questionStyleA">企業名稱：</span>
-          <div class="input-group ">
-            <input type="text" class="form-control accName" 
-            placeholder="新戶請自行輸入" style="width:300px;">
-          </div>
-        </div>
-
-        <div class="form-group form-inline my-3">
-          <button type="button" class="btn btn-primary confirmBtnTCFD"
-            onclick="esgBuildTCFD()">確認</button>
-        </div>
-
-        <!-- 氣候風險檢核表(TCFD) -->
-        <div id="allShowClimateDiv" class="card">
-          <!-- 氣候風險檢核表 -->
-          <div class="card-header justify-content-between form-group form-inline">
-            <h5 class="mb-0">
-              <a data-toggle="collapse" href="#showClimateDiv"> 氣候風險檢核表(TCFD) </a>
-            </h5>
-          </div>
-          <div id="showClimateDiv">
-            <div class="card-body">
-              <!-- 編號 -->
-              <div class="form-group form-inline my-3">
-                <span class="buildClimateNum">編號：</span>
-                <div class="input-group">
-                  <input type="text" class="form-control caseClimateId" style="width: 15rem;" disabled>
-                </div>
-              </div>
-              <!-- 上傳說明 -->
-              <div class="uploadCaptionDiv my-3">
-                <div class="form-group form-inline">
-                  <span class="uploadCaption">上傳說明：</span>
-                </div>
-                <div class="form-group form-inline">
-                  <textarea name="uploadDirection" class="form-control col-11 uploadDirection" rows="4"></textarea>
-                </div> 
-              </div>
-              <!-- 上傳檔案(氣候風險檢核表) -->
-              <div class="my-3 uploadfileSelectDiv">
-                <div class="my-3 uploadfileSelect">
-                  <div class="form-inline mt-2">
-                    <select class="btn-sm sendType">
-                      <option value="300">氣侯風險檢核表</option>
-                    </select>
-                    <span class="d-flex font-weight-bold">：</span>
-                    <label class="btn btn-info btn-sm my-0">
-                      <input type="file" class="hide" accept=".xls,.xlsm,.xlsx,.jpg,.pdf,.txt,.doc,.docx,.tif,.rtf" multiple
-                        onchange="chgFileStatus(this)" />
-                      <i class="fas fa-file-medical"></i>
-                      <span class="ml-1">選擇檔案</span>
-                    </label>
-                    <label class="btn btn-primary btn-sm ml-1 my-0">
-                      <input id="uploadfileMInput" type="button" class="hide" onclick="uploadFileTCFD(this)" />
-                      <i class="fas fa-file-upload"></i>
-                      <span class="ml-1">夾檔</span>
-                    </label>
-                    <label class="ml-1 mb-1 btn-outline-success fileStatus hide">
-                      <i class="mt-1 fas fa-check-circle"></i>
-                      <span class="fileName"></span>
-                    </label>
-                  </div>
-                </div>
-              </div>
-              <!-- 夾檔訊息 -->
-              <div class="my-3 uploadResultDiv">
-                <span class="questionStyleA">夾檔結果：</span>
-                <label class="uploadResultTrue ml-1 mb-1 text-success hide">
-                  <span>成功</span>
-                </label>
-                <label class="uploadResultFalse ml-1 mb-1 btn btn-outline-danger hide">
-                  <input id="uploadResult_Failed" name="fileCheckInfo" type="button" class="hide" onclick="uploadResultFailedTCFD(this)" />
-                  <span>失敗</span>
-                </label>
-                <span class="promptText ml-2 text-danger font-weight-bold hide">(點選『失敗』按鈕可查閱錯誤訊息)</span>
-              </div>
-              <!-- dataTable -->
-              <div class="py-1 uploadFileDiv">
-
-              </div>
-              <!--流程按鈕-->
-              <div id="sendBtnOPDiv" class="modal-footer process-footer btnOpDiv" style="z-index:2">
-                <button type="button" class="my-1 mx-1 btn btn-outline-danger"
-                  onclick="btnBackTCFD(this)">撤件</button>
-                  <button type="button" class="my-1 mx-1 btn btn-success"
-                  onclick="btnStoreTCFD(this)">暫存</button>
-                  <button type="button" class="my-1 mx-1 btn btn-primary"
-                  onclick="btnFinishTCFD(this)">完成</button>
-              </div>
-              <!-- 作業中心上傳進度條modal -->
-              <div class="modal" id="loadingOpView" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true"
-                data-backdrop="static" data-keyboard="false">
-                <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
-                  <div class="modal-content">
-                    <div class="modal-body">
-                      <div class="container mt-3">
-                        <table class="table table-bordered table-hover">
-                          <thead>
-                            <tr>
-                              <th width="30%" class="px-4">檔案名稱</th>
-                              <th width="70%" class="px-4">檔案大小 / 上傳進度</th>
-                            </tr>
-                          </thead>
-                          <tbody></tbody>
-                        </table>
-                        <div class="d-flex justify-content-end">
-                          <button type="button" class="btn btn-primary" onclick="closeThisModal(this)">
-                            關閉
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-            </div>
-          </div>
-
-        </div>
-
-      </div>
-    </div>
-  </div>
+        // 再打完成 API
+        let json = await apiS140020005(uid, token, data);
+        if (json.rc === "M0000") {
+            alert(json.msg);
+            $("section").text("");
+            $(".breadcrumb").text("");
+        } else {
+            apiErrorHandler(json);
+        }
+    } catch (error) {
+        console.error("處理失敗：", error);
+        alert("處理失敗，請稍後重試！");
+    } finally {
+        loadingHide();
+    }
+}
