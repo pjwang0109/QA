@@ -1,107 +1,82 @@
-<!-- 建立-氣候風險檢核表(TCFD) -->
-  <div id="allEsgClimateDiv" class="card">
-    <!-- 氣候風險檢核表 -->
-    <div class="card-header justify-content-between form-group form-inline">
-      <h5 class="mb-0">
-        <a data-toggle="collapse" href="#esgClimateDiv"> 氣候風險檢核表(TCFD) </a>
-      </h5>
-    </div>
-    <div id="esgClimateDiv">
-      <div class="card-body">
-        <!-- 編號 -->
-        <div class="form-group form-inline my-3">
-          <span class="buildClimateNum">編號：</span>
-          <div class="input-group">
-            <input type="text" class="form-control caseClimateId" style="width: 15rem;" disabled>
-          </div>
-        </div>
-        <!-- 上傳說明 -->
-        <div class="uploadCaptionDiv my-3">
-          <div class="form-group form-inline">
-            <span class="uploadCaption">上傳說明：</span>
-          </div>
-          <div class="form-group form-inline">
-            <textarea name="uploadDirection" class="form-control col-11 uploadDirection" rows="4"></textarea>
-          </div> 
-        </div>
-        <!-- 上傳檔案(氣候風險檢核表) -->
-        <div class="my-3 uploadfileSelectDiv">
-          <div class="my-3 uploadfileSelect">
-            <div class="form-inline mt-2">
-              <select class="btn-sm sendType">
-                <option value="300">氣侯風險檢核表</option>
-              </select>
-              <span class="d-flex font-weight-bold">：</span>
-              <label class="btn btn-info btn-sm my-0">
-                <input type="file" class="hide" accept=".xls,.xlsm,.xlsx,.jpg,.pdf,.txt,.doc,.docx,.tif,.rtf" multiple
-                  onchange="chgFileStatus(this)" />
-                <i class="fas fa-file-medical"></i>
-                <span class="ml-1">選擇檔案</span>
-              </label>
-              <label class="btn btn-primary btn-sm ml-1 my-0">
-                <input id="uploadfileMInput" type="button" class="hide" onclick="uploadFileTCFD(this)" />
-                <i class="fas fa-file-upload"></i>
-                <span class="ml-1">夾檔</span>
-              </label>
-              <label class="ml-1 mb-1 btn-outline-success fileStatus hide">
-                <i class="mt-1 fas fa-check-circle"></i>
-                <span class="fileName"></span>
-              </label>
-            </div>
-          </div>
-        </div>
-        <!-- 夾檔訊息 -->
-        <div class="my-3 uploadResultDiv">
-          <span class="questionStyleA">夾檔結果：</span>
-          <label class="uploadResultTrue ml-1 mb-1 text-success hide">
-            <span>成功</span>
-          </label>
-          <label class="uploadResultFalse ml-1 mb-1 btn btn-outline-danger hide">
-            <input id="uploadResult_Failed" name="fileCheckInfo" type="button" class="hide" onclick="uploadResultFailedTCFD(this)" />
-            <span>失敗</span>
-          </label>
-          <span class="promptText ml-2 text-danger font-weight-bold hide">(點選『失敗』按鈕可查閱錯誤訊息)</span>
-        </div>
-        <!-- dataTable -->
-        <div class="py-1 uploadFileDiv">
+// 資料包裝並上傳
+let chan = new $.Deferred().resolve();
+let allFileJson = []; // 用來收集所有 filejson 資料
 
-        </div>
-        <!--流程按鈕-->
-        <div id="sendBtnOPDiv" class="modal-footer process-footer btnOpDiv" style="z-index:2">
-          <button type="button" class="my-1 mx-1 btn btn-outline-danger"
-            onclick="btnBackTCFD(this)">撤件</button>
-            <button type="button" class="my-1 mx-1 btn btn-success"
-            onclick="btnStoreTCFD(this)">暫存</button>
-            <button type="button" class="my-1 mx-1 btn btn-primary"
-            onclick="btnFinishTCFD(this)">完成</button>
-        </div>
-        <!-- 作業中心上傳進度條modal -->
-        <div class="modal" id="loadingOpView" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true"
-          data-backdrop="static" data-keyboard="false">
-          <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
-            <div class="modal-content">
-              <div class="modal-body">
-                <div class="container mt-3">
-                  <table class="table table-bordered table-hover">
-                    <thead>
-                      <tr>
-                        <th width="30%" class="px-4">檔案名稱</th>
-                        <th width="70%" class="px-4">檔案大小 / 上傳進度</th>
-                      </tr>
-                    </thead>
-                    <tbody></tbody>
-                  </table>
-                  <div class="d-flex justify-content-end">
-                    <button type="button" class="btn btn-primary" onclick="closeThisModal(this)">
-                      關閉
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+for (let i = 0; i < fileLength; i++) {
+    let fileData = new FormData();
+    fileData.append("token", token);
+    fileData.append("uid", uid);
+    fileData.append("caseno", caseno);
+    fileData.append("filetype", filetype);
+    fileData.append("uploadfile", files[i]);
 
-      </div>
-    </div>
-  </div>
+    let s140020009 = getS140020009(fileData, i, "loadingOpView");
+
+    chan = chan.pipe(function () {
+        return $.ajax(s140020009).pipe(
+            // 成功處理
+            function (filejson) {
+                console.log(`Response from request ${i}:`, filejson);
+
+                // 如果 filejson 是字串，嘗試解析
+                if (typeof filejson === "string") {
+                    try {
+                        filejson = JSON.parse(filejson);
+                    } catch (e) {
+                        console.error("JSON 解析錯誤：", e);
+                        return $.Deferred().resolve();
+                    }
+                }
+
+                // 儲存 filejson
+                allFileJson.push(filejson);
+
+                // 更新畫面
+                if (filejson.rc != "M0401") {
+                    let $modal = $("#loadingOpView").find('tbody tr:nth(' + i + ')');
+                    let $bar = $modal.find('.progress-bar');
+                    let $percent = $modal.find('.percentVal');
+                    let $msg = $modal.find('.msg');
+                    $bar.width("0%");
+                    $percent.html("0%");
+                    $msg.addClass("text-danger").html("錯誤訊息：" + filejson.msg);
+                } else {
+                    let $modal = $("#loadingOpView").find('tbody tr:nth(' + i + ')');
+                    let $msg = $modal.find('.msg');
+                    $msg.addClass("text-success").html("夾檔成功");
+                }
+
+                return $.Deferred().resolve();
+            },
+            // 錯誤處理
+            function (jqXHR, textStatus, errorThrown) {
+                console.error(`Error in request ${i}:`, errorThrown);
+                let $modal = $("#loadingOpView").find('tbody tr:nth(' + i + ')');
+                let $bar = $modal.find('.progress-bar');
+                let $percent = $modal.find('.percentVal');
+                let $msg = $modal.find('.msg');
+                $bar.width("0%");
+                $percent.html("0%");
+                $msg.addClass("text-danger").html("伺服器發生錯誤，上傳失敗：" + errorThrown);
+                return $.Deferred().resolve();
+            }
+        );
+    });
+}
+
+chan.pipe(function () {
+    // 在這裡打印收集到的所有 filejson 資料
+    console.log("所有的 filejson 資料：", allFileJson);
+
+    // 清空輸入欄位並執行後續邏輯
+    $file.val("").change();
+    apiOpS000040010(uid, token, caseno, "").done(function (jsondata) {
+        $('#msg_token').text(jsondata.token);
+        if (jsondata.rc == "M0000") {
+            console.log("更新清單完成", jsondata.result);
+        } else {
+            apiErrorHandler(jsondata);
+        }
+    });
+    $modal.find("button").prop("disabled", false);
+});
