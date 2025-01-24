@@ -1,1 +1,55 @@
+這段會有顯示錯誤 VM2710:1 Uncaught SyntaxError: "[object Object]" is not valid JSON
+好像是 filejson = JSON.parse(filejson); 有誤，我該怎麼修改?
+    //資料包裝並上傳
+    let chan = new $.Deferred().resolve();
+    for (let i = 0; i < fileLength; i++) {
+        let fileData = new FormData();
+        fileData.append("token", token);
+        fileData.append("uid", uid);
+        // fileData.append("cfid", "");
+        fileData.append("caseno", caseno);
+        fileData.append("filetype", filetype);
+        fileData.append('uploadfile', files[i]);
+        // let s000040001 = getS000040001(fileData, i, "loadingOpView");
+        let s140020009 = getS140020009(fileData, i, "loadingOpView");
 
+        chan = chan.pipe(function () {
+            // return $.ajax(s000040001).pipe(
+            return $.ajax(s140020009).pipe(
+                //doneFilter, 形同ajax success事件，但要傳回Promise物件
+                function (filejson) {
+                    filejson = JSON.parse(filejson);
+                    // console.log('filejson2:', filejson, typeof filejson);
+                    $('#msg_token').text(filejson.token);
+                    // 傳回reject的Deferred物件可中斷pipe()執行
+                    if (filejson.rc != "M0401") {
+                        let $modal = $("#loadingOpView").find('tbody tr:nth(' + i + ')');
+                        let $bar = $modal.find('.progress-bar');
+                        let $percent = $modal.find('.percentVal');
+                        let $msg = $modal.find('.msg');
+                        let percentVal = '0%';
+                        $bar.width(percentVal);
+                        $percent.html(percentVal);
+                        $msg.addClass('text-danger').html('錯誤訊息：' + filejson.msg);
+                        return $.Deferred().resolve();
+                    }
+                    let $modal = $("#loadingOpView").find('tbody tr:nth(' + i + ')');
+                    let $msg = $modal.find('.msg');
+                    $msg.addClass('text-success').html('夾檔成功');
+                    // //傳回resolve的Deferred物件繼續pipe()
+                    return $.Deferred().resolve();
+                }
+                //server error, 形同ajax error事件，但要傳回Promise物件
+                , function (jqXHR, textStatus, errorThrown) {
+                    let $modal = $("#loadingOpView").find('tbody tr:nth(' + i + ')');
+                    let $bar = $modal.find('.progress-bar');
+                    let $percent = $modal.find('.percentVal');
+                    let $msg = $modal.find('.msg');
+                    let percentVal = '0%';
+                    $bar.width(percentVal);
+                    $percent.html(percentVal);
+                    $msg.addClass('text-danger').html('伺服器發生錯誤，上傳失敗' + errorThrown);
+                    return $.Deferred().resolve();
+                });
+        }); 
+    }
