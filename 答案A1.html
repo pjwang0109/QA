@@ -1,82 +1,30 @@
-// 資料包裝並上傳
-let chan = new $.Deferred().resolve();
-let allFileJson = []; // 用來收集所有 filejson 資料
+是的，邊寫專案邊學 Vue 會讓你更快上手！
 
-for (let i = 0; i < fileLength; i++) {
-    let fileData = new FormData();
-    fileData.append("token", token);
-    fileData.append("uid", uid);
-    fileData.append("caseno", caseno);
-    fileData.append("filetype", filetype);
-    fileData.append("uploadfile", files[i]);
+為什麼專案導向學習更有效？
 
-    let s140020009 = getS140020009(fileData, i, "loadingOpView");
+✅ 實際應用：學習 Vue 語法的同時，透過專案解決問題，比單純看教學影片更容易記住。
+✅ 動手操作：Vue 有許多概念（如 組件、響應式、Vue Router、Pinia），透過實作可以加深理解。
+✅ 遇到問題才有成長：實際開發時會遇到錯誤，這時候查文件、Google 解決方案，能提升你的查找與除錯能力。
 
-    chan = chan.pipe(function () {
-        return $.ajax(s140020009).pipe(
-            // 成功處理
-            function (filejson) {
-                console.log(`Response from request ${i}:`, filejson);
+🔥 建議的學習方式（專案導向學習）
 
-                // 如果 filejson 是字串，嘗試解析
-                if (typeof filejson === "string") {
-                    try {
-                        filejson = JSON.parse(filejson);
-                    } catch (e) {
-                        console.error("JSON 解析錯誤：", e);
-                        return $.Deferred().resolve();
-                    }
-                }
+	1.	第一週（8 小時） – Vue 基礎
+	•	了解 Vue 基本語法（模板語法、事件處理、v-if、v-for、computed、watch）
+	•	做一個簡單的 To-Do List（練習響應式資料、事件處理）
+	2.	第二週（8 小時） – Vue Router + API 串接
+	•	了解 Vue Router（單頁應用、動態路由）
+	•	做一個 Blog 或 商品列表（API 串接、Vue Router 切換頁面）
+	3.	第三週（8 小時） – 組件拆分 + Pinia（狀態管理）
+	•	學習 Vue 組件化（Props、Emit、插槽）
+	•	了解 Pinia，管理全域狀態
+	•	做一個待辦事項或購物車系統
+	4.	第四週（8 小時） – 完整專案 + 部署
+	•	串接 API、優化 UI/UX
+	•	做一個小型後台系統（如管理系統，包含登入、表單、驗證）
+	•	部署到 GitHub Pages / Vercel / Firebase
 
-                // 儲存 filejson
-                allFileJson.push(filejson);
+⏳ 這樣學習，2-3 個月內就能獨立開發 Vue 專案！
 
-                // 更新畫面
-                if (filejson.rc != "M0401") {
-                    let $modal = $("#loadingOpView").find('tbody tr:nth(' + i + ')');
-                    let $bar = $modal.find('.progress-bar');
-                    let $percent = $modal.find('.percentVal');
-                    let $msg = $modal.find('.msg');
-                    $bar.width("0%");
-                    $percent.html("0%");
-                    $msg.addClass("text-danger").html("錯誤訊息：" + filejson.msg);
-                } else {
-                    let $modal = $("#loadingOpView").find('tbody tr:nth(' + i + ')');
-                    let $msg = $modal.find('.msg');
-                    $msg.addClass("text-success").html("夾檔成功");
-                }
+與其 純看影片 + 笔记，邊學邊做專案 會更快讓你進入實戰模式，也比較符合面試需求。
 
-                return $.Deferred().resolve();
-            },
-            // 錯誤處理
-            function (jqXHR, textStatus, errorThrown) {
-                console.error(`Error in request ${i}:`, errorThrown);
-                let $modal = $("#loadingOpView").find('tbody tr:nth(' + i + ')');
-                let $bar = $modal.find('.progress-bar');
-                let $percent = $modal.find('.percentVal');
-                let $msg = $modal.find('.msg');
-                $bar.width("0%");
-                $percent.html("0%");
-                $msg.addClass("text-danger").html("伺服器發生錯誤，上傳失敗：" + errorThrown);
-                return $.Deferred().resolve();
-            }
-        );
-    });
-}
-
-chan.pipe(function () {
-    // 在這裡打印收集到的所有 filejson 資料
-    console.log("所有的 filejson 資料：", allFileJson);
-
-    // 清空輸入欄位並執行後續邏輯
-    $file.val("").change();
-    apiOpS000040010(uid, token, caseno, "").done(function (jsondata) {
-        $('#msg_token').text(jsondata.token);
-        if (jsondata.rc == "M0000") {
-            console.log("更新清單完成", jsondata.result);
-        } else {
-            apiErrorHandler(jsondata);
-        }
-    });
-    $modal.find("button").prop("disabled", false);
-});
+你有沒有想做的 Vue 專案？可以從小型專案開始，我可以幫你規劃學習方向！
