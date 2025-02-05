@@ -1,13 +1,1 @@
-那要如何將 allFileJson.result.fileCheckFlag 放到 tr裡面
 
-let tr = '<tr>' +
-                        '<td>uf_no</td>'.replace('uf_no', result.uf_no) +
-                        '<td title="tDemo">file_type</td>'.replace('file_type', result.file_type).replace('tDemo', result.uf_no) +
-                        '<td>filename_ori</td>'.replace('filename_ori', result.filename_ori) +
-                        '<td>uf_uid</td>'.replace('uf_uid', result.uf_uid) +
-                        '<td>uf_date</td>'.replace('uf_date', result.uf_date) +
-                        '<td>' +
-                        '<label class="cursor"><input type="button" class="hide" onclick="viewFile(this)"><i class="fas fa-file px-2"></i></label>' +
-                        '<label class="uploadLabel"><input type="hidden" class="uploadText" value="file_type" isflag="fileCheckFlag"></label>'.replace('file_type', result.file_type).replace('fileCheckFlag', result.fileCheckFlag) +
-                        // `<label>${allFileJson.result.fileCheckFlag}</label>`+
-                        '</td></tr>';
