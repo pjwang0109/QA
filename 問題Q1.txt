@@ -1,150 +1,40 @@
-我想要在這裡看這段資料(s140020009)，要怎麼讓這段印出來 console.log('zzzz:', filejson);
+js:
 
+//企金、票金-判斷行業別4碼是否為高碳排行業
+        async function jobL4Blur(target){
+            console.log('business@@@:', business);
+            if(jsondata1.result.showTcfd == "1"){ //會顯示
+                //企金、票金
+                if(business === "40" || business === "41"){
+                    let num = $(target).val();
+                    //高碳排行業
+                    let conformNumTCFD = ['0500', '1111', '1112', '1113', '1119', '1121', '1122', '1123', '1124', '1129', '1130', '1140',
+                        '1151', '1152', '1159', '1511', '1512', '1513', '1520', '1591', '1599', '1700', '1810', '1830', '1841', 
+                        '1842', '1850', '1910', '1920', '1930', '1931', '1932', '1990', '2101', '2102', '2109', '2201', '2202', 
+                        '2203', '2209', '2311', '2312', '2313', '2319', '2321', '2322', '2329', '2331', '2332', '2333', '2340', 
+                        '2391', '2399', '2411', '2412', '2413', '2414', '2421', '2422', '2423', '2431', '2432', '2433', '2491', 
+                        '2499', '2611', '2612', '2613', '2620', '2630', '2641', '2642', '2643', '2649', '2691', '2699', '2711', 
+                        '2712', '2719', '2721', '2729', '2730', '2740', '2751', '2752', '2760', '2771', '2779', '2810', '2820',
+                        '2831', '2832', '2841', '2842', '2851', '2859', '2890', '3510', '3520', '3530', '1820', '1940', '2323', 
+                        '2392', '2393', '2852', '2853', '2854'];
 
-//資料包裝並上傳
-    let chan = new $.Deferred().resolve();
-    for (let i = 0; i < fileLength; i++) {
-        let fileData = new FormData();
-        fileData.append("token", token);
-        fileData.append("uid", uid);
-        // fileData.append("cfid", "");
-        fileData.append("caseno", caseno);
-        fileData.append("filetype", filetype);
-        fileData.append('uploadfile', files[i]);
-        // let s000040001 = getS000040001(fileData, i, "loadingOpView");
-        let s140020009 = getS140020009(fileData, i, "loadingOpView");
-
-        chan = chan.pipe(function () {
-            // return $.ajax(s000040001).pipe(
-            return $.ajax(s140020009).pipe(
-                //doneFilter, 形同ajax success事件，但要傳回Promise物件
-                function (filejson) {
-                    $('#msg_token').text(filejson.token);
-                    // 傳回reject的Deferred物件可中斷pipe()執行
-                    if (filejson.rc != "M0401") {
-                        let $modal = $("#loadingOpView").find('tbody tr:nth(' + i + ')');
-                        let $bar = $modal.find('.progress-bar');
-                        let $percent = $modal.find('.percentVal');
-                        let $msg = $modal.find('.msg');
-                        let percentVal = '0%';
-                        $bar.width(percentVal);
-                        $percent.html(percentVal);
-                        $msg.addClass('text-danger').html('錯誤訊息：' + filejson.msg);
-                        return $.Deferred().resolve();
+                    // let jobNum = jsondata6.result.ptype.slice(2);
+                    if(conformNumTCFD.includes(num)){
+                        $('#demo_climateRisk').removeClass('hide');
+                    }else{
+                        $('#demo_climateRisk').addClass('hide');
                     }
-                    let $modal = $("#loadingOpView").find('tbody tr:nth(' + i + ')');
-                    let $msg = $modal.find('.msg');
-                    $msg.addClass('text-success').html('夾檔成功');
-                    // //傳回resolve的Deferred物件繼續pipe()
-                    return $.Deferred().resolve();
+                }else if(business === "30" || business === "20" || business === "21"){  //理貸、車貸
+                    $htmlF2.find('#demo_climateRisk').removeClass('hide');
                 }
-                //server error, 形同ajax error事件，但要傳回Promise物件
-                , function (jqXHR, textStatus, errorThrown) {
-                    let $modal = $("#loadingOpView").find('tbody tr:nth(' + i + ')');
-                    let $bar = $modal.find('.progress-bar');
-                    let $percent = $modal.find('.percentVal');
-                    let $msg = $modal.find('.msg');
-                    let percentVal = '0%';
-                    $bar.width(percentVal);
-                    $percent.html(percentVal);
-                    $msg.addClass('text-danger').html('伺服器發生錯誤，上傳失敗' + errorThrown);
-                    return $.Deferred().resolve();
-                });
-        }); 
-    }
-    
-    chan.pipe(function () {
-        console.log('zzzz:', filejson);
-        //清單更新
-        $file.val('').change();//清空input欄位資料
-        apiOpS000040010(uid, token, caseno, "").done(function (jsondata) {
-            $('#msg_token').text(jsondata.token);
-            if (jsondata.rc == "M0000") {
-                let $tableDiv = $('.uploadfileDiv');
-                const $options = $('.uploadfileSelectDiv .uploadfileSelect').find('select option');
-                let selList = $options.map(function (item, option) {
-                    return $(option).text().trim();
-                }).get();
-
-                let endResult = jsondata.result.filter(function (item, index, array) {
-                    return selList.indexOf(item.file_type.trim()) > -1;
-                });
-
-                const table = '<table class="uploadfileTable table table-bordered table-hover text-center" style="table-layout:fixed;"></table>';
-                const thead = '<thead>' +
-                    '<th>筆數</th>' +
-                    '<th>選項</th>' +
-                    '<th>檔案</th>' +
-                    '<th>夾檔人員</th>' +
-                    '<th>夾檔時間</th>' +
-                    '<th>案件操作</th></thead>';
-                const tbody = '<tbody></tbody>';
-                $tableDiv.empty().append(table);
-                $tableDiv.find('table').append(thead).append(tbody);
-                $.each(endResult, function (item, result) {
-                    let tr = '<tr>' +
-                        '<td>uf_no</td>'.replace('uf_no', result.uf_no) +
-                        '<td title="tDemo">file_type</td>'.replace('file_type', result.file_type).replace('tDemo', result.uf_no) +
-                        '<td>filename_ori</td>'.replace('filename_ori', result.filename_ori) +
-                        '<td>uf_uid</td>'.replace('uf_uid', result.uf_uid) +
-                        '<td>uf_date</td>'.replace('uf_date', result.uf_date) +
-                        '<td>' +
-                        '<label class="cursor"><input type="button" class="hide" onclick="viewFile(this)"><i class="fas fa-file px-2"></i></label>' +
-                        '<label class="uploadLabel"><input type="hidden" class="uploadText" value="file_type" isflag="fileCheckFlag"></label>'.replace('file_type', result.file_type).replace('fileCheckFlag', result.fileCheckFlag) +
-                        '</td></tr>';
-                    $tableDiv.find('tbody').append(tr);
-                });
-
-                let opt = {
-                    "searching": false,//取消搜尋欄位
-                    "bAutoWidth": true, //自適應寬度
-                    "bRetrieve": true,
-                    "bStateSave": false,
-                    "scrollCollapse": true,
-                    "autowidth": false,
-                    "language": {
-                        search: "搜尋表格:",
-                        info: "顯示第 _START_ 至 _END_ 筆結果，共 _TOTAL_ 筆",
-                        infoFiltered: "",
-                        infoEmpty: "無相關資料",
-                        zeroRecords: "沒有符合的資料",
-                        lengthMenu: "顯示 _MENU_ 筆",
-                        paginate: {
-                            "first": "第一頁",
-                            "previous": "上一頁",
-                            "next": "下一頁",
-                            "last": "最後一頁"
-                        },
-                    },
-                    "columnDefs": [
-                        { "targets": 0, "width": "8.5%", "visible": false, "orderable": false },
-                        { "targets": 1, "width": "8.5%" },
-                        { "targets": 2, "width": "8.5%" },
-                        { "targets": 3, "width": "8.5%" },
-                        { "targets": 4, "width": "12%" },
-                        { "targets": 5, "width": "8%", "orderable": false },
-                    ],
-                    "order": [1, 'asc']
-                };
-
-                //更新table
-                let dataTable = $('.uploadfileTable').DataTable(opt);
-                $('.uploadfileTable').css('border', '1px solid #dee2e6').css('width', '');
-                $('.uploadfileTable').find('thead th').addClass('align-middle');
-                $('.uploadfileTable thead th').addClass('tableSort-top');
-                $('.uploadfileTable').closest('.container-fluid').addClass('px-0');
-                $(obj).closest('.card-body').find(".col-sm-12").addClass('my-1');
-                $(obj).closest('.card-body').find(".dataTables_info").addClass('pt-2');
-
-                let i = 0;
-                $.each(endResult, function (item, result) { 
-                    dataTable.row(i).data()[0] = result;
-                    i++;
-                });
-                uploadTextTCFDHandler()
-            } else {
-                apiErrorHandler(jsondata);
+            }else if(jsondata1.result.showTcfd == "0"){ //不顯示
+                $htmlF2.find('#demo_climateRisk').addClass('hide');
             }
-        });
-        $modal.find('button').prop('disabled', false);
-    });
+        }
+
+
+html:
+
+<input type="text" class="form-control form-digit-4 jobl4 BizNum4 BIZ2_4" maxlength="4" size="4" onchange="jobL4ChangeHandler(this)" onblur="jobL4Blur(this)"/>
+
+為何有誤?
