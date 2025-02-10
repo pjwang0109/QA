@@ -37,4 +37,5 @@ html:
 
 <input type="text" class="form-control form-digit-4 jobl4 BizNum4 BIZ2_4" maxlength="4" size="4" onchange="jobL4ChangeHandler(this)" onblur="jobL4Blur(this)"/>
 
-為何有誤?
+為何有這個錯誤 index.html?1739174943791:1 Uncaught ReferenceError: jobL4Blur is not defined
+    at HTMLInputElement.onblur ?
