@@ -1,17 +1,11 @@
-let columnDefs = [
-            { title: "完成日期", data: "completionDate" },
-            {
-                title: "動作", data: "caseNo", render: (data, type, row) => {
-                    return `<button class="btn btn-sm btn-primary" id="linkHostTranCo" onclick="linkToCaseTCFD(this)">連結此案</button>`
-                }
-            },
-            { title: "分行", data: "cbranch", width: "10%"},
-            { title: "建立者", data: "cuser"},
-            {
-                title: "預覽", data: "caseno", render: (data, type, row) => {
-                    return `<a href="javascript:void(0)" onclick="openWindowTCFD(this)">${data}</a>`
-                }
-            }
-        ];
+有一顆按鈕為:
+<button href="javascript:void(0)" class="btn btn-success climate-view-btn view-func-btn mr-1"
+              onclick="openWindowTCFD(this)">
+              預覽</button>
 
-我想做一個隱藏的資料，而且必定會有資料 data: 'business'  該如何做?
+我想讓這顆按鈕，可以打開某個網頁，如 text.html 那要怎麼用?:
+function openWindowTCFD(obj) { 
+
+setTimeout(() => {
+        }
+}
