@@ -1,41 +1,38 @@
-js:
+他這裡(openTestWindow)是怎樣做的，為什麼openWindowTCFD會有錯?
 
-//企金、票金-判斷行業別4碼是否為高碳排行業
-        async function jobL4Blur(target){
-            console.log('business@@@:', business);
-            if(jsondata1.result.showTcfd == "1"){ //會顯示
-                //企金、票金
-                if(business === "40" || business === "41"){
-                    let num = $(target).val();
-                    //高碳排行業
-                    let conformNumTCFD = ['0500', '1111', '1112', '1113', '1119', '1121', '1122', '1123', '1124', '1129', '1130', '1140',
-                        '1151', '1152', '1159', '1511', '1512', '1513', '1520', '1591', '1599', '1700', '1810', '1830', '1841', 
-                        '1842', '1850', '1910', '1920', '1930', '1931', '1932', '1990', '2101', '2102', '2109', '2201', '2202', 
-                        '2203', '2209', '2311', '2312', '2313', '2319', '2321', '2322', '2329', '2331', '2332', '2333', '2340', 
-                        '2391', '2399', '2411', '2412', '2413', '2414', '2421', '2422', '2423', '2431', '2432', '2433', '2491', 
-                        '2499', '2611', '2612', '2613', '2620', '2630', '2641', '2642', '2643', '2649', '2691', '2699', '2711', 
-                        '2712', '2719', '2721', '2729', '2730', '2740', '2751', '2752', '2760', '2771', '2779', '2810', '2820',
-                        '2831', '2832', '2841', '2842', '2851', '2859', '2890', '3510', '3520', '3530', '1820', '1940', '2323', 
-                        '2392', '2393', '2852', '2853', '2854'];
+function openTestWindow(obj) {
+    $(obj).prop("disabled", true);
+    //超連結鎖定
+    $(obj).closest("table").find("a").css({
+        "pointer-events": "none",
+        "color": "grey",
+    });
+    let caseData = {};
+    let accLink = $(obj).closest(`.accLinkDiv`).find(`.accLink`).val() || "";
+    let hostNo = $(obj).closest(`.transWorkCoInfoDiv`).find(`.workco`).val() || "";
 
-                    // let jobNum = jsondata6.result.ptype.slice(2);
-                    if(conformNumTCFD.includes(num)){
-                        $('#demo_climateRisk').removeClass('hide');
-                    }else{
-                        $('#demo_climateRisk').addClass('hide');
-                    }
-                }else if(business === "30" || business === "20" || business === "21"){  //理貸、車貸
-                    $htmlF2.find('#demo_climateRisk').removeClass('hide');
-                }
-            }else if(jsondata1.result.showTcfd == "0"){ //不顯示
-                $htmlF2.find('#demo_climateRisk').addClass('hide');
-            }
-        }
+    if (caseData["caseNo"] = accLink || hostNo) {
+        caseData["caseNo"] = accLink || hostNo;
+    } else {
+        const table = $(obj).closest("table").DataTable();
+        const tr = $(obj).closest('tr');
+        caseData = table.row(tr).data();
+    }
+    const userObj = getUidToken();
+    const sendData = {
+        caseData: caseData,
+        userObj: userObj
+    };
 
+    sessionStorage.setItem("openHostData", JSON.stringify(sendData));
 
-html:
-
-<input type="text" class="form-control form-digit-4 jobl4 BizNum4 BIZ2_4" maxlength="4" size="4" onchange="jobL4ChangeHandler(this)" onblur="jobL4Blur(this)"/>
-
-為何有這個錯誤 index.html?1739174943791:1 Uncaught ReferenceError: jobL4Blur is not defined
-    at HTMLInputElement.onblur ?
+    setTimeout(() => {
+        window.open("bankQuery/page/oldCase.html", undefined, "menubar=no");
+        $(obj).prop("disabled", false);
+        //超連結解除
+        $(obj).closest("table").find("a").css({
+            "pointer-events": "auto",
+            "color": "#007bff",
+        });
+    }, 500)
+}
