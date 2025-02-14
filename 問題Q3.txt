@@ -1,13 +1,15 @@
-Failed to load resource: the server responded with a status of 404 ()
+我不想要這行 "../../esg/esg_search_ClimateCheckList.html"，我只要 openEsgTCFDSearchCaseWeb(obj); 來打開此網頁，該怎麼修改?
 
-有一顆按鈕為:
-<button href="javascript:void(0)" class="btn btn-success climate-view-btn view-func-btn mr-1"
-              onclick="openWindowTCFD(this)">
-              預覽</button>
-
-我想讓這顆按鈕，可以打開某個網頁，如 text.html 那要怎麼用?:
-function openWindowTCFD(obj) { 
-
-setTimeout(() => {
-        }
-}
+$("section>.container-fluid").load(
+            "../../esg/esg_search_ClimateCheckList.html",
+            function () {
+              $("#msg_uid").text(userObj.uid);
+              $("#msg_token").text(userObj.token);
+              $("#msg_branch").text(userObj.branch);
+              openEsgTCFDSearchCaseWeb(obj);
+              // fillBankQuery(data.caseData.caseNo, data.caseData.cid);
+              $("#searchANS,#searchTable").remove();
+              $("#addRel-btn").closest(".form-inline").remove();
+              // clearFunctionBtn();
+            }
+          );
