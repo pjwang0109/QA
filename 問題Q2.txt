@@ -1,7 +1,6 @@
 這段程式有什麼問題嗎?
 
 $("section>.container-fluid").load(
-          //   "../../esg/esg_build_ClimateCheckList.html",
              function () {
               $("#msg_uid").text(userObj.uid);
               $("#msg_token").text(userObj.token);
