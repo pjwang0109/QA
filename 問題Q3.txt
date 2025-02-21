@@ -1,15 +1,1 @@
-我不想要這行 "../../esg/esg_search_ClimateCheckList.html"，我只要 openEsgTCFDSearchCaseWeb(obj); 來打開此網頁，該怎麼修改?
 
-$("section>.container-fluid").load(
-            "../../esg/esg_search_ClimateCheckList.html",
-            function () {
-              $("#msg_uid").text(userObj.uid);
-              $("#msg_token").text(userObj.token);
-              $("#msg_branch").text(userObj.branch);
-              openEsgTCFDSearchCaseWeb(obj);
-              // fillBankQuery(data.caseData.caseNo, data.caseData.cid);
-              $("#searchANS,#searchTable").remove();
-              $("#addRel-btn").closest(".form-inline").remove();
-              // clearFunctionBtn();
-            }
-          );
