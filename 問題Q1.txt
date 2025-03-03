@@ -1,1 +1,38 @@
 
+程式碼哪裡有誤?
+html:
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>todo</title>
+    <script src="./20250303-todo.js"></script>
+    <style>
+        #infoBtn{
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+    <button id="infoBtn">點我查看資訊</button>
+    <div id="root"></div>
+</body>
+</html>
+
+js:
+const infoBtn = document.querySelector('#infoBtn');
+
+infoBtn.addEventListener('click', ()=>{
+    console.log('hihi');
+    const root = document.querySelector('#root');
+
+    const h2 = document.createElement('h2');
+    h2.textContent = '大標題';
+
+    const p = document.createElement('p');
+    p.textContent = 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ducimus minus architecto repellendus officia provident veritatis?';
+
+    root.appendChild(h2)
+    root.appendChild(p)
+})
