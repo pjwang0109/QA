@@ -60,8 +60,9 @@ document.addEventListener('DOMContentLoaded', ()=>{
         loadTodos();
     }
 
+    // 儲存-localStage
     function saveTodo(todoText) {
-        let todos = JSON.parse(localStorage.getItem('todos')) || [];
+        let todos = JSON.parse(localStorage.getItem('todos')) || [];  //資料: ['1', '2', '3']
         todos.push(todoText);
         localStorage.setItem('todos', JSON.stringify(todos));
     }
@@ -85,7 +86,9 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
             // 刪除事件
             todoDel.addEventListener('click', () => {
-                deleteTodo(index);
+                if(confirm('確定要刪除嗎?')){
+                    deleteTodo(index);
+                }
             });
 
             // 建立 todo 結構
@@ -97,7 +100,9 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
     function deleteTodo(index) {
         let todos = JSON.parse(localStorage.getItem('todos')) || [];
+        console.log("1", todos);
         todos.splice(index, 1);
+        console.log("2", todos);
         localStorage.setItem('todos', JSON.stringify(todos));
 
         // 重新渲染 todo 列表
