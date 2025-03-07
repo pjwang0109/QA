@@ -1,1 +1,212 @@
+Sentence Slots
+Subject and Verb Slots
+A sentence has two primary slots for inserting content: the subject slot and the verb slot. Readers naturally focus on the words in these slots and, rightfully, sense that the main information will be in them.
 
+[subject slot] + [verb slot]
+
+[The cat] [chattered].
+[I] [wrote] an essay.
+[The movie] [failed] at the box office.
+ 
+
+When styling sentences, take advantage of this feature of the English language with the following strategy:
+
+Fill the subject slot and verb slot with the most relevant, most exact, most particular words within your meaning.
+
+For instance, if you are writing about how someone gave a confusing speech, your meaning could be conveyed in this way:
+
+When giving his speech, it was a little confusing to the audience.
+But notice what pieces of information fill the subject and verb slots.
+
+[it] [was]
+This is poor sentence style, for the most relevant words within the meaning—speech and confusing—are left out of the primary slots for information: subject and verb. Instead, those slots are filled with vague, abstract words that do not directly convey the meaning themselves. It and was could apply to any sort of idea. In other words, they are not relevant, exact, or particular to the meaning speech or the meaning confusion.
+
+The same meaning could be conveyed in a differently styled sentence, such as this one:
+
+Confusion happened among the audience during his speech.
+Notice which pieces of information fill the subject and verb slots.
+
+[Confusion] [happened]
+This is poor sentence style because the real meaning focuses on the subject of his speech, but that does not appear in either slot. And the subject slot is instead filled by the wrong piece: what the subject did—the action, or verb—which is confused. The verb slot, where confused should have gone, is instead filled with the vague word happened, which could be about anything. The result is a sentence that sounds unclear and awkward; in other words, it has poor sentence style.
+
+But notice what happens when that sentence is styled according to the strategy of filling the subject slot and verb slot with the most relevant, most exact, most particular words within your meaning.
+
+His speech confused the audience.
+This sentence is much clearer and more natural than the above version. It is therefore good sentence style. And it was achieved by this strategy. Notice which pieces of information fill the subject and verb slots:
+
+[His speech] [confused]
+Whether skimming or paying careful attention, readers of this sentence will naturally focus on his speech and confused, which is exactly the meaning the sentence intended to convey in the first place. Thus, this strategy improved the sentence style.
+
+ 
+
+Exercise 1
+
+Revise the following sentences according to this strategy: Fill the subject slot and verb slot with the most relevant, most exact, most particular words within your meaning. Make sure to use complete sentences.
+
+It took a long time for the marathon by the end of it for some of the runners.
+A lot of things were problems in my essay with all my bad grammar.
+Feeling uncertain is how I am right now.
+Watching the show revealed to me that the Emmy should go to that lead actor for deserving it so much.
+It’s to where social media has been people’s focus more than their real relationships.
+Needless “It” in the Subject Slot
+A common writing weakness is needlessly starting sentences with a vague use of “it.” This does not mean that the pronoun “it” is a bad subject, especially not when this pronoun has a clear and specific referent. Instead, the weakness comes when the use of “it” refers to nothing in particular. In those cases, some other meaning is probably the true subject and should be placed in the subject slot.
+
+See the following examples (with the subject slot in brackets):
+
+Weak Sentence Style: [It] is a common weakness to needlessly start sentences with a vague use of “it.”
+Strong Sentence Style: [A common weakness] is needlessly starting sentences with a vague use of “it.”
+But this solution can get difficult if you think that the subject slot can hold only nouns and pronouns. Remember that styling sentences gives you more options than those. The best words for the subject slot do not always have to be nouns and pronouns. Instead, you can fill the subject slot with other kinds of words and phrases (even whole clauses, as explained later).
+
+The exact grammatical names of the different words and phrases (gerunds, infinitives, etc.) do not matter here. What matters is that you are aware that other kinds of words and phrases can be subjects, and that they can be used to better say what you mean.
+
+For these other kinds of subjects, see the following examples (with the subject slot in brackets):
+
+Weak Sentence Style: [It] hurts my knees to run.
+Strong Sentence Style: [Running] hurts my knees.
+ 
+
+Weak Sentence Style: [It] is the key to happiness to live freely.
+Strong Sentence Style: [To live freely] is the key to happiness.
+ 
+
+Weak Sentence Style: [It]’s wise that you are pursuing a liberal, adaptable degree.
+Strong Sentence Style: [Pursuing a liberal, adaptable degree] is wise.
+Strong Sentence Style: [Your pursuing a liberal, adaptable degree] is wise.
+Further information on this can be found in the section Active Voice vs. Passive Voice.
+
+ 
+
+Exercise 2
+
+Directions: Revise the following sentences to remove “it” from the subject slot.
+
+1. It is my decision that matters.
+
+2. It won’t take long for the present to arrive.
+
+ 
+
+Directions: Do the same as above. But make the subject slot begin with a word that ends with “-ing.” (This is using a gerund.)
+
+3. It is wrong to keep wild animals caged.
+
+4. It is silly spending fifty thousand dollars on a car.
+
+5. [Write a sentence of your own that has an “-ing” phrase in the subject slot.]
+
+ 
+
+Directions: Do the same as above. But make the subject slot begin with the word “to.” (This is using an infinitive.)
+
+6. It has become a danger to disagree with anyone in America nowadays.
+
+7. It teaches us wisdom to laugh at life.
+
+8. [Write a sentence of your own that has a “to” phrase in the subject slot.]
+
+Clauses in the Subject Slot
+Once you can see and use the subject and verb slots in your sentences—once you gain this awareness and skill—you can begin to gain control over exactly what your sentences say and how they must be interpreted.
+
+Writers without this awareness and skill often find themselves writing sentences that suggest the wrong ideas, but they won’t have any notions about how to say it differently, or how to style the sentence to fix the problem. Worse than that, these weaker writers might not think closely enough about the style of their sentences to notice that the problem exists.
+
+For example, consider the following problematic sentence:
+
+Example I.
+
+I do not disagree with you because your facts are wrong.
+
+This suggests two very different meanings, and which one the writer intends is unclear. This could mean either scenario:
+
+I agree with you, and there is one main reason for that: your facts are wrong.
+I disagree with you, but the reason I disagree is not just because your facts are wrong—that just happens to be coincidental to the fact that I disagree with you.
+Indeed, these two valid interpretations are nearly opposites, which is extremely bad. If your writing can be validly interpreted as saying the opposite of what you mean, you have failed in your primary task as a writer. Your primary task is to say what you mean.
+
+ 
+
+Consider another problematic sentence.
+
+Example II.
+
+He waited to text until he sat down after having dropped his lunch tray two days in a row.
+
+Again, this suggests at least two very different meanings, and which one the writer intends is unclear. This could mean either scenario:
+
+For two days in a row, this happened in this order: he dropped his lunch tray, and then sat down at the table, and then texted.
+For two days in a row, he was texting while walking and carrying his lunch tray, and that caused him to drop his lunch tray. After those incidences, he decided from then on to take his tray to the table and sit down first, and then text afterward.
+Again, these are both valid interpretations of the sentence, and they are very different. Either could be what the writer means, which means the writer has failed.
+
+ 
+
+These are not the only two possible sentences with such problems. Countless sentences like these pop up in student essays all the time, and they might have even occurred in your own essays. But what is the cause of these problems? And how do you fix them? And what if you didn’t even notice them so that you could try to fix them?
+
+The cause of these problems is poor sentence style. And that sentence style can be improved by making use of the subject slot. Merely being aware of what you have placed in your subject slots can help you begin to see whether you have these kinds of problems or not, and then manipulating the words you put in the subject slots can help you fix the problem.
+
+Let’s use the above examples, and let’s fix them using the following as the writer’s intended meanings:
+
+Example I: I do not disagree with you because your facts are wrong.
+
+Intended Meaning of Example I: I disagree with you, but the reason I disagree is not just because your facts are wrong—that just happens to be coincidental to the fact that I disagree with you.
+
+ 
+
+Example II: He waited to text until he sat down after having dropped his lunch tray two days in a row.
+
+Intended Meaning of Example II: For two days in a row, he was texting while walking and carrying his lunch tray, and that caused him to drop his lunch tray. After those incidences, he decided from then on to take his tray to the table and sit down first, and then text afterward.
+
+The descriptions of the intended meaning are terribly clunky, awkward, and excessive, so they would be very poor solutions, and we can disregard them. Instead, let’s style the sentences to say exactly what they mean in roughly the same amount of space as the originals.
+
+Here is why the key to fixing these sentence styles is manipulating the words in the subject slots: the subject slot should hold the words for whatever is truly “doing” or “being.”
+
+In Example I, the subject slot holds “I,” which means “the writer” is doing “the disagreeing.” But if the true meaning is about the subject of “the wrong facts,” and what they are being is “not the reason,” then we need to find a way to place that idea of “the wrong facts” in the subject slot.
+
+The same goes for Example II. The subject slot holds “he,” which means that “he” is doing “the waiting.” But if the true meaning is about “the incidents of dropping the tray,” and what they are doing is “convincing him to sit down first,” then we need to find a way to place that idea of “the incidents of dropping the tray” in the subject slot.
+
+We can do this by filling the subject slots with something other than just nouns or pronouns. We can fill the subject slots with different kinds of clauses.
+
+The exact grammatical names of the different clauses (gerund, relative, subordinate, etc.) do not matter here. What matters is that you are aware that clauses can be subjects, and that they can be used to better say what you mean.
+
+ 
+
+For Example I, watch what happens when we turn “the wrong facts” into a clause and place it in the subject slot (subject slot in brackets):
+
+Subject Slot: [That your facts are wrong]
+
+Solution for Example I: That your facts are wrong is not the reason I disagree with you.
+
+This is good sentence style. There is only one valid way to interpret this, and that interpretation matches with the intended meaning. Because it uses the strategy of filling the subject slot with the real subject, worded here as a clause, the sentence says what it means.
+
+ 
+
+Watch what happens when we apply the same strategy to Example II:
+
+Subject Slot: [Having dropped his lunch tray two days in a row]
+
+Solution for Example II: Having dropped his lunch tray two days in a row convinced him to wait until he sat down at the table to text.
+
+Again, this is good sentence style because the only valid interpretation is the intended one. And that was achieved by using the subject slot, and filling it with a whole clause that says the real subject. It says what it means.
+
+ 
+
+Exercise 3
+
+Directions: Revise the following sentences by using a clause in the subject slot. Use a clause that begins with “that.”
+
+1. We should not take this trail because it is the only one.
+
+2. The thing that upsets me the most is that the dog sheds so badly.
+
+3. His horror stories are universal due to the fact that the fear of the unknown is primordial.
+
+4. [Write a sentence of your own that uses a “that” clause in the subject slot.]
+
+ 
+
+Directions: Revise the following sentences by using a clause in the subject slot. Use a clause that begins with “having.”
+
+5. It zapped his strength by nightfall after having worked all day in the sun.
+
+6. It caused him great embarrassment to have been named student of the year in front of the cool kids.
+
+7. She delayed sending her e-mail until she calmed down after having read his statement.
+
+8. [Write a sentence of your own that uses a clause in the subject slot that begins with “having.”]
