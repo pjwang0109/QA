@@ -1,111 +1,59 @@
-document.addEventListener('DOMContentLoaded', ()=>{
-    // div#root
-    const root = document.querySelector('#root');
+json = JSON.parse(json);
+let funclist = json.result.funclist;
 
-    // title
-    const h2 = document.createElement('h2');
-    h2.textContent = 'TEST TODO';
+// 生成主選單
+$.each(funclist, function (key, object) {
+    let menuLi = `
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="${object.sid}" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                ${object.sname}
+            </a>
+            <div class="dropdown-menu" style="min-width: 14rem;" aria-labelledby="${object.sid}"></div>
+        </li>`;
 
-    // input
-    const input = document.createElement('input');
-    input.id = 'writeTodo' 
-    input.type = 'text';
-    
-    // button 新增 todo
-    const addBtn = document.createElement('button');
-    addBtn.innerText = '新增待辦事項';
-    addBtn.style.margin = '0 20px';
+    $("#navbarSupportedContent").find(".navbar-nav.m-auto").append(menuLi);
 
-    root.appendChild(h2);
-    root.appendChild(input);
-    root.appendChild(addBtn);
+    // 處理第二層選單
+    $.each(object.child, function (key, val) {
+        if (val.type == 2.5) { // 三層選單
+            let tabVal = val.sid;
+            let menuUrl = `
+                <div class="dropdown">
+                    <a class="dropdown-item1">${val.sname}</a>
+                    <div class="dropdown-content">
+                        <div class="dropdown${tabVal} position-relative bg-white"></div>
+                    </div>
+                </div>`;
+            $("#" + object.sid).nextAll(".dropdown-menu").append(menuUrl);
 
-    // 讓輸入框在頁面載入時自動獲得焦點
-    input.focus();
+            // 處理第三層選單
+            $.each(val.child, function (item, val3) {
+                if (val3.type == 3.5) { // 四層選單
+                    let subTabVal = val3.sid;
+                    let subMenuUrl = `
+                        <div class="dropdown">
+                            <a class="dropdown-item1">${val3.sname}</a>
+                            <div class="dropdown-content">
+                                <div class="dropdown${subTabVal} position-relative bg-white"></div>
+                            </div>
+                        </div>`;
+                    $(".dropdown" + tabVal).append(subMenuUrl);
 
-    // todo 區塊
-    const divBox = document.createElement('div');
-    divBox.id = 'box';
-    divBox.style.margin = '30px 0';
-    root.appendChild(divBox);
+                    // 處理第四層選單
+                    $.each(val3.child, function (item, val4) {
+                        let link = `<a class="dropdown-item" href="javascript:getFunctionPage('${val4.sid.toLowerCase()}')">${val4.sname}</a>`;
+                        $(".dropdown" + subTabVal).append(link);
+                    });
 
-    // 讀取 localStorage 並顯示
-    loadTodos();
-
-    // 監聽鍵盤事件，按 Enter 時新增代辦事項
-    input.addEventListener('keydown', (event) => {
-        if (event.key === 'Enter') {  // 檢查是否按下 Enter
-            addTodo();
-        }
-    });
-
-    // 監聽按鈕點擊事件
-    addBtn.addEventListener('click', addTodo);
-
-    function addTodo() {
-        const writeTodo = document.querySelector('#writeTodo'); // 取得 input 欄位
-        const todoText = writeTodo.value.trim();
-
-        // 檢查是否輸入內容
-        if (todoText === '') return;
-
-        // 新增至 localStorage
-        saveTodo(todoText);
-
-        // 清空輸入框並獲得焦點
-        writeTodo.value = '';
-        writeTodo.focus();
-
-        // 重新渲染 todo 列表
-        loadTodos();
-    }
-
-    // 儲存-localStage
-    function saveTodo(todoText) {
-        let todos = JSON.parse(localStorage.getItem('todos')) || [];  //資料: ['1', '2', '3']
-        todos.push(todoText);
-        localStorage.setItem('todos', JSON.stringify(todos));
-    }
-
-    function loadTodos() {
-        // 清空畫面上的待辦事項
-        divBox.innerHTML = '';
-
-        let todos = JSON.parse(localStorage.getItem('todos')) || [];
-        
-        todos.forEach((todoText, index) => {
-            const todoBox = document.createElement('div');
-            todoBox.classList.add('list');
-
-            const span = document.createElement('span'); // 顯示待辦事項
-            span.textContent = todoText;
-
-            const todoDel = document.createElement('button'); // 刪除按鈕
-            todoDel.classList.add('delete');
-            todoDel.textContent = '刪除';
-
-            // 刪除事件
-            todoDel.addEventListener('click', () => {
-                if(confirm('確定要刪除嗎?')){
-                    deleteTodo(index);
+                } else {
+                    let link = `<a class="dropdown-item" href="javascript:getFunctionPage('${val3.sid.toLowerCase()}')">${val3.sname}</a>`;
+                    $(".dropdown" + tabVal).append(link);
                 }
             });
 
-            // 建立 todo 結構
-            todoBox.appendChild(span);
-            todoBox.appendChild(todoDel);
-            divBox.appendChild(todoBox);
-        });
-    }
-
-    function deleteTodo(index) {
-        let todos = JSON.parse(localStorage.getItem('todos')) || [];
-        console.log("1", todos);
-        todos.splice(index, 1);
-        console.log("2", todos);
-        localStorage.setItem('todos', JSON.stringify(todos));
-
-        // 重新渲染 todo 列表
-        loadTodos();
-    }
+        } else {
+            let menuUrl = `<a class="dropdown-item" href="javascript:getFunctionPage('${val.sid.toLowerCase()}')">${val.sname}</a>`;
+            $("#" + object.sid).nextAll(".dropdown-menu").append(menuUrl);
+        }
+    });
 });
