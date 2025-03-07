@@ -1,131 +1,47 @@
-js 哪裡有錯
+我要做分層選單，當type 二層選單 1→2 / type 三層選單 1→2,5→3 / type 四層選單 1→2.5→3.5→4
+原本以下的js程式碼可以做出三層選單
+我現在卡在四層選單做不出來，應該怎麼更改?
+
+json = JSON.parse(json);
+						let funclist = json.result.funclist;
+						// console.log(funclist);
+
+						$.each(funclist, function (key, object) {
+							let menuLi = `<li class="nav-item dropdown"><a class="nav-link dropdown-toggle" href="#" id="${object.sid}" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">${object.sname}</a><div class="dropdown-menu" style="min-width: 14rem;" aria-labelledby="navbarDropdown"></div></li>`;
+							//header 主目錄
+							$("#navbarSupportedContent").find(".navbar-nav.m-auto").append(menuLi);
+
+							//header 各目錄內的清單
+							$.each(object.child, function (key, val) {
 
 
-html:
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>todo</title>
-    
-    <style>
-        body{
-            text-align: center;
-        }
-        input#enterTxt{
-            margin-right: 10px;
-        }
-        button#addBtn{
-            margin-left: 10px;
-        }
-
-    </style>
-</head>
-<body>
-    <h2>TODO MYSELF</h2>
-    <input type="text" id="enterTxt">
-    <button id="addBtn">Add list</button>
-    
-    <div id="box"></div>
-    <script src="./0305.js"></script>
-</body>
-</html>
-
-
-js:
-let input = document.querySelector('#enterTxt');
-let addBtn = document.querySelector('#addBtn');
-
-let boxDiv = document.querySelector('#box');
-boxDiv.style.marginTop = "20px";
-
-input.focus();
-
-loadData();
-
-input.addEventListener('keydown', (e)=>{
-    if(e.key === 'Enter' ){
-        toDoList()
-    }
-})
-
-addBtn.addEventListener('click', toDoList)
-
-//toDoList
-function toDoList(){
-    const data = input.value.trim();
-
-    saveData(data);
-    loadData();
-
-    input.value = "";
-    input.focus();
-}
-
-//save
-function saveData(data){
-    let list = JSON.parse(localStorage.getItem('titles')) || [];
-    list.push(data);
-    localStorage.setItem('titles', JSON.stringify(list))
-    // localStorage.removeItem('titles')
-
-    console.log('1:', data, typeof data); //string
-    console.log('2:', list, typeof list); //object
-}
-
-//儲存起來的資料
-function loadData(){
-    
-    //todos
-    let todos = JSON.parse(localStorage.getItem('titles')) || [];
-
-    todos.forEach((todo, index)=>{
-        //每一個todoList的div
-        let listDiv = document.createElement('div');
-        listDiv.classList.add('list');
-        listDiv.style.marginTop = "15px";
-        listDiv.style.background = "rgb(225, 225, 225)";
-        listDiv.style.padding = "10px";
-        listDiv.style.display = "flex";
-        listDiv.style.justifyContent = "space-between";
-        listDiv.style.alignItems = "center";
-        listDiv.style.borderRadius = "5px";
-
-        //todoList的填寫項目
-        let span = document.createElement('span');
-        span.textContent = todo // 修改為todo
-        span.style.marginRight = '20%';
-
-        //todoList的刪除按鈕
-        let delBtn = document.createElement('button');
-        delBtn.classList.add('delete');
-        delBtn.innerText = "DELETE";
-        delBtn.style.backgroundColor = "red";
-        delBtn.style.border = "1px solid red";
-        delBtn.style.borderRadius = "2px";
-        delBtn.style.color = "white";
-        delBtn.style.padding = "8px";
-        delBtn.style.cursor = "pointer";
-
-        delBtn.addEventListener('click', ()=>{
-            if(confirm('Are you sure you want to delete?')){
-                delBtnData(index)
-            }
-        })
-
-        listDiv.appendChild(span);
-        listDiv.appendChild(delBtn);
-        boxDiv.appendChild(listDiv);
-
-    })
-}
-
-// 刪除todoList按鈕
-function delBtnData(index){
-    let todos = JSON.parse(localStorage.getItem('titles')) || [];
-    todos.splice(index, 1);
-    localStorage.setItem('titles', JSON.stringify(todos))
-
-    loadData();
-}
+								//dropdown-menu分層選單
+								if (val.type == 2.5) {
+									let tabVal = val.sid;//dropdown-item1
+									// console.log(tabVal);
+									let menuUrl = `<div class="dropdown">
+      								<a class="dropdown-item1">${val.sname}</a>
+      								<div class="dropdown-content">
+        							<div class="dropdown${tabVal} position-relative bg-white"></div>
+      								</div>
+    								</div>`;
+									$("#" + object.sid).nextAll(".dropdown-menu").append(menuUrl + divider);
+									let b;
+									$.each(val.child, function (item, val) {
+										let link = `<a class="dropdown-item" href="javascript:getFunctionPage('${val.sid.toLowerCase()}')">${val.sname}</a>`
+										$(".dropdown" + tabVal).append(link);
+									})
+									// console.log(val.child);
+									$("#s100_035").mouseenter(function () { //滑鼠滑入
+										console.log($("#submenu"))
+										$("#submenu").remove();
+										$("#submenu").mouseleave(function () { //滑鼠滑出
+											$("#submenu").remove();
+										});
+									});
+								} else {
+									let menuUrl = `<a class="dropdown-item" href="javascript:getFunctionPage('${val.sid.toLowerCase()}')">${val.sname}</a>`;
+									$("#" + object.sid).nextAll(".dropdown-menu").append(menuUrl + divider);
+								}
+							});
+						});
