@@ -1,1 +1,58 @@
+在第四層選單應該只會出現 <a class="dropdown-item3" href="javascript:getFunctionPage('${val4.sid.toLowerCase()}')">${val4.sname}</a>
 
+但有些會有
+<a class="dropdown-item3" href="javascript:getFunctionPage('${val4.sid.toLowerCase()}')">${val4.sname}</a>跟
+<a class="dropdown-item" href="javascript:getFunctionPage('${val4.sid.toLowerCase()}')">${val4.sname}</a>
+我應該如何更改?
+
+//dropdown-menu分層選單
+								if (val.type == 2.5) {
+									// console.log('val2222.5:', val);
+									let tabVal = val.sid;//dropdown-item1
+									// console.log(tabVal);
+									let menuUrl = `<div class="dropdown">
+      								<a class="dropdown-item1">${val.sname}</a>
+      								<div class="dropdown-content">
+        							<div class="dropdown${tabVal} position-relative bg-white"></div>
+      								</div>
+    								</div>`;
+									$("#" + object.sid).nextAll(".dropdown-menu").append(menuUrl + divider);
+									let b;
+									$.each(val.child, function (item, val3) {
+										if(val3.type == '3.5'){
+											console.log('val3.5:', val3);
+											let subTabVal = val3.sid;
+											let subMenuUrl = `
+												<div class="dropdown">
+													<a class="dropdown-item2">${val3.sname}</a>
+													<div class="dropdown-content">
+														<div class="dropdown${subTabVal} position-relative bg-white"></div>
+													</div>
+												</div>`;
+											$(".dropdown" + tabVal).append(subMenuUrl);
+										
+											// 處理第四層選單
+											$.each(val3.child, function (item, val4) {
+												// console.log('val4444:', val4);
+												let linkVal4 = `<a class="dropdown-item3" href="javascript:getFunctionPage('${val4.sid.toLowerCase()}')">${val4.sname}</a>`;
+												$(".dropdown" + subTabVal).append(linkVal4);
+											});
+										}else if (val3.type == '3'){
+											// console.log('val3.5noooo:', val3);
+											let link = `<a class="dropdown-item" href="javascript:getFunctionPage('${val3.sid.toLowerCase()}')">${val3.sname}</a>`;
+                    						$(".dropdown" + tabVal).append(link);
+										}
+									})
+									
+									// console.log(val.child);
+									$("#s100_035").mouseenter(function () { //滑鼠滑入
+										console.log($("#submenu"))
+										$("#submenu").remove();
+										$("#submenu").mouseleave(function () { //滑鼠滑出
+											$("#submenu").remove();
+										});
+									});
+								} else {
+									let menuUrl = `<a class="dropdown-item" href="javascript:getFunctionPage('${val.sid.toLowerCase()}')">${val.sname}</a>`;
+									$("#" + object.sid).nextAll(".dropdown-menu").append(menuUrl + divider);
+								}
