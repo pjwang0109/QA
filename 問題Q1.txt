@@ -1,1 +1,3 @@
+<id="sendBtnOPDiv" class="modal-footer process-footer btnOpDiv" cftype="12">
 
+我要如何取得 cftype 的值? 使用jquery
