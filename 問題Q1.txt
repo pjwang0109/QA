@@ -1,1 +1,8 @@
+$.each($this.find('.acc'), function (a, b) {
+     if ($this.find('.acc').eq(a).val() != "") {
+         data[dataName] = $this.find(className).eq(a).val() || "";
+     }              
+ });
 
+這每一段程式是什麼，請解釋一下?
+另外 eq 是什麼?
