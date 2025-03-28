@@ -1,1 +1,39 @@
+我想要先打S120010021，拿到主鍵(crpt_pk)後，再打 S120010007。
 
+想問我成功打S120010021 之後，apiS120010007 前面不用加 await嗎? 還是有更好的方式嗎?
+
+
+async function buildCReport(){
+    // loadingShow();
+    // try{
+        let userObj = getUidToken();
+        let uid = userObj.uid;
+        let token = userObj.token;
+        //業務別
+        let business = $('#allCReportCase').find('.business').val();
+        //分行別
+        let branch = $('#allCReportCase').find('.branch').val();
+        //ID
+        let custid = $('#allCReportCase').find('.crBuildID').val();
+        //戶名
+        let cname = $('#allCReportCase').find('.crName').val();
+
+        //
+        // let jsonFinish = await apiS120010007(uid, token, keyCR);
+
+        //先打S120010021，拿到主鍵(crpt_pk)後，再打 S120010007
+        await apiS120010021(uid, token, business, branch, custid, cname).done(function (json) {
+            if(json && json.rc == "M0000"){
+                let crpt_pk = json.result.crpt_pk;
+
+                apiS120010007(uid, token, crpt_pk).done(function (jsonFinish) { 
+                    if(jsonFinish && jsonFinish.rc == "M0000"){
+                        console.log('@@@:', crpt_pk);
+                    }   
+                })
+                
+            }
+
+        //     $('#allCReportCase').addClass('hide');
+        //     $('#createReportAll').removeClass('hide');
+        })
