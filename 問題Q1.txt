@@ -1,9 +1,1 @@
-這段程式碼在做什麼?
 
-$credit.find(".allSelect").data("select", {});
-$credit.find(".jobSelect").data("select", {});
-
-.....其他程式碼
-
-$credit.find(".jobSelect").data("select", jobMappingObj);
-$credit.find(".allSelect").data("select", allSelect);
