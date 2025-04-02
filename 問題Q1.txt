@@ -1,60 +1,9 @@
-try {
-        res = await Promise.all([
-            apiS120010001(uid, token, caseno),
-            apiS120010002(uid, token, caseno),
-        ]);
-    } catch (e) {
-        console.error(e);
-        return;
-    }
+這段程式碼在做什麼?
 
-徵信報告(新增)-建立徵信報告 btn 是我原本寫的程式碼， 我想要再加 apiS120010001, apiS120010002，在S120010021和apiS120010007成功之後 怎麼修改
+$credit.find(".allSelect").data("select", {});
+$credit.find(".jobSelect").data("select", {});
 
-//徵信報告(新增)-建立徵信報告 btn
-async function buildCReport(){
-    loadingShow("建立報告中");
-    try{
-        let userObj = getUidToken();
-        let uid = userObj.uid;
-        let token = userObj.token;
-        //業務別
-        let business = $('#allCReportCase').find('.business').val();
-        //分行別
-        let branch = $('#allCReportCase').find('.branch').val();
-        //ID
-        let custid = $('#allCReportCase').find('.crBuildID').val();
-        //戶名
-        let cname = $('#allCReportCase').find('.crName').val();
+.....其他程式碼
 
-        //先打S120010021，拿到主鍵(crpt_pk)後，再打 S120010007
-        let json = await apiS120010021(uid, token, business, branch, custid, cname);
-        
-        if(json && json.rc == "M0000"){
-            let crpt_pk = json.result.crpt_pk; //拿到主鍵
-
-            let jsonFinish = await apiS120010007(uid, token, crpt_pk);
-            if(jsonFinish && jsonFinish.rc == "M0000"){
-                $('#allCReportCase').addClass('hide');
-                $('#createReportAll').removeClass('hide');
-
-                //案件編號
-                let caseNumInfo = `案件編號：${crpt_pk}`
-                $('#createReportAll').find('#caseNumber').text(caseNumInfo);
-                //ID
-                $('#createReportAll').find('.idNumber').val(custid);
-                // 戶名
-                $('#createReportAll').find('.buildNameCR').val(cname);
-                loadingHide();
-            }else{
-                apiErrorHandler(jsonFinish);
-                loadingHide();
-            }
-            loadingHide();
-        }else{
-            apiErrorHandler(json);
-            loadingHide();
-        }
-    }catch (e) {
-        console.error(e);
-    }
-}
+$credit.find(".jobSelect").data("select", jobMappingObj);
+$credit.find(".allSelect").data("select", allSelect);
