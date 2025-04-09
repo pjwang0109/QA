@@ -1,1 +1,37 @@
+想問以下有簡短寫法嗎?
 
+
+function set_identityHandler(target) {
+
+    let val = $(target).val();
+
+    switch (val) {
+        case "1":
+            $("#usekycdata").prop("checked", true);
+            $("#usekycdata").prop("disabled", true);
+            break;
+        case "2":
+            $("#usekycdata").prop("checked", false);
+            $("#usekycdata").prop("disabled", false);
+            break;
+        case "3":
+            $("#usekycdata").prop("checked", false);
+            $("#usekycdata").prop("disabled", false);
+            break;
+        case "4":
+            $("#usekycdata").prop("checked", false);
+            $("#usekycdata").prop("disabled", false);
+            break;
+        case "5":
+            $("#usekycdata").prop("checked", false);
+            $("#usekycdata").prop("disabled", false);
+            break;
+        case "6":
+            $("#usekycdata").prop("checked", false);
+            $("#usekycdata").prop("disabled", false);
+            break;
+        case "":
+            $(target).next().addClass("hide");
+            break;
+    }
+}
