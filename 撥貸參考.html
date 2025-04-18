@@ -1,0 +1,28 @@
+<!-- 聯徵複查表無法產出 + 夾檔 -->
+<div class="form-group form-inline my-4 tableNoProduce">
+  <label for="unableProduce" class="">
+    <input type="checkbox" name="unableProduce" id="unableProduce" class="jcicFlag mr-1" onchange="touchUnPro(this)">聯徵複查表無法產出 
+  </label>
+  <select class="btn-sm originalFile ml-3">
+    <option value="87">聯徵原始檔</option>
+  </select>
+  <span class="d-flex font-weight-bold">：</span>
+  <label class="btn btn-info btn-sm my-0">
+    <input type="file" class="hide" accept=".xls,.xlsm,.xlsx,.jpg,.pdf,.txt,.doc,.docx,.tif,.rtf" multiple
+      onchange="chgFileStatus(this)" />
+    <i class="fas fa-file-medical"></i>
+    <span class="ml-1">選擇檔案</span>
+  </label>
+  <label class="btn btn-primary btn-sm ml-1 my-0">
+    <input id="uploadfileBeInput" type="button" class="hide" onclick="uploadFileOpBe(this)" />
+    <i class="fas fa-file-upload"></i>
+    <span class="ml-1">夾檔</span>
+  </label>
+  <label class="ml-1 mb-1 btn-outline-success fileStatus hide">
+    <i class="mt-1 fas fa-check-circle"></i>
+    <span class="fileName"></span>
+  </label>
+  <label class="ml-2 remarkUnPrText hide">
+    <span class="text-danger">(請檢附原始電文，並說明人工檢核聯徵資料是否異常)</span>
+  </label>
+</div>
