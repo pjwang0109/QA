@@ -59,23 +59,6 @@ function touchUnPro(obj) {
 }
 
 
-//選擇檔案 (檢測檔案名稱) (全部功能業務通用)
-function chgFileStatus(obj) {
-    let $this = $(obj);
-    let files = $this[0].files;
-    let $fileStatus = $this.closest('label').nextAll('.fileStatus');
-    if (files.length == 0) { $fileStatus.addClass('hide'); $fileStatus.find('.fileName').text(''); }
-    if (files.length > 0) {
-        let fileName = "";
-        $.each(files, function (item, file) {
-            fileName += file.name + (files.length == item + 1 ? '' : '、');
-        });
-        $fileStatus.find('.fileName').text(fileName);
-        $fileStatus.removeClass('hide');
-    }
-}
-
-
 //檔案上傳 (傳送作業中心--撥貸前回查)
 function uploadFileOpBe(obj) {
     let caseType = $(".caseType").attr("value") || "";
