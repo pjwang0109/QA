@@ -1,37 +1,25 @@
-想問以下有簡短寫法嗎?
+我想要 (借款人：小金牛有限公司) 和 (聯徵： 正常 不正常) 都在同一行 為什麼 (聯徵： 正常 不正常)會換行? 如何修改?
 
+<!-- 先帶假資料 看畫面 -->
+          <div class="form-group form-inline idBorrowerAllDiv my-2">
+            
+            <div id="idBorrowerDiv_${num}" class="idBorrowerDiv">
+              <!-- 1聯徵 -->
+              <!-- <div class="creditDiv"> -->
+                <span class="questionStyleA">借款人：小金牛有限公司</span>
+                <label for="">聯徵：
+                  <input type="radio">正常
+                  <input type="radio">不正常
+                </label>
+              <!-- </div> -->
+              <!-- 2票信 -->
+              <div class="letterDiv">
+                <label for="">票信：
+                  <input type="radio">正常
+                  <input type="radio">不正常
+                  <input type="radio" class="ml-5">未查詢
+                </label>
+              </div>
 
-function set_identityHandler(target) {
-
-    let val = $(target).val();
-
-    switch (val) {
-        case "1":
-            $("#usekycdata").prop("checked", true);
-            $("#usekycdata").prop("disabled", true);
-            break;
-        case "2":
-            $("#usekycdata").prop("checked", false);
-            $("#usekycdata").prop("disabled", false);
-            break;
-        case "3":
-            $("#usekycdata").prop("checked", false);
-            $("#usekycdata").prop("disabled", false);
-            break;
-        case "4":
-            $("#usekycdata").prop("checked", false);
-            $("#usekycdata").prop("disabled", false);
-            break;
-        case "5":
-            $("#usekycdata").prop("checked", false);
-            $("#usekycdata").prop("disabled", false);
-            break;
-        case "6":
-            $("#usekycdata").prop("checked", false);
-            $("#usekycdata").prop("disabled", false);
-            break;
-        case "":
-            $(target).next().addClass("hide");
-            break;
-    }
-}
+            </div>
+          </div>
