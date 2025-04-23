@@ -1,31 +1,12 @@
-我想做一個連動的html 每當點選button 就會增加一個 #idBorrowerDiv_${num}頁面，而每增加一個 他的id會是 #idBorrowerDiv_1, 再來是#idBorrowerDiv_2, 接著#idBorrowerDiv_3....這要怎麼寫?
+當我點選 正常 時 .caption 會顯示  不正常 時 .caption 會隱藏 是使用onchange寫嗎
 
-
-<div id="idBorrowerDiv_${num}" class="idBorrowerDiv my-2">
-              <!-- 1聯徵 -->
-              <div class="form-group form-inline creditDiv">
-                <span class="idPerson ml-5" style="width:300px">借款人：小金牛有限公司</span>
-                <span class="questionStyleA">聯徵：</span>
-                <label class="form-check-label jointCreditLabel">
-                  <input type="radio" class="form-check-input jointCredit_1" name="jointCredit" disabled>正常
-                </label>
-                <label class="form-check-label jointCreditLabel">
-                  <input type="radio" class="form-check-input jointCredit_2 ml-2" name="jointCredit" disabled>不正常
-                </label>
-                <span class="caption text-danger ml-5">請於授信評估說明</span>
-              </div>
-              <!-- 2票信 -->
-              <div class="form-group form-inline letterDiv">
-                <span class="widthHide ml-5" style="width:300px"></span>
-                <span class="questionStyleA">票信：</span>
-                <label class="form-check-label ticketCreLabel">
-                  <input type="radio" class="form-check-input ticketCre_1" name="ticketCre" disabled>正常
-                </label>
-                <label class="form-check-label ticketCreLabel">
-                  <input type="radio" class="form-check-input ticketCre_2 ml-2" name="ticketCre" disabled>不正常
-                </label>
-                <label class="form-check-label ticketCreLabel">
-                  <input type="radio" class="form-check-input ticketCre_3 ml-5" name="ticketCre" disabled>未查詢
-                </label>
-              </div>
-            </div>
+<div class="form-group form-inline my-2">
+            <span class="questionStyleA">二、借戶本行往來資料是否正常：</span>
+            <label class="form-check-label contactDataLabel">
+              <input type="radio" class="form-check-input contactData_1" name="contactData">正常
+            </label>
+            <label class="form-check-label contactDataLabel">
+              <input type="radio" class="form-check-input contactData_2 ml-2" name="contactData" onchange="noContactData(this)">不正常
+            </label>
+            <span class="caption text-danger hide">，請於授信評估說明</span>
+          </div>
