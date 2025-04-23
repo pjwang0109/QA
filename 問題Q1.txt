@@ -1,25 +1,31 @@
-我想要 (借款人：小金牛有限公司) 和 (聯徵： 正常 不正常) 都在同一行 為什麼 (聯徵： 正常 不正常)會換行? 如何修改?
+我想做一個連動的html 每當點選button 就會增加一個 #idBorrowerDiv_${num}頁面，而每增加一個 他的id會是 #idBorrowerDiv_1, 再來是#idBorrowerDiv_2, 接著#idBorrowerDiv_3....這要怎麼寫?
 
-<!-- 先帶假資料 看畫面 -->
-          <div class="form-group form-inline idBorrowerAllDiv my-2">
-            
-            <div id="idBorrowerDiv_${num}" class="idBorrowerDiv">
+
+<div id="idBorrowerDiv_${num}" class="idBorrowerDiv my-2">
               <!-- 1聯徵 -->
-              <!-- <div class="creditDiv"> -->
-                <span class="questionStyleA">借款人：小金牛有限公司</span>
-                <label for="">聯徵：
-                  <input type="radio">正常
-                  <input type="radio">不正常
+              <div class="form-group form-inline creditDiv">
+                <span class="idPerson ml-5" style="width:300px">借款人：小金牛有限公司</span>
+                <span class="questionStyleA">聯徵：</span>
+                <label class="form-check-label jointCreditLabel">
+                  <input type="radio" class="form-check-input jointCredit_1" name="jointCredit" disabled>正常
                 </label>
-              <!-- </div> -->
+                <label class="form-check-label jointCreditLabel">
+                  <input type="radio" class="form-check-input jointCredit_2 ml-2" name="jointCredit" disabled>不正常
+                </label>
+                <span class="caption text-danger ml-5">請於授信評估說明</span>
+              </div>
               <!-- 2票信 -->
-              <div class="letterDiv">
-                <label for="">票信：
-                  <input type="radio">正常
-                  <input type="radio">不正常
-                  <input type="radio" class="ml-5">未查詢
+              <div class="form-group form-inline letterDiv">
+                <span class="widthHide ml-5" style="width:300px"></span>
+                <span class="questionStyleA">票信：</span>
+                <label class="form-check-label ticketCreLabel">
+                  <input type="radio" class="form-check-input ticketCre_1" name="ticketCre" disabled>正常
+                </label>
+                <label class="form-check-label ticketCreLabel">
+                  <input type="radio" class="form-check-input ticketCre_2 ml-2" name="ticketCre" disabled>不正常
+                </label>
+                <label class="form-check-label ticketCreLabel">
+                  <input type="radio" class="form-check-input ticketCre_3 ml-5" name="ticketCre" disabled>未查詢
                 </label>
               </div>
-
             </div>
-          </div>
