@@ -1,22 +1,30 @@
-
-
-每當按按鈕會做這個動作，而 li 的id 會隨著增加 nav_1 nav_2 nav_3 nav_4....
-
-但是我有做一個刪除的按鈕，當我刪除nav_2時，會重新排序為  nav_1 nav_2 nav_3..
-當我刪除nav_3時，會重新排序為  nav_1 nav_2 nav_3..
-刪除的方法該怎麼做?
-
-const $tabItem = $(`
-        <li class="nav-item pageNav" id="nav_${num}">
-            <a class="nav-link" data-toggle="tab" href="#relInfoTabItem_${hash}">
-                ${identity}${showName}
-                <button class="btn-sm btn del-btn btn-link"
-                    data-seq="${navCount}"
-                    onclick="delUnitCR(this)">
-                    <i class="fa fa-times"></i>
-                </button>
-            </a>
-        </li>
-      `);
-
-$("#myTab").append($tabItem);
+有什麼方法在 if(abc) 時 不要打 $.ajax(s050010015)嗎?
+const s050010100 = getS050010100(uid, token, caseno); //取得663.661.660.671.I500.I513.I520下拉式選單初始化資訊。
+  const s050010101 = getS050010101(uid, token, caseno, ttype, cfid); //取得663.661.660.671.I500.I513.I520資料。
+  let s050010015 = getS060001033(uid, token, cfidB); //受理案件預取使用者操作按鈕
+  const s020010012 = getS020010012(uid, token, caseno);
+  const s020010005 = getS020010005(uid, token, caseno, ttype);
+  let res = [];
+  const reqArr = [$.ajax(urlFrame),
+  $.ajax(s050010015),
+  $.ajax(s050010100),
+  $.ajax(s050010101),
+  $.ajax(s020010012)];
+  let html = "";
+  let button = {};
+  let select = {};
+  let jsonData = {};
+  let caseData = {};
+  let approveData = {};
+  if (business != "30") {
+    reqArr.push($.ajax(s020010005));
+  }
+  try {
+    res = await Promise.all(reqArr);
+    html = res[0];
+    button = res[1];
+    select = res[2];
+    jsonData = res[3];
+    caseData = res[4];
+    approveData = res[5];
+  } catch (e) { console.error(e) }
