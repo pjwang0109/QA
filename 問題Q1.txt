@@ -1,1 +1,30 @@
+有時候不會跑 if(json && json.rc == "M0000") { 以下的程式 但是每次json && json.rc == "M0000"都是成功的
 
+async function createCReport(){
+    loadingShow();
+    let userObj = getUidToken();
+    let uid = userObj.uid;
+    let token = userObj.token;
+    await apiS120010020(uid, token).done(function (json) {
+        if (json && json.rc == "M0000") {
+            //日期
+            let getTime = new Date().toISOString().substring(0, 10).replace(/-/g, "/");
+            $(".getTime").val(getTime);
+            //分行別
+            $('.branch').val(json.result.branch);
+            //業務別
+            if (json.result && json.result.business) {
+                $.each(json.result.business, (i, v) => {
+                    const $opt = $("<option>");
+                    $opt.attr("value", v.code);
+                    $opt.text(v.name);
+                    $(".business").append($opt);
+                });
+            }
+            loadingHide();
+        } else {
+            apiErrorHandler(json);
+            loadingHide();
+        }
+    })
+}
