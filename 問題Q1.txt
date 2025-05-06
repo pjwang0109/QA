@@ -1,179 +1,32 @@
 這段要如何修改?
 
-try{
-        let userObj = getUidToken();
-        let uid = userObj.uid;
-        let token = userObj.token;
-        //業務別
-        let business = $('#allCReportCase').find('.business').val();
-        //分行別
-        let branch = $('#allCReportCase').find('.branch').val();
-        //ID
-        let custid = $('#allCReportCase').find('.crBuildID').val();
-        //戶名
-        let cname = $('#allCReportCase').find('.crName').val();
-
-        //先打S120010021，拿到主鍵(crpt_pk)後，再打 S120010007
-        let json = await apiS120010021(uid, token, business, branch, custid, cname);
-        
-        if(json && json.rc == "M0000"){
-            let crpt_pk = json.result.crpt_pk; //拿到主鍵
-
-            let jsonFinish = await apiS120010007(uid, token, crpt_pk);
-            if(jsonFinish && jsonFinish.rc == "M0000"){
-                $('#allCReportCase').addClass('hide');
-                
-                //建立徵信報告btn頁面
-                let $html = $('#createReportAll');
-                $html.removeClass('hide');
-
-                //借保戶一般信評及往來情形表:企金、票金要顯示
-                if(business == "40" || business == "41"){
-                    $html.find('#situationTable').removeClass('hide');
-                }else{
-                    $html.find('#situationTable').addClass('hide');
-                }
-
-                //把企業別塞入
-                $html.find('.businessCR').val(business);
-
-                //案件編號
-                let caseNumInfo = `案件編號：${crpt_pk}`
-                $html.find('#caseNumber').text(caseNumInfo);
-                //ID
-                $html.find('.idNumber').val(custid);
-                // 戶名
-                $html.find('.buildNameCR').val(cname);
-                //crpt_pk 隱藏hide的值
-                $html.find('#demo_creditCheck .crpt_pk').val(crpt_pk);
-
-                //預取資料
-                let allSelect = {};
-                let jobSelect = {};
-                try {
-                    res = await Promise.all([
-                        apiS120010001(uid, token, crpt_pk),
-                        apiS120010002(uid, token, crpt_pk),
-                    ]);
-                } catch (e) {
-                    console.error(e);
-                    return;
-                }
-                allSelect = res[0];
-                jobSelect = res[1];
-                $html.find(".allSelect").data("select", {});
-                $html.find(".jobSelect").data("select", {});
-                console.log('1:', allSelect);
-                console.log('2:', jobSelect);
-                //allSelect資料
-                if (allSelect && allSelect.rc  == "M0000") {
-                    //選擇檔案 select選單
-                    const uploadTypeList = allSelect.result.uploadtypeSLT || [];
-                    $.each(uploadTypeList, (i, v) => {
-                        const $option = $("<option>");
-                        $option.attr("value", v.key);
-                        $option.text(v.val);
-                        $html.find(".uploadfileSelect").append($option);
-                    })
-                    //新增借保戶 select選單
-                    const custTypeList = allSelect.result.custtypeSLT || [];
-                    $.each(custTypeList, (i, v) => {
-                        const $option = $("<option>");
-                        $option.attr("value", v.key);
-                        $option.text(v.val);
-                        $html.find("#model_identity").append($option);
-                    });
-                    const otherRightList = allSelect.result.otherrightsSLT || [];
-                    $html.find("#otherRightModal").find("ul").empty();
-                    $.each(otherRightList, (i, v) => {
-                        const key = v.key || "";
-                        const val = v.val || "";
-                        let body_li = '<li class="nav-item">' +
-                            '<div class="nav-link">' +
-                            '<input class="form-check-input" style="margin-top: 8px;" type="checkbox" id="othercheckbox' + key + '" value="' + val + '">' +
-                            '<label class="form-check-label" for="othercheckbox' + key + '">' + val + '</label>' +
-                            '</div></li>';
-                        $html.find("#otherRightModal").find("ul").append(body_li);
-                    });
-                    $html.find(".allSelect").data("select", allSelect);
-                }
-                //jobSelect資料
-                if (jobSelect && jobSelect.rc == "M0000") {
-                    const jobArr = jobSelect.result.bizSLT;
-                    $html.find("#jobQueryList").empty();
-                    const jobMappingObj = {};
-                    $.each(jobArr, (i, v) => {
-                        const $option = $(`<option value="${v.key} ${v.val}">${v.key} ${v.val}</option>`)
-                        $html.find("#jobQueryList").append($option);
-            
-                        jobMappingObj[String(v.key)] = v.val;
-                    })
-                    $html.find(".jobSelect").data("select", jobMappingObj);
-                }
-
-                /////開始註冊dataTable/////
-                let table = '<table class="uploadfileTable table table-bordered table-hover text-center" style="table-layout:fixed;"></table>';
-                let thead = '<thead>' +
-                    '<th>筆數</th>' +
-                    '<th>選項</th>' +
-                    '<th>檔案</th>' +
-                    '<th>夾檔人員</th>' +
-                    '<th>夾檔時間</th>' +
-                    '<th>案件操作</th></thead>';
-                let tbody = '<tbody></tbody>';
-                $('#createReportAll').find('.uploadfileDiv').empty().append(table);
-                $('#createReportAll').find('.uploadfileDiv').find('table').append(thead).append(tbody);
-                let opt = {
-                    "searching": false,//取消搜尋欄位
-                    "bAutoWidth": true, //自動適應
-                    "bRetrieve": true,
-                    "bStateSave": false,
-                    "scrollCollapse": true,
-                    "autowidth": false,
-                    "language": {
-                        search: "搜尋表格:",
-                        info: "顯示第 _START_ 至 _END_ 筆結果，共 _TOTAL_ 筆",
-                        infoFiltered: "",
-                        infoEmpty: "無相關資料",
-                        zeroRecords: "沒有符合的資料",
-                        lengthMenu: "顯示 _MENU_ 筆",
-                        paginate: {
-                            "first": "第一頁",
-                            "previous": "上一頁",
-                            "next": "下一頁",
-                            "last": "最後一頁"
-                        },
-                    },
-                    "columnDefs": [
-                        { "targets": 0, "width": "8.5%", "visible": false, "orderable": false },
-                        { "targets": 1, "width": "8.5%" },
-                        { "targets": 2, "width": "8.5%" },
-                        { "targets": 3, "width": "8.5%" },
-                        { "targets": 4, "width": "12%" },
-                        { "targets": 5, "width": "8%", "orderable": false },
-                    ],
-                    "order": [1, 'asc']
-                };
-
-                $('.uploadfileTable').DataTable(opt);
-                $('.uploadfileTable').css('border', '1px solid #dee2e6').css('width', '');
-                $('.uploadfileTable').find('thead th').addClass('align-middle');
-                $('.uploadfileTable thead th').addClass('tableSort-top');
-                $('.uploadfileTable').closest('.container-fluid').addClass('px-0');
-                $(".col-sm-12").addClass('my-1');
-                $(".dataTables_info").addClass('pt-2');
-                /////dataTable結束/////
-
-                loadingHide();
-            }else{
-                apiErrorHandler(jsonFinish);
-                loadingHide();
+async function createCReport(){
+    loadingShow();
+    let userObj = getUidToken();
+    let uid = userObj.uid;
+    let token = userObj.token;
+    try{
+        const json = await apiS120010020(uid, token);
+        if (json && json.rc == "M0000"){
+            //日期
+            let getTime = new Date().toISOString().substring(0, 10).replace(/-/g, "/");
+            $(".getTime").val(getTime);
+            //分行別
+            $('.branch').val(json.result.branch);
+            //業務別
+            if (json.result && json.result.business) {
+                $.each(json.result.business, (i, v) => {
+                    const $opt = $("<option>");
+                    $opt.attr("value", v.code);
+                    $opt.text(v.name);
+                    $(".business").append($opt);
+                });
             }
             loadingHide();
         }else{
             apiErrorHandler(json);
             loadingHide();
         }
-    }catch (e) {
+    }catch (e){
         console.error(e);
     }
