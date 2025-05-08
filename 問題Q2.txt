@@ -1,52 +1,18 @@
-為什麼我的 $html 沒有在頁面上顯示出來?
-async function openCaseWebCR(obj) { 
-    // loadingShow();
-    let userObj = getUidToken();
-    let uid = userObj.uid;
-    let token = userObj.token;
-    let crpt_pk = $(obj).text(); //案件編號
-    let table = $(obj).closest("table").DataTable();
-    let tr = $(obj).closest('tr');
-    //超連結鎖定
-    $(obj).closest(".tab-content").find("a").css({
-        "pointer-events": "none",
-        "color": "grey",
-    });
-
-    $(obj).closest("table").find("tr").removeClass('table-warning');
-    $("#frontBody").empty();
-    $("#frontHeader").empty();
-
-
-    
-    const res = await Promise.all([
-        apiS120010007(uid, token, crpt_pk),
-        apiS120010001(uid, token, crpt_pk),
-        apiS120010002(uid, token, crpt_pk)
-    ])
-
-
-    const s120010007 = res[0];
-    const s120010001 = res[1];
-    const s120010002 = res[2];
-
-    console.log("07:", s120010007);
-    console.log("01:", s120010001);
-    console.log("02:", s120010002);
-
-    if(s120010007.rc = "M0000"){
+這樣寫可以嗎
+if(s120010007.rc == "M0000"){
         tr.addClass('table-warning');
 
         let urlHtml = ajaxhttpIPHostHtml("/NEW_creditReport/creditReport_create.html");
         const html = await $.ajax(urlHtml);
         let $html = $(html);
-        $("#frontBody").empty().append($html.html());
+        $("#frontBody").empty().append($html);
 
-        $html.find('#allCReportCase').addClass('hide');
+        console.log("GG:", $("#frontBody").find('#allCReportCase'));
 
-        const $createReportAll = $html.find('#createReportAll');
+        $("#frontBody").find('#allCReportCase').addClass('hide');
+
+        const $createReportAll = $("#frontBody").find('#createReportAll');
         $createReportAll.removeClass('hide');
-    }else{
-        console.log("no! 07");
+
+
     }
-}
