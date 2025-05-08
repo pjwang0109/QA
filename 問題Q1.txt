@@ -1,21 +1,30 @@
-我有一顆按鈕btnStoreCR 當我點選按鈕時 想要得到flag_jcic的值(value) 該怎麼寫?
+以下寫得有錯嗎?
+另外$html要如何顯示出來?
 
-html:
-<div class="form-group form-inline creditDiv">
-                <span class="resPerson ml-4" style="width:420px">負責人(或借戶)配偶</span>
-                <span class="questionStyleA">聯徵：</span>
-                <label class="form-check-label jointCreditLabel">
-                  <input type="radio" class="form-check-input flag_jcic" id="jointCredit_Y" name="jointCredit" value="0" onchange="jointCToggle(this)">正常
-                </label>
-                <label class="form-check-label jointCreditLabel ml-2">
-                  <input type="radio" class="form-check-input flag_jcic" id="jointCredit_N" name="jointCredit" value="1" onchange="jointCToggle(this)">不正常
-                </label>
-                <label class="form-check-label caption ml-5 hide">說明：<input type="text" class="desc_jcic" style="width:280px"/></label>
-              </div>
+async function openCaseWebCR(obj) { 
+    // loadingShow();
+    let userObj = getUidToken();
+    let uid = userObj.uid;
+    let token = userObj.token;
+    let crpt_pk = $(obj).text(); //案件編號
 
+    const createCR = ajaxhttpIPHostHtml("/NEW_creditReport/creditReport_create.html");
+    
+    const res = await Promise.all([
+        $.ajax(createCR),
+        apiS120010007(uid, token, crpt_pk),
+        apiS120010001(uid, token, crpt_pk),
+        apiS120010002(uid, token, crpt_pk)
+    ])
 
-js:
-async function btnStoreCR(obj, alertSuccess = false) {
-let flag_jcic = ;
+    const html = res[0];
+    const s120010007 = res[1];
+    const s120010001 = res[2];
+    const s120010002 = res[3];
 
-}
+    let $html = $(html);
+
+    $html.find('#allCReportCase').addClass('hide');
+
+    const $createReportAll = $html.find('#createReportAll');
+    $createReportAll.removeClass('hide');
