@@ -1,30 +1,15 @@
-以下寫得有錯嗎?
-另外$html要如何顯示出來?
+1我要根據使用者修改 stock_status 是使用 onchange 嗎
+2我要如何取得使用者若選擇  <option value="1">A</option> 我要拿到 1 這個值
+請幫我修改
 
-async function openCaseWebCR(obj) { 
-    // loadingShow();
-    let userObj = getUidToken();
-    let uid = userObj.uid;
-    let token = userObj.token;
-    let crpt_pk = $(obj).text(); //案件編號
+<select class="form-control stock_status" onchange="stockStatusCH(this)" name="stock_status">
 
-    const createCR = ajaxhttpIPHostHtml("/NEW_creditReport/creditReport_create.html");
-    
-    const res = await Promise.all([
-        $.ajax(createCR),
-        apiS120010007(uid, token, crpt_pk),
-        apiS120010001(uid, token, crpt_pk),
-        apiS120010002(uid, token, crpt_pk)
-    ])
+    <option value="1">A</option>
+    <option value="2">B</option>
+    <option value="3">C</option>
+</select>
 
-    const html = res[0];
-    const s120010007 = res[1];
-    const s120010001 = res[2];
-    const s120010002 = res[3];
+js:
+async function stockStatusCH(target){
 
-    let $html = $(html);
-
-    $html.find('#allCReportCase').addClass('hide');
-
-    const $createReportAll = $html.find('#createReportAll');
-    $createReportAll.removeClass('hide');
+}
