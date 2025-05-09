@@ -1,15 +1,37 @@
-1我要根據使用者修改 stock_status 是使用 onchange 嗎
-2我要如何取得使用者若選擇  <option value="1">A</option> 我要拿到 1 這個值
-請幫我修改
+他打了apiS020010035 我想再打一個apiS140020010 怎麼寫
 
-<select class="form-control stock_status" onchange="stockStatusCH(this)" name="stock_status">
-
-    <option value="1">A</option>
-    <option value="2">B</option>
-    <option value="3">C</option>
-</select>
-
-js:
-async function stockStatusCH(target){
-
+async function openModalGHandlerBtn(obj) {
+    loadingShow();
+    let userObj = getUidToken();
+    let uid = userObj.uid;
+    let token = userObj.token;
+    let business = $('.business').val();
+    console.log('@AAA: ', business);
+    //預設 13(新台幣)
+    let currencySelect = "13";//幣別
+    //企金業務 40
+    if (business == "40") {
+        //企金不一定是新台幣
+        currencySelect = $(".accForeignCurrencySelect[name='accForeignCurrencySelect']").val() || "";//幣別
+    }
+    let data = {};
+    let openModalAppMoney = $(".openModalAppMoney").val() || "";//金額
+    data.caseno = $('.appNumber').val() || "";//案件編號
+    data.accForeignCurrencySelect = currencySelect;//幣別
+    data.appMoney = openModalAppMoney;//金額
+    if ($(".openModalAppMoney").val() == "") {
+        alert("請輸入金額!");
+        loadingHide();
+        return;
+    }
+    await apiS020010035(uid, token, data).done(function (json) {
+        if (json.rc == "M0000") {
+            $(".appMoney[name='appMoney']").val(openModalAppMoney);
+            $('#modalG').modal('hide');
+            loadingHide();
+        } else {
+            apiErrorHandler(json);
+            loadingHide();
+        }
+    });
 }
