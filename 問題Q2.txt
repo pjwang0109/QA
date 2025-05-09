@@ -1,18 +1,60 @@
-這樣寫可以嗎
-if(s120010007.rc == "M0000"){
-        tr.addClass('table-warning');
-
-        let urlHtml = ajaxhttpIPHostHtml("/NEW_creditReport/creditReport_create.html");
-        const html = await $.ajax(urlHtml);
-        let $html = $(html);
-        $("#frontBody").empty().append($html);
-
-        console.log("GG:", $("#frontBody").find('#allCReportCase'));
-
-        $("#frontBody").find('#allCReportCase').addClass('hide');
-
-        const $createReportAll = $("#frontBody").find('#createReportAll');
-        $createReportAll.removeClass('hide');
+當  else if(json.rc == "M2111"){} 時 我的 dataRES.appMoney 想要改值 怎麼修改程式?
 
 
+async function openModalGHandlerBtn(obj) {
+    loadingShow();
+    let userObj = getUidToken();
+    let uid = userObj.uid;
+    let token = userObj.token;
+    let business = $('.business').val();
+    console.log('@AAA: ', business);
+    //預設 13(新台幣)
+    let currencySelect = "13";//幣別
+    //企金業務 40
+    if (business == "40") {
+        //企金不一定是新台幣
+        currencySelect = $(".accForeignCurrencySelect[name='accForeignCurrencySelect']").val() || "";//幣別
     }
+    let data = {};
+    let openModalAppMoney = $(".openModalAppMoney").val() || "";//金額
+    data.caseno = $('.appNumber').val() || "";//案件編號
+    data.accForeignCurrencySelect = currencySelect;//幣別
+    data.appMoney = openModalAppMoney;//金額
+    if ($(".openModalAppMoney").val() == "") {
+        alert("請輸入金額!");
+        loadingHide();
+        return;
+    }
+
+    let caseno = $('#indexBtn').find('.appNumber').val() || ""; //案件編號
+    let jsonData = "";
+    jsonData = await apiS120010007(uid, token, caseno);
+    let BIZ1_4 = jsonData.result.crptlist[0].basedata_company.BIZ1_4; //營業種類標準代號4碼
+
+    let dataRES = {};
+    dataRES.appNumber = caseno || ""; //案件編號
+    dataRES.highCarbon = BIZ1_4 || ""; //營業種類標準代號4碼
+    dataRES.business = $('.businessTCFD').val() || ""; //業務別
+    dataRES.stock_status = ""; //股票發行狀況
+    dataRES.appMoney = openModalAppMoney || ""; //客戶申請金額
+    let res2 = await apiS140020010(uid, token, dataRES);
+    
+    await apiS020010035(uid, token, data).done(function (json) {
+        if (json.rc == "M0000") {
+            $(".appMoney[name='appMoney']").val(openModalAppMoney);
+            $('#modalG').modal('hide');
+
+            if(res2.rc == "M0000"){
+
+            }
+           
+            loadingHide();
+        } else if(json.rc == "M2111"){
+            
+        }
+        else {
+            apiErrorHandler(json);
+            loadingHide();
+        }
+    });
+}
