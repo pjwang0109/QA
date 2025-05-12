@@ -1,60 +1,127 @@
-當  else if(json.rc == "M2111"){} 時 我的 dataRES.appMoney 想要改值 怎麼修改程式?
-
-
-async function openModalGHandlerBtn(obj) {
-    loadingShow();
+幫我看以下程式是否有需要修改的地方
+async function openCaseWebCR(obj) { 
+    // loadingShow();
     let userObj = getUidToken();
     let uid = userObj.uid;
     let token = userObj.token;
-    let business = $('.business').val();
-    console.log('@AAA: ', business);
-    //預設 13(新台幣)
-    let currencySelect = "13";//幣別
-    //企金業務 40
-    if (business == "40") {
-        //企金不一定是新台幣
-        currencySelect = $(".accForeignCurrencySelect[name='accForeignCurrencySelect']").val() || "";//幣別
-    }
-    let data = {};
-    let openModalAppMoney = $(".openModalAppMoney").val() || "";//金額
-    data.caseno = $('.appNumber').val() || "";//案件編號
-    data.accForeignCurrencySelect = currencySelect;//幣別
-    data.appMoney = openModalAppMoney;//金額
-    if ($(".openModalAppMoney").val() == "") {
-        alert("請輸入金額!");
-        loadingHide();
-        return;
-    }
+    let crpt_pk = $(obj).text(); //案件編號
+    let table = $(obj).closest("table").DataTable();
+    let tr = $(obj).closest('tr');
 
-    let caseno = $('#indexBtn').find('.appNumber').val() || ""; //案件編號
-    let jsonData = "";
-    jsonData = await apiS120010007(uid, token, caseno);
-    let BIZ1_4 = jsonData.result.crptlist[0].basedata_company.BIZ1_4; //營業種類標準代號4碼
+    //超連結鎖定
+    $(obj).closest(".tab-content").find("a").css({
+        "pointer-events": "none",
+        "color": "grey",
+    });
 
-    let dataRES = {};
-    dataRES.appNumber = caseno || ""; //案件編號
-    dataRES.highCarbon = BIZ1_4 || ""; //營業種類標準代號4碼
-    dataRES.business = $('.businessTCFD').val() || ""; //業務別
-    dataRES.stock_status = ""; //股票發行狀況
-    dataRES.appMoney = openModalAppMoney || ""; //客戶申請金額
-    let res2 = await apiS140020010(uid, token, dataRES);
+    $(obj).closest("table").find("tr").removeClass('table-warning');
+    $("#frontBody").empty();
+    $("#frontHeader").empty();
+
+    const res = await Promise.all([
+        apiS120010007(uid, token, crpt_pk),
+        apiS120010001(uid, token, crpt_pk),
+        apiS120010002(uid, token, crpt_pk),
+    ])
+
+    const s120010007 = res[0];
+    const s120010001 = res[1];
+    const s120010002 = res[2];
+
+    console.log("07:", s120010007);
+    console.log("01:", s120010001);
+    console.log("02:", s120010002);
+
+    if(s120010007.rc == "M0000"){
+        tr.addClass('table-warning');
+
+        const urlHtml = ajaxhttpIPHostHtml("/NEW_creditReport/creditReport_create.html");
+        const html = await $.ajax(urlHtml);
+        const $html = $(html);
+        $("#frontBody").empty().append($html);
+
+        const $frontBody = $('#frontBody');
+        $frontBody.find('#allCReportCase').addClass('hide');
+        $frontBody.find('#createReportAll').removeClass('hide');
+
+        //////////塞入資料 START//////////
+        //案件編號
+        let caseNumInfo = `案件編號：${crpt_pk}`;
+        $('#caseNumber').text(caseNumInfo);
+        //ID
+        $('.idNumber').val(s120010007.result.custid);
+        // 戶名
+        $('.buildNameCR').val(s120010007.result.cname);
+
+        //預取資料
+        // $html.find(".allSelect").data("select", {});
+        // $html.find(".jobSelect").data("select", {});
+
+        //allSelect資料(s120010001)
+        if (s120010001 && s120010001.rc  == "M0000") {
+            //選擇檔案 select選單
+            const uploadTypeList = s120010001.result.uploadtypeSLT || [];
+            $.each(uploadTypeList, (i, v) => {
+                const $option = $("<option>");
+                $option.attr("value", v.key);
+                $option.text(v.val);
+                $html.find(".uploadfileSelect").append($option);
+            })
+            //新增借保戶 select選單
+            const custTypeList = s120010001.result.custtypeSLT || [];
+            $.each(custTypeList, (i, v) => {
+                const $option = $("<option>");
+                $option.attr("value", v.key);
+                $option.text(v.val);
+                $html.find("#model_identity").append($option);
+            });
+            const otherRightList = s120010001.result.otherrightsSLT || [];
+            $html.find("#otherRightModal").find("ul").empty();
+            $.each(otherRightList, (i, v) => {
+                const key = v.key || "";
+                const val = v.val || "";
+                let body_li = '<li class="nav-item">' +
+                    '<div class="nav-link">' +
+                    '<input class="form-check-input" style="margin-top: 8px;" type="checkbox" id="othercheckbox' + key + '" value="' + val + '">' +
+                    '<label class="form-check-label" for="othercheckbox' + key + '">' + val + '</label>' +
+                    '</div></li>';
+                $html.find("#otherRightModal").find("ul").append(body_li);
+            });
+            // $html.find(".allSelect").data("select", allSelect);
+        }
+        //jobSelect資料(s120010002)
+        if (s120010002 && s120010002.rc == "M0000") {
+            const jobArr = s120010002.result.bizSLT;
+            $html.find("#jobQueryList").empty();
+            const jobMappingObj = {};
+            $.each(jobArr, (i, v) => {
+                const $option = $(`<option value="${v.key} ${v.val}">${v.key} ${v.val}</option>`)
+                $html.find("#jobQueryList").append($option);
     
-    await apiS020010035(uid, token, data).done(function (json) {
-        if (json.rc == "M0000") {
-            $(".appMoney[name='appMoney']").val(openModalAppMoney);
-            $('#modalG').modal('hide');
-
-            if(res2.rc == "M0000"){
-
-            }
-           
-            loadingHide();
-        } else if(json.rc == "M2111"){
-            
+                jobMappingObj[String(v.key)] = v.val;
+            })
+            // $html.find(".jobSelect").data("select", jobMappingObj);
         }
-        else {
-            apiErrorHandler(json);
-            loadingHide();
-        }
+        //////////塞入資料 END//////////
+
+        // 取得目標區塊的y座標 //滑到該位置
+        try {
+            let target_top = $("#createReportAll").offset().top;
+            window.scrollTo({
+                top: target_top,
+                behavior: "smooth"
+            });
+        } catch (e) { console.error(e) };
+
+        // loadingHide();
+    }else{
+        apiErrorHandler(s120010007);
+        // loadingHide();
+    }
+
+    //超連結解除
+    $(obj).closest(".tab-content").find("a").css({
+        "pointer-events": "auto",
+        "color": "#007bff",
     });
 }
