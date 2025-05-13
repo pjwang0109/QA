@@ -1,7 +1,19 @@
-原先的新增 是他每次會有 baseData.result.crptlist 這1筆資料 根據這筆資料去新增addBorrowerTable(dataRes);
+dataResLength 得到有多少筆資料 我的 ${dataRes[].crpt_custtype}：每一筆資料的crpt_custtype要帶進去 怎麼寫?
 
-但是我現在是取出 baseData.result.crptlist裡面會有多筆資料 我要如何新增每一筆的 資料到頁面上
+const dataRes = baseData.result.crptlist || [];
+            const dataResLength = baseData.result.crptlist.length;
+            dataRes.forEach(crptlist =>{
+                takeOutBorrowerTable(crptlist, dataResLength);
+            })
 
-//A連動-借保戶多筆資料
-//const dataRes = baseData.result.crptlist[0];
-//addBorrowerTable(dataRes);
+
+takeOutBorrowerTable(dataRes, dataResLength){
+    // let identity = $("#model_identity>option:selected").text();
+    crpt_custtype
+    console.log("dataRes:", dataRes);
+    let num = $(".idBorrowerDiv").length + 1
+    const $idDiv = `<div id="idBorrowerDiv_${num}" class="idBorrowerDiv my-2">
+              <!-- 1聯徵 -->
+              <div class="form-group form-inline creditDiv">
+                <span class="idPerson ml-4" style="width:420px">${dataRes[].crpt_custtype}：${dataRes.cname}</span>
+.....
