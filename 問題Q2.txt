@@ -1,11 +1,7 @@
-s107.result.flag_mf 為0時
+原先的新增 是他每次會有 baseData.result.crptlist 這1筆資料 根據這筆資料去新增addBorrowerTable(dataRes);
 
-<label class="form-check-label contactDataLabel">
-              <input type="radio" class="form-check-input flag_mf" id="contactData_Y" name="contactData" value="0" onchange="contactDataToggle(this)">正常
-            </label>
-            <label class="form-check-label contactDataLabel ml-2">
-              <input type="radio" class="form-check-input flag_mf" id="contactData_N" name="contactData" value="1" onchange="contactDataToggle(this)">不正常
-            </label>
+但是我現在是取出 baseData.result.crptlist裡面會有多筆資料 我要如何新增每一筆的 資料到頁面上
 
-想將 <input type="radio" class="form-check-input flag_mf" id="contactData_Y" name="contactData" value="0" onchange="contactDataToggle(this)">正常 
-勾選起來該怎麼寫
+//A連動-借保戶多筆資料
+//const dataRes = baseData.result.crptlist[0];
+//addBorrowerTable(dataRes);
