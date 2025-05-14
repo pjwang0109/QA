@@ -1,19 +1,46 @@
-dataResLength 得到有多少筆資料 我的 ${dataRes[].crpt_custtype}：每一筆資料的crpt_custtype要帶進去 怎麼寫?
+這是回傳完整徵信報告 jQuery物件 我想幫nav_${num} 排序，當 pageNav 有2個時，為nav_1, nav_2 以此類推 但要怎麼做
 
-const dataRes = baseData.result.crptlist || [];
-            const dataResLength = baseData.result.crptlist.length;
-            dataRes.forEach(crptlist =>{
-                takeOutBorrowerTable(crptlist, dataResLength);
-            })
+//完整徵信報告頁面資料 回傳完整徵信報告 jQuery物件   **參考 getCreditCheckReportUnit
+async function getUnitCR(dataObj, $source) {
+    const id = dataObj.custid;
+    const navCount = dataObj.crpt_seq;
+    let hash = getHash(String(id + navCount + new Date().getTime()));
+    const identityArr = ["", "借款人：", "保證人：", "負責人：", "實際經營者：", "共同借款人：", "擔保物提供人："];
+    const identity = identityArr[dataObj.crpt_custtype] || "";
+    let result = "";
+    // 行業別中文顯示需使用
+    const jobSelectObj = $($source).find(".jobSelect").data("select") || {};
+    if (dataObj && dataObj.crpt_datatype == "2") {
+        json = dataObj.basedata_company;
+        dataObj.jobSelect = jobSelectObj;
+        result = await getCompanyPageCR(navCount, hash, dataObj);
+    } else if (dataObj && dataObj.crpt_datatype == "1") {
+        json = dataObj.basedata_person;
+        result = await getPersonPageCR(navCount, hash, dataObj);
+    }
+    let showName = id;
+    if (dataObj.cname) showName = dataObj.cname;
 
-
-takeOutBorrowerTable(dataRes, dataResLength){
-    // let identity = $("#model_identity>option:selected").text();
-    crpt_custtype
-    console.log("dataRes:", dataRes);
-    let num = $(".idBorrowerDiv").length + 1
-    const $idDiv = `<div id="idBorrowerDiv_${num}" class="idBorrowerDiv my-2">
-              <!-- 1聯徵 -->
-              <div class="form-group form-inline creditDiv">
-                <span class="idPerson ml-4" style="width:420px">${dataRes[].crpt_custtype}：${dataRes.cname}</span>
-.....
+    const $tabItem = $(`
+    <li class="nav-item pageNav" id="nav_${num}">
+        <a class="nav-link" data-toggle="tab" href="#relInfoTabItem_${hash}">
+            ${identity}${showName}
+            <button class="btn-sm btn del-btn btn-link"
+                data-seq="${navCount}"
+                onclick="delUnitCR(this)">
+                <i class="fa fa-times"></i>
+            </button>
+        </a>
+    </li>
+  `);
+    const $div = $(`<div id="relInfoTabItem_${hash}">`);
+    $div.addClass("tab-pane");
+    // // 塞入預取選項
+    $div.append(result);
+    // $target.find("#myTab").append($tabItem);
+    // $target.find("#myTabContent").append($div);
+    const resultObj = {};
+    resultObj["tabItem"] = $tabItem;
+    resultObj["tabContent"] = $div;
+    return resultObj;
+}
