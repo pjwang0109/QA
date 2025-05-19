@@ -1,4 +1,14 @@
-        $('#guarantor .guarantorsection .card-body:nth(0)').find('.collapse.show').map(function () {
-            $(this).collapse('hide');
-        });
-這是什麼意思
+1:
+ <select class="form-control jname">
+                <option value="">請選擇...</option>
+                <option value="董事">董事</option>
+                <option value="主要股東">主要股東</option>
+                <option value="監察人">監察人</option>
+              </select>
+
+2: 
+<input type="text" class="form-control form-digit-5 sratio" />
+
+
+directorSratio 想要根據以上 sratio 和 jname 來設定 directorSratio的值為多少 應該如何給directorSratio定義方法? 使用on事件嗎 還是有更好的方法
+<input type="text" class="form-control form-digit-7 directorSratio"/>
