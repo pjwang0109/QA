@@ -1,14 +1,37 @@
-1:
- <select class="form-control jname">
-                <option value="">請選擇...</option>
-                <option value="董事">董事</option>
-                <option value="主要股東">主要股東</option>
-                <option value="監察人">監察人</option>
-              </select>
+<div class="has-director-div hide">
+                    <div class="form-group form-inline mt-4 mb-2">
+                        <span class="questionStyleA">董監事總持股比率：</span>
+                        <div class="input-group">
+                            <input type="text" class="form-control form-digit-7 directorSratio" oninput="addRedLine(this)"/>
+                            <span class="input-group-text">%</span>
+                        </div>
+                    </div>
+                    <div class="form-group form-inline my-2">
+                        <span class="questionStyleA">董監事總設質比率(公開發行以上)：</span>
+                        <div class="input-group">
+                            <input type="text" class="form-control form-digit-7 publicRelease" oninput="addRedLine(this)"/>
+                            <span class="input-group-text">%</span>
+                        </div>
+                    </div>
+                    <div class="form-group form-inline my-2">
+                        <span class="questionStyleA">保證人總持股比率：</span>
+                        <div class="input-group">
+                            <input type="text" class="form-control form-digit-7 guarantor" oninput="addRedLine(this)"/>
+                            <span class="input-group-text">%</span>
+                        </div>
+                    </div>
+                </div>
 
-2: 
-<input type="text" class="form-control form-digit-5 sratio" />
+我要及時增加紅框 JS是這樣寫嗎
+//及時增加紅框
+function addRedLine(obj){
+    let directorSratio = $(obj).val();
+    let publicRelease = $(obj).val();
+    let guarantor = $(obj).val();
 
-
-directorSratio 想要根據以上 sratio 和 jname 來設定 directorSratio的值為多少 應該如何給directorSratio定義方法? 使用on事件嗎 還是有更好的方法
-<input type="text" class="form-control form-digit-7 directorSratio"/>
+    if(guarantor > 100){
+        $(obj).addClass('border-danger');
+    }else{
+         $(obj).removeClass('border-danger');
+    }
+}
