@@ -1,3 +1,5 @@
-這是一個 readonly 的input框 我有辦法根據 onchange 來偵測當他的值更改時 寫一個js方法嗎
-<input type="text" readonly name="jtno" class="jtno form-control hide" size="30" onchange="showNo(this)"/>
+目前頁面為:
+<label class="btn btn-info btn-sm my-0" style="cursor: default; opacity: 0.65;"></label>
+可以用jquery 把 style="cursor: default; opacity: 0.65;"刪掉嗎，變成以下
+<label class="btn btn-info btn-sm my-0"></label>
 
