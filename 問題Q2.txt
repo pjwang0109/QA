@@ -1,158 +1,24 @@
-這是re_YN的radio
-html:
-<div class="card-body">
-          <div class="form-group form-inline my-2">
-            <span class="questionStyleA">名下不動產:</span>
-            <div class="input-group">
-              <div class="form-check-inline">
-                <label class="form-check-label">
-                  <input type="radio" class="form-check-input re_YN" name="re_YN_${num}" value="1"/>有
-                </label>
-              </div>
-              <div class="form-check-inline">
-                <label class="form-check-label">
-                  <input type="radio" class="form-check-input re_YN" name="re_YN_${num}" value="0"/>無
-                </label>
-              </div>
-              <div class="form-check-inline details">
-                <label class="form-check-label">
-                  <input type="radio" class="form-check-input re_YN" name="re_YN_${num}" value="2"/>詳如評估報告
-                </label>
-              </div>
-            </div>
-          </div>
-          <div class="has-estate-div hide">
-            <button type="button" class="btn btn-info" style="margin: 10px" onclick="addEstateRowDataCR(this)">新增資料</button>
-            <div class="data-div"></div>
-            <div class="form-group form-inline my-2">
-              <span class="questionStyleA">不動產總筆數：</span>
-              <div class="input-group">
-                <input type="text" class="form-control form-digit-7 re_total" value="0"/>
-              </div>
-            </div>
-            <div class="form-group form-inline my-2">
-              <span class="questionStyleA">不動產設定數：</span>
-              <div class="input-group">
-                <input type="text" class="form-control form-digit-7 re_set"/>
-              </div>
-            </div>
-            <div class="form-inline mt-2 hide">
-              <span class="questionStyleA">不動產有無異常情形： </span>
-              <div class="input-group form-inline">
-                <div class="form-check-inline">
-                  <label class="form-check-label">
-                    <input type="radio" class="form-check-input re_flag" name="reflag_${num}" value="1"/>有
-                  </label>
-                </div>
-                <div class="form-check-inline">
-                  <label class="form-check-label">
-                    <input type="radio" class="form-check-input re_flag" name="reflag_${num}" value="0"/>無
-                  </label>
-                </div>
-                <div class="input-desc hide">
-                  <span class="input-group-addon">說明:</span>
-                  <input type="text" class="form-control re_desc"/>
-                </div>
-              </div>
-            </div>
-            <div class="form-inline mb-2 hide">
-              <span class="ml-2 comment-word">EX：私人設定、扣押或預告登記等</span>
-            </div>
-            <div class="form-group form-inline my-2">
-              <span class="questionStyleA">總市價:</span>
-              <div class="input-group form-inline">
-                <input type="text" class="form-control form-digit-15 referamt-total readonly" onblur="set_money_Thousands(this)" onfocus="cancel_money_Thousands(this)" oninput=" digitalboxHandler(this)" value="0" readonly/>
-                <span class="input-group-addon">仟元</span>
-              </div>
-            </div>
-          </div>
-        </div>
+這段是什麼意思
+function setPageDataByJsonClassNameMappingCR(jsondata, $div) {
+    $.each(jsondata, (k, v) => {
+if ($input.is("select")) {
+            $div.find(`select.${k}`).val(v);
+            $div.find(`select.${k}`).data("selected", v);
+        }           
 
-js:
+else if ($input.is("input:checkbox")) {
+            console.log($input);
+            let vArr = [];
+            if (v.indexOf(",") != -1) {
+                vArr = v.split(",");
+            } else {
+                vArr.push(v);
+            }
+            if (v && vArr.length > 0) {
+                $.each(vArr, (i, val) => {
+                    $div.find(`.${k}[value=${val}]`).prop("checked", true).change();
+                });
+            }
 
-    //徵信報告-不動產現狀 依據class radio onchange連動事件處理
-    $($target).on(
-        "change",
-        ".estateDiv input[type=radio]",
-        (event) => {
-            const $radio = $(event.target);
-            const classArr = $radio.prop("class").split(/\s+/);
-            $.each(classArr, (i, v) => {
-                switch (v) {
-                    case "re_YN":
-                        hasEstateData(event); //不動產現狀 有無名下不動產 有無名下不動產radio控制                        
-                        break;
-                }
-            });
-        
-
-function hasEstateData(event) {
-    const $radio = $(event.target);
-    const $div = $radio.closest(".card-body").find(".has-estate-div");
-    if ($radio.prop("checked") != true) {
-        return;
-    }
-    const value = $radio.val();
-    if (value == "0" || value == "2") {
-        console.log("value", value);
-        $div.addClass("hide");
-    } else if (value == "1") {
-        $div.removeClass("hide");
-        console.log("value", value);
-    }
-}
-
-我想做的是: flag_nonjcic 的 checkbox 想問哪裡有錯
-
-html:
-<input type="checkbox" name="unableProduceCR" id="unableProduceCR" class="flagCR mr-1 flag_nonjcic" value="0" onclick="touchUnCR(this)">聯徵彙整表無法產出
-
-js:
-//徵信報告-聯徵彙整表無法產出   **參考 touchUnPro
-async function touchUnCR(obj){
-    let $obj = $(obj);
-    if($obj.is(':checked')){ //勾選
-        $obj.val('1');
-        $obj.closest('.jcicInfomationDiv').find('.add-jcic-btn').prop('disabled', true);
-    }else{ //未勾選
-        $obj.val('0');
-        $obj.closest('.jcicInfomationDiv').find('.add-jcic-btn').prop('disabled', false);
-    }
-}
-
-
-
-    //徵信報告-聯徵票信資訊 依據class checkbox onchange連動事件處理
-    $($target).on(
-        "change",
-        ".jcicInfomationDiv input[type=checkbox]",
-        (event) => {
-            const $checkbox = $(event.target);
-            const classArr = $checkbox.prop("class").split(/\s+/);
-            $.each(classArr, (i, v) => {
-                switch (v) {
-                    case "flag_nonjcic":
-                        hasjcicData(event); //聯徵票信資訊 checkbox控制                        
-                        break;
-                }
-            });
-        }
-    );
-
-//聯徵票信資訊-有無勾選 聯徵彙整表無法產出 checkbox控制
-function hasjcicData(event) { 
-    const $checkbox = $(event.target);
-    let $div = $checkbox.find('.card-body');
-    console.log("$checkbox:", $checkbox, $div);
-
-    const value = $checkbox.val();
-    if (value == "0") {
-        console.log("@value", value);
-        $checkbox.val("0");
-        $div.find('.add-jcic-btn').prop('disabled', false);
-    } else if (value == "1") {
-        console.log("@value", value);
-        $checkbox.val("1");
-        $div.find('.add-jcic-btn').prop('disabled', true);
-    }
+})
 }
