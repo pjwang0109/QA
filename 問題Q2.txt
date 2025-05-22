@@ -1,24 +1,9 @@
-這段是什麼意思
-function setPageDataByJsonClassNameMappingCR(jsondata, $div) {
-    $.each(jsondata, (k, v) => {
-if ($input.is("select")) {
-            $div.find(`select.${k}`).val(v);
-            $div.find(`select.${k}`).data("selected", v);
-        }           
 
-else if ($input.is("input:checkbox")) {
-            console.log($input);
-            let vArr = [];
-            if (v.indexOf(",") != -1) {
-                vArr = v.split(",");
-            } else {
-                vArr.push(v);
-            }
-            if (v && vArr.length > 0) {
-                $.each(vArr, (i, val) => {
-                    $div.find(`.${k}[value=${val}]`).prop("checked", true).change();
-                });
-            }
 
-})
-}
+$target 為 id="relInfoTabItem_{num}"
+
+我想從
+let $text = $target.closest('#myTabContent').closest('.card-body');
+$text.find 每一個 .pageNav 裡面去找 <a class="nav-link active show" href="#relInfoTabItem_{num}"></a>
+找到同一個 {num} 之後 再從 <a class="nav-link active show" href="#relInfoTabItem_{num}"></a> 往上取得他的id
+該怎麼寫(jquery)
