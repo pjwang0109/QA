@@ -1,5 +1,6 @@
 因為我有一個 #unableProduceCR 當他點選時 value="1" 未點選時 value="0" 那我要如何調整這段程式碼
 
+而且有別的 checkbox 同時存在
 可以當 k ==  "flag_nonjcic" 嗎
 
             <label for="unableProduceCR" class="mx-2">
