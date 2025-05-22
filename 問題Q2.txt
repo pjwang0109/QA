@@ -1,9 +1,44 @@
+這是什麼意思 $div.find(`input:radio.${k}[value=${v}]`).prop("checked", true).change();
 
 
-$target 為 id="relInfoTabItem_{num}"
+//回傳單筆徵信報告 jQuery物件 將json key值與className對應的element直接填入   **參考 setPageDataByJsonClassNameMapping 
+function setPageDataByJsonClassNameMappingCR(jsondata, $div) {
+    $.each(jsondata, (k, v) => {
+        // console.log(jsondata);
+        // console.log(k);
+        // console.log(v);
+        const $input = $div.find(`.${k}`);
+        if ($input.is("select")) {
+            $div.find(`select.${k}`).val(v);
+            $div.find(`select.${k}`).data("selected", v);
+        } else if ($input.is("input:radio")) {
+            if (v) {
+                $div.find(`input:radio.${k}[value=${v}]`).prop("checked", true).change();
 
-我想從
-let $text = $target.closest('#myTabContent').closest('.card-body');
-$text.find 每一個 .pageNav 裡面去找 <a class="nav-link active show" href="#relInfoTabItem_{num}"></a>
-找到同一個 {num} 之後 再從 <a class="nav-link active show" href="#relInfoTabItem_{num}"></a> 往上取得他的id
-該怎麼寫(jquery)
+                //徵信報告-不動產現狀-使用分區(土地) 建築結構(建物) click觸發
+                if (`${k}` == "architecturalstructure" || `${k}` == "zoning") {
+                    $div.find(`input:radio.${k}[value=${v}]`).click();
+                }
+            }
+        } else if ($input.is("input:checkbox")) {
+            console.log("k:", k);
+            let vArr = [];
+            if (v.indexOf(",") != -1) {
+                vArr = v.split(",");
+            } else {
+                vArr.push(v);
+            }
+            if (v && vArr.length > 0) {
+                $.each(vArr, (i, val) => {
+                    $div.find(`.${k}[value=${val}]`).prop("checked", true).change();
+                });
+            }
+        } else if ($input.is("input:hidden")) {
+            if (v) {
+                $input.val(v).change();
+            }
+        } else {
+            $input.val(v).change();
+        }
+    });
+}
