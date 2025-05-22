@@ -1,44 +1,9 @@
-這是什麼意思 $div.find(`input:radio.${k}[value=${v}]`).prop("checked", true).change();
+因為我有一個 #unableProduceCR 當他點選時 value="1" 未點選時 value="0" 那我要如何調整這段程式碼
 
+可以當 k ==  "flag_nonjcic" 嗎
 
-//回傳單筆徵信報告 jQuery物件 將json key值與className對應的element直接填入   **參考 setPageDataByJsonClassNameMapping 
-function setPageDataByJsonClassNameMappingCR(jsondata, $div) {
-    $.each(jsondata, (k, v) => {
-        // console.log(jsondata);
-        // console.log(k);
-        // console.log(v);
-        const $input = $div.find(`.${k}`);
-        if ($input.is("select")) {
-            $div.find(`select.${k}`).val(v);
-            $div.find(`select.${k}`).data("selected", v);
-        } else if ($input.is("input:radio")) {
-            if (v) {
-                $div.find(`input:radio.${k}[value=${v}]`).prop("checked", true).change();
-
-                //徵信報告-不動產現狀-使用分區(土地) 建築結構(建物) click觸發
-                if (`${k}` == "architecturalstructure" || `${k}` == "zoning") {
-                    $div.find(`input:radio.${k}[value=${v}]`).click();
-                }
-            }
-        } else if ($input.is("input:checkbox")) {
-            console.log("k:", k);
-            let vArr = [];
-            if (v.indexOf(",") != -1) {
-                vArr = v.split(",");
-            } else {
-                vArr.push(v);
-            }
-            if (v && vArr.length > 0) {
-                $.each(vArr, (i, val) => {
-                    $div.find(`.${k}[value=${val}]`).prop("checked", true).change();
-                });
-            }
-        } else if ($input.is("input:hidden")) {
-            if (v) {
-                $input.val(v).change();
-            }
-        } else {
-            $input.val(v).change();
-        }
-    });
-}
+            <label for="unableProduceCR" class="mx-2">
+              <input type="checkbox" name="unableProduceCR" id="unableProduceCR" class="flagCR mr-1 flag_nonjcic" value="0">聯徵彙整表無法產出
+              <!-- <input type="checkbox" name="unableProduceCR" id="unableProduceCR" class="flagCR mr-1 flag_nonjcic" value="0" onclick="touchUnCR(this)">聯徵彙整表無法產出 -->
+              <span class="text-danger">(請檢附原始電文)</span>
+            </label>
