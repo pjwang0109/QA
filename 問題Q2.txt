@@ -1,10 +1,60 @@
-因為我有一個 #unableProduceCR 當他點選時 value="1" 未點選時 value="0" 那我要如何調整這段程式碼
+            const dataRes = baseData.result.crptlist || [];
+            dataRes.forEach((crptItem) =>{
+                takeOutBorrowerTable(crptItem);
+                console.log('crptItem:', crptItem.flag_jcic, crptItem.flag_tch);
+            })
 
-而且有別的 checkbox 同時存在
-可以當 k ==  "flag_nonjcic" 嗎
+我想在 當
+console.log('crptItem:', crptItem.flag_jcic, crptItem.flag_tch); //crptItem: 1 2
+console.log('crptItem:', crptItem.flag_jcic, crptItem.flag_tch); //crptItem: 1 0
+時
+讓 takeOutBorrowerTable #idBorrowerDiv_1  #flagJcic_N 和 #flag_tch_NS 勾選起來
+讓 takeOutBorrowerTable #idBorrowerDiv_2  #flagJcic_N 和 #flag_tch_Y 勾選起來
+我的程式該如何改?
 
-            <label for="unableProduceCR" class="mx-2">
-              <input type="checkbox" name="unableProduceCR" id="unableProduceCR" class="flagCR mr-1 flag_nonjcic" value="0">聯徵彙整表無法產出
-              <!-- <input type="checkbox" name="unableProduceCR" id="unableProduceCR" class="flagCR mr-1 flag_nonjcic" value="0" onclick="touchUnCR(this)">聯徵彙整表無法產出 -->
-              <span class="text-danger">(請檢附原始電文)</span>
-            </label>
+
+//取出連動:借保戶一般信評及往來情形表  
+async function takeOutBorrowerTable(crptItem){
+    const typeMap = {
+        "1": '借款人',
+        "2": '保證人',
+        "3": '負責人',
+        "4": '實際經營者',
+        "5": '共同借款人',
+        "6": '擔保物提供人',
+    }
+    const typeLabel = typeMap[crptItem.crpt_custtype] || "";
+
+    let num = $(".idBorrowerDiv").length + 1;
+    const $idDiv = `<div id="idBorrowerDiv_${num}" class="idBorrowerDiv my-2">
+              <!-- 1聯徵 -->
+              <div class="form-group form-inline creditDiv">
+                <span class="idPerson ml-4" style="width:420px">${typeLabel}：${crptItem.cname}</span>
+                <span class="questionStyleA">聯徵：</span>
+                <label class="form-check-label flag_jcicLabel">
+                  <input type="radio" class="form-check-input flag_jcic" id="flagJcic_Y" name="flag_jcic" value="0" disabled>正常
+                </label>
+                <label class="form-check-label flag_jcicLabel ml-2">
+                  <input type="radio" class="form-check-input flag_jcic" id="flagJcic_N" name="flag_jcic" value="1" disabled>不正常
+                </label>
+                <label class="caption ml-5 hide">說明：<input type="text" style="width:280px" class="desc_jcic"/></label>
+              </div>
+              <!-- 2票信 -->
+              <div class="form-group form-inline letterDiv">
+                <span class="widthHide ml-4" style="width:420px"></span>
+                <span class="questionStyleA">票信：</span>
+                <label class="form-check-label flag_tchLabel">
+                  <input type="radio" class="form-check-input flag_tch" id="flag_tch_Y" name="flag_tch" value="0" disabled>正常
+                </label>
+                <label class="form-check-label flag_tchLabel ml-2">
+                  <input type="radio" class="form-check-input flag_tch" id="flag_tch_N" name="flag_tch" value="1" disabled>不正常
+                </label>
+                <label class="form-check-label flag_tchLabel ml-5">
+                  <input type="radio" class="form-check-input flag_tch" id="flag_tch_NS" name="flag_tch" value="2" disabled>未查詢
+                </label>
+              </div>
+            </div>`
+    let $table = $('#situationTable');
+    $table.find('.idBorrowerAllDiv').append($idDiv);
+    
+}
