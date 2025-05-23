@@ -1,4 +1,6 @@
-            const dataRes = baseData.result.crptlist || [];
+Uncaught (in promise) TypeError: $idDiv.find is not a function
+
+const dataRes = baseData.result.crptlist || [];
             dataRes.forEach((crptItem) =>{
                 takeOutBorrowerTable(crptItem);
                 console.log('crptItem:', crptItem.flag_jcic, crptItem.flag_tch);
