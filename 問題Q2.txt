@@ -1,33 +1,37 @@
-這個方法有時候會導致 日期getTime和 分行別branch 、業務別business 不會顯示，我該如何改
-async function createCReport(){
-    loadingShow();
-    let userObj = getUidToken();
-    let uid = userObj.uid;
-    let token = userObj.token;
-    try{
-        const json = await apiS120010020(uid, token);
-        if (json && json.rc == "M0000"){
-            //日期
-            let getTime = new Date().toISOString().substring(0, 10).replace(/-/g, "/");
-            $(".getTime").val(getTime);
-            //分行別
-            $('.branch').val(json.result.branch);
-            //業務別
-            if (json.result && json.result.business) {
-                $.each(json.result.business, (i, v) => {
-                    const $opt = $("<option>");
-                    $opt.attr("value", v.code);
-                    $opt.text(v.name);
-                    $(".business").append($opt);
-                });
-            }
-            loadingHide();
-        }else{
-            apiErrorHandler(json);
-            loadingHide();
-        }
-    }catch (e){
-        console.error(e);
-    }
-
+這兩個function寫法 有差異嗎
+function apiS120010021(uid, token, business, branch, custid, cname) {
+    return $.ajax({
+        url: ajaxhttpIPHost("/res/S120010021"), 
+        type: "POST",
+        dataType: "json",
+        data: JSON.stringify({
+            "uid": uid,
+            "token": token,
+            "business": business,
+            "branch": branch,
+            "custid": custid,
+            "cname": cname
+        }),
+    });
 }
+
+
+// function apiS120010021(uid, token, business, branch, custid, cname) {
+//     let opt = getS120010021(uid, token, business, branch, custid, cname);
+//     return $.ajax(opt);
+// }
+// function getS120010021(uid, token, business, branch, custid, cname) {
+//     return {
+//         url: ajaxhttpIPHost("/res/S120010021"), 
+//         type: "POST",
+//         contentType: "application/json",
+//         data: JSON.stringify({
+//             "uid": uid,
+//             "token": token,
+//             "business": business, 
+//             "branch": branch, 
+//             "custid": custid, 
+//             "cname": cname
+//         }),
+//     };
+// }
