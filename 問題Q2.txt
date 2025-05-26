@@ -1,37 +1,44 @@
-這兩個function寫法 有差異嗎
-function apiS120010021(uid, token, business, branch, custid, cname) {
-    return $.ajax({
-        url: ajaxhttpIPHost("/res/S120010021"), 
-        type: "POST",
-        dataType: "json",
-        data: JSON.stringify({
-            "uid": uid,
-            "token": token,
-            "business": business,
-            "branch": branch,
-            "custid": custid,
-            "cname": cname
-        }),
-    });
+case = 1 時  
+$("#usekycdata").prop("checked", true);
+$("#usekycdata").prop("disabled", true);
+
+case = 2或3或4或5或6或"" 時 
+$("#usekycdata").prop("checked", false);
+$("#usekycdata").prop("disabled", false);
+
+該怎麼修改
+
+function set_identityHandler(target) {
+
+    let val = $(target).val();
+
+    switch (val) {
+        case "1":
+            $("#usekycdata").prop("checked", true);
+            $("#usekycdata").prop("disabled", true);
+            break;
+        case "2":
+            $("#usekycdata").prop("checked", false);
+            $("#usekycdata").prop("disabled", false);
+            break;
+        case "3":
+            $("#usekycdata").prop("checked", false);
+            $("#usekycdata").prop("disabled", false);
+            break;
+        case "4":
+            $("#usekycdata").prop("checked", false);
+            $("#usekycdata").prop("disabled", false);
+            break;
+        case "5":
+            $("#usekycdata").prop("checked", false);
+            $("#usekycdata").prop("disabled", false);
+            break;
+        case "6":
+            $("#usekycdata").prop("checked", false);
+            $("#usekycdata").prop("disabled", false);
+            break;
+        case "":
+            $(target).next().addClass("hide");
+            break;
+    }
 }
-
-
-// function apiS120010021(uid, token, business, branch, custid, cname) {
-//     let opt = getS120010021(uid, token, business, branch, custid, cname);
-//     return $.ajax(opt);
-// }
-// function getS120010021(uid, token, business, branch, custid, cname) {
-//     return {
-//         url: ajaxhttpIPHost("/res/S120010021"), 
-//         type: "POST",
-//         contentType: "application/json",
-//         data: JSON.stringify({
-//             "uid": uid,
-//             "token": token,
-//             "business": business, 
-//             "branch": branch, 
-//             "custid": custid, 
-//             "cname": cname
-//         }),
-//     };
-// }
