@@ -1,44 +1,45 @@
-case = 1 時  
-$("#usekycdata").prop("checked", true);
-$("#usekycdata").prop("disabled", true);
+function apiS120010020(uid, token) {
+    let opt = getS120010020(uid, token);
+    return $.ajax(opt);
+}
+function getS120010020(uid, token) {
+    return {
+        url: ajaxhttpIPHost("/res/S120010020"),
+        type: "POST",
+        contentType: "application/json",
+        data: JSON.stringify({
+            "uid": uid,
+            "token": token,
+        })
+    };
+}
 
-case = 2或3或4或5或6或"" 時 
-$("#usekycdata").prop("checked", false);
-$("#usekycdata").prop("disabled", false);
-
-該怎麼修改
-
-function set_identityHandler(target) {
-
-    let val = $(target).val();
-
-    switch (val) {
-        case "1":
-            $("#usekycdata").prop("checked", true);
-            $("#usekycdata").prop("disabled", true);
-            break;
-        case "2":
-            $("#usekycdata").prop("checked", false);
-            $("#usekycdata").prop("disabled", false);
-            break;
-        case "3":
-            $("#usekycdata").prop("checked", false);
-            $("#usekycdata").prop("disabled", false);
-            break;
-        case "4":
-            $("#usekycdata").prop("checked", false);
-            $("#usekycdata").prop("disabled", false);
-            break;
-        case "5":
-            $("#usekycdata").prop("checked", false);
-            $("#usekycdata").prop("disabled", false);
-            break;
-        case "6":
-            $("#usekycdata").prop("checked", false);
-            $("#usekycdata").prop("disabled", false);
-            break;
-        case "":
-            $(target).next().addClass("hide");
-            break;
-    }
+想問這個 createCReport 這樣寫可以嗎
+async function createCReport(){
+    loadingShow();
+    let userObj = getUidToken();
+    let uid = userObj.uid;
+    let token = userObj.token;
+    await apiS120010020(uid, token).done(function (json) {
+        if (json && json.rc == "M0000") {
+            //日期
+            let getTime = new Date().toISOString().substring(0, 10).replace(/-/g, "/");
+            $(".getTime").val(getTime);
+            //分行別
+            $('.branch').val(json.result.branch);
+            //業務別
+            if (json.result && json.result.business) {
+                $.each(json.result.business, (i, v) => {
+                    const $opt = $("<option>");
+                    $opt.attr("value", v.code);
+                    $opt.text(v.name);
+                    $(".business").append($opt);
+                });
+            }
+            loadingHide();
+        } else {
+            apiErrorHandler(json);
+            loadingHide();
+        }
+    })
 }
