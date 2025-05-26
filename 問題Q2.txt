@@ -1,5 +1,5 @@
 
-我要在btnInvalidCR先打 做btnStoreCR 成功後 在打 api2 怎麼寫
+我要在btnInvalidCR先 做btnStoreCR 成功後 在打 api2 怎麼寫
 async function btnInvalidCR(obj){
 
 }
