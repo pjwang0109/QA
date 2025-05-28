@@ -1,37 +1,30 @@
-他打了apiS020010035 我想再打一個apiS140020010 怎麼寫
+let thead =
+                    '<tr class="text-center">' +
+                    '<th></th>' +
+                    '<th><input type="checkbox" class="align-middle" style="width: 18px;height: 18px;"></th>' + //checkbox 
+                    '<th>日期</th>' +
+                    '<th>案件編號</th>' +
+                    // '<th>業務別</th>' +
+                    '<th>分行別</th>' +
+                    // '<th>ID</th>' +
+                    '<th>案件狀態</th>' +
+                    '<th>戶名</th>' +
+                    '<th>目前作業人員</th>' +
+                    '<th>改派</th>' +
+                    '</tr>';
 
-async function openModalGHandlerBtn(obj) {
-    loadingShow();
-    let userObj = getUidToken();
-    let uid = userObj.uid;
-    let token = userObj.token;
-    let business = $('.business').val();
-    console.log('@AAA: ', business);
-    //預設 13(新台幣)
-    let currencySelect = "13";//幣別
-    //企金業務 40
-    if (business == "40") {
-        //企金不一定是新台幣
-        currencySelect = $(".accForeignCurrencySelect[name='accForeignCurrencySelect']").val() || "";//幣別
-    }
-    let data = {};
-    let openModalAppMoney = $(".openModalAppMoney").val() || "";//金額
-    data.caseno = $('.appNumber').val() || "";//案件編號
-    data.accForeignCurrencySelect = currencySelect;//幣別
-    data.appMoney = openModalAppMoney;//金額
-    if ($(".openModalAppMoney").val() == "") {
-        alert("請輸入金額!");
-        loadingHide();
-        return;
-    }
-    await apiS020010035(uid, token, data).done(function (json) {
-        if (json.rc == "M0000") {
-            $(".appMoney[name='appMoney']").val(openModalAppMoney);
-            $('#modalG').modal('hide');
-            loadingHide();
-        } else {
-            apiErrorHandler(json);
-            loadingHide();
-        }
-    });
-}
+為何columnDefs裡的checkbox沒有置中
+ { "targets": 1, "width": "3%", "orderable": false, "className": "align-middle" }, //checkbox
+
+
+"columnDefs": [
+                    { "targets": 0, "width": "0%", "visible": false, "orderable": false }, //各別data
+                    { "targets": 1, "width": "3%", "orderable": false, "className": "align-middle" }, //checkbox
+                    { "targets": 2, "className": "text-center align-middle" },//日期
+                    { "targets": 3, "width": "15%", "className": "text-center align-middle" },//案件編號
+                    { "targets": 4, "className": "text-center align-middle" },//分行別
+                    { "targets": 5, "className": "text-center align-middle" },//案件狀態
+                    { "targets": 6, "width": "10%", "className": "text-center align-middle" },//戶名
+                    { "targets": 7, "className": "text-center align-middle" },//目前作業人員
+                    { "targets": 8, "className": "text-center align-middle" },//改派
+                ],
