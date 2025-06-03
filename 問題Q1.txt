@@ -1,1 +1,24 @@
+幫我看這個方法這樣寫可以嗎
 
+//是否顯示 TCFD
+async function isShowTcfd(obj){
+    loadingShow();
+    // let val = $(obj).val() || "";
+    let BIZ2_4 = $('.BIZ2_4').val() || ""; //業種代號
+    let appMoney = $('.appMoney').val() || "";
+    let appMoneyNum = Number(appMoney.replace(/,/g, "")); //客戶申請金額
+    let stock_status = $('.stock_status').val() || ""; //股票發行狀況
+
+    console.log(BIZ2_4);
+    console.log(appMoneyNum);
+    console.log(stock_status);
+
+
+    if((highCarbonNum.includes(BIZ2_4) && (appMoneyNum >= 50000000)) || (stock_status == 2 ||stock_status == 3)){
+        $('#climateRisk').removeClass('hide');
+        loadingHide();
+    }else{
+        $('#climateRisk').addClass('hide');
+        loadingHide();
+    }
+}
