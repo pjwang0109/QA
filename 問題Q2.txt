@@ -1,79 +1,11 @@
+新增年度 改為讓使用者填寫，而且填完後input數字增加1
+然後使用者填寫這個數字會影響每個增加年度直欄的排序 會自動幫我排序 怎麼修改
 
-我要在btnInvalidCR先 做btnStoreCR 成功後 在打 api2 怎麼寫
-async function btnInvalidCR(obj){
-
-}
-
-async function btnStoreCR(obj, alertSuccess = false) {
-    const $target = $(obj).closest(".container"); //全頁面
-    const $div = $('#createReportAll').find('#demo_creditCheck');
-    const crpt_pk = $div.find(".crpt_pk").val() || "";
-    const isclosed = $div.find(".isclosed").val() || "";
-    const isreopen = $div.find(".isreopen").val() || "";
-    const $crptArr = $target.find(".rel-info-div"); //新增借保戶的頁面
-    const $situationTable = $('#createReportAll').find('#situationTable');
-    let flag_jcic = $situationTable.find('.responsibleDiv .flag_jcic:checked').val() || "";
-    let flag_tch = $situationTable.find('.responsibleDiv .flag_tch:checked').val() || "";
-    let flag_other = $situationTable.find('.flag_other:checked').val() || "";
-    let desc_jcic = $situationTable.find('.responsibleDiv .desc_jcic').val() || "";
-    let flag_mf = $situationTable.find('.flag_mf:checked').val() || "";
-    let desc_mf = $situationTable.find('.desc_mf').val() || "";
-    let flag_payment = $situationTable.find('.flag_payment:checked').val() || "";
-    let times_payment = $situationTable.find('.times_payment').val() || "";
-    let desc_payment = $situationTable.find('.desc_payment').val() || "";
-    let flag_credit = $situationTable.find('.flag_credit:checked').val() || "";
-    let desc_credit = $situationTable.find('.desc_credit').val() || "";
-    let flag_judicial = $situationTable.find('.flag_judicial:checked').val() || "";
-
-    const sendData = {};
-    let result = false;
-    sendData.crpt_pk = crpt_pk;
-    sendData.isclosed = isclosed;
-    sendData.isreopen = isreopen;
-    sendData.flag_jcic = flag_jcic;
-    sendData.flag_tch = flag_tch;
-    sendData.flag_other = flag_other;
-    sendData.desc_jcic = desc_jcic;
-    sendData.flag_mf = flag_mf;
-    sendData.desc_mf = desc_mf;
-    sendData.flag_payment = flag_payment;
-    sendData.times_payment = times_payment;
-    sendData.desc_payment = desc_payment;
-    sendData.flag_credit = flag_credit;
-    sendData.desc_credit = desc_credit;
-    sendData.flag_judicial = flag_judicial;
-    sendData.crptlist = [];
-    sendData.mflist = [];
-    loadingShow("資料上傳中...");
-    $.each($crptArr, (i, crptEle) => {
-        const crptData = getSaveCRData(crptEle);
-        sendData.crptlist.push(crptData);
-    });
-    if ($target.find(".hostNo").val()) {
-        const mfObj = { dataseq: "1", case_no: $target.find(".hostNo").val() }
-        sendData.mflist.push(mfObj);
-    }
-    const userObj = getUidToken();
-    const uid = userObj.uid;
-    const token = userObj.token;
-    let res = {};
-    try {
-        res = await apiS120010006(uid, token, sendData);
-    } catch (e) { console.error(e) }
-    loadingHide();
-    if (res.rc && res.rc == "M0000") {
-        const crptArr = res.result.crpt_no;
-        $.each(crptArr, (i, crptObj) => {
-            $($crptArr[i]).find(".crpt_no").val(crptObj["crpt_no"]);
-        });
-        result = true;
-        if (alertSuccess)
-            alert("暫存成功")
-    } else {
-        if (res.msg) {
-            alert(res.msg);
-        }
-    }
-
-    return result;
-}
+<div class="d-flex align-items-center">
+                    <span class="infoText" >新增或引入資料:</span>
+                    <input type="text" class="form-control text-center infoYearData ml-3" name="" id="" >
+                    <span class="input-group-text yearTxt">年</span>
+                    <button class="btn btn-success add-btitem-btn ml-2" id="add-year-btn" onclick="addYearDataUnit(this)">
+                        <i class="fa fa-plus"></i>
+                    </button>
+                </div>
