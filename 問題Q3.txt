@@ -1,72 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <title>產品資料表（模組化）</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <style>
+    th, td { text-align: center; vertical-align: middle; }
+    .input-group-addon { padding: 6px 10px; }
+  </style>
+</head>
+<body>
 <div class="container">
   <h3>產品資料表格</h3>
   <button id="add-year-btn" class="btn btn-primary">新增年度</button>
   <button id="add-product-btn" class="btn btn-success">新增產品</button>
 
-  <table class="table table-bordered">
+  <table class="table table-bordered" id="product-table">
     <thead>
-      <tr class="header-row">
+      <tr id="table-header">
         <th>產品名稱</th>
         <th>佔營收比</th>
-        <!-- 年度欄位插入點 -->
+        <!-- 年度欄位插入位置 -->
       </tr>
     </thead>
     <tbody id="product-body">
-      <!-- 產品資料列插入點 -->
+      <!-- 產品資料列插入位置 -->
     </tbody>
   </table>
 </div>
 
-
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-  let maxYears = 3;
-  let currentYear = 2023;
+  // 狀態變數
   let yearList = [];
-  let productIndex = 0;
+  const maxYears = 3;
+  let nextYear = new Date().getFullYear();
 
-  $('#add-year-btn').on('click', function () {
+  // 初始化
+  $(document).ready(function () {
+    $('#add-year-btn').click(addYearColumn);
+    $('#add-product-btn').click(addProductRow);
+    $(document).on('click', '.remove-year-btn', removeYearColumn);
+  });
+
+  // ✅ 新增一個年度欄位
+  function addYearColumn() {
     if (yearList.length >= maxYears) {
-      alert("最多只能新增 " + maxYears + " 個年份！");
+      alert('最多只能新增 3 個年份');
       return;
     }
 
-    const year = currentYear++;
+    const year = nextYear++;
     yearList.push(year);
 
-    // 在標題列加入新年度欄位
-    $('.header-row').append(`
-      <th class="year-${year}">
+    // 新增表頭欄位
+    $('#table-header').append(`
+      <th class="year-col-${year}">
         ${year}
-        <button class="btn btn-xs btn-danger" onclick="removeYear(${year})">
+        <button class="btn btn-xs btn-danger remove-year-btn" data-year="${year}">
           <i class="glyphicon glyphicon-remove"></i>
         </button>
       </th>
     `);
 
-    // 在每一筆產品資料列加入對應 input 欄位
-    $('.product-row').each(function () {
+    // 為現有的每一列產品加上金額輸入欄位
+    $('#product-body .product-row').each(function () {
       $(this).append(`
-        <td class="year-${year}">
+        <td class="year-col-${year}">
           <input type="text" class="form-control amount" placeholder="金額">
         </td>
       `);
     });
-  });
+  }
 
-  function removeYear(year) {
-    // 移除標題與每一列的對應欄位
-    $(`.year-${year}`).remove();
+  // ✅ 移除指定年份欄位與資料欄
+  function removeYearColumn() {
+    const year = $(this).data('year');
+    $(`.year-col-${year}`).remove();
     yearList = yearList.filter(y => y !== year);
   }
 
-  $('#add-product-btn').on('click', function () {
-    productIndex++;
-    const newRow = $('<tr class="product-row"></tr>');
+  // ✅ 新增一筆產品資料列
+  function addProductRow() {
+    const $row = $('<tr class="product-row"></tr>');
 
-    newRow.append(`
-      <td>
-        <textarea class="form-control pname" rows="1" placeholder="產品名稱"></textarea>
-      </td>
+    // 基本欄位
+    $row.append(`
+      <td><textarea class="form-control pname" rows="1" placeholder="產品名稱"></textarea></td>
       <td>
         <div class="input-group">
           <input type="text" class="form-control rate" maxlength="3" placeholder="%" />
@@ -75,15 +95,17 @@
       </td>
     `);
 
-    // 為每個已新增的年度補欄位
+    // 根據目前的年份欄位數新增金額欄
     yearList.forEach(year => {
-      newRow.append(`
-        <td class="year-${year}">
+      $row.append(`
+        <td class="year-col-${year}">
           <input type="text" class="form-control amount" placeholder="金額">
         </td>
       `);
     });
 
-    $('#product-body').append(newRow);
-  });
+    $('#product-body').append($row);
+  }
 </script>
+</body>
+</html>
