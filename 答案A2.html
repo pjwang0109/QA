@@ -1,43 +1,112 @@
+let yearList = []; // 年度陣列（整數）
+const maxYears = 3;
 
-function addPrimaryProductTableData(obj) {
-  if (years.length === 0) {
-    alert("請先新增年份");
+$(document).ready(function () {
+  $('#add-year-btn').click(handleAddYear);
+});
+
+function handleAddYear() {
+  const input = $('#year-input');
+  let year = parseInt(input.val());
+
+  if (isNaN(year)) {
+    alert('請輸入有效的年份');
     return;
   }
-  if (productCount >= 3) {
-    alert("最多只能新增 3 列產品");
+
+  if (yearList.includes(year)) {
+    alert('該年份已存在');
     return;
   }
 
-  const $tbody = $(obj).closest(".card-body").find(".mainProductss-div .mainProduct-unit table tbody");
-  productCount++;
+  if (yearList.length >= maxYears) {
+    alert('最多只能新增 3 個年份');
+    return;
+  }
 
-  // 建立資料列（產品名 + 每年金額與比重）
-  const $productRows = $(`<>
-    <tr>
-      <td rowspan="2" class="v-middle">
-        <button data-num="2" data-row="${productCount}" class="del-btn btn btn-danger btn-sm">
-          <i class="fa fa-times"></i>
+  yearList.push(year);
+  yearList.sort(); // 依照數字排序
+
+  updateTableHeader();
+  updateProductRows();
+
+  // 自動 +1
+  input.val(year + 1);
+}
+
+// 更新表頭欄位（年份欄位重繪）
+function updateTableHeader() {
+  const $header = $('#table-header');
+  $header.find('th.year-col').remove(); // 移除舊的年份欄位
+
+  yearList.forEach(year => {
+    const th = $(`
+      <th class="year-col year-col-${year}">
+        ${year}
+        <button class="btn btn-xs btn-danger remove-year-btn" data-year="${year}">
+          <i class="glyphicon glyphicon-remove"></i>
         </button>
-      </td>
-      <td rowspan="2">
-        <textarea class="form-control pname p-${productCount}" cols="30" rows="1"></textarea>
-      </td>
-      <td class="hide">金額</td>
-      ${years.map((y, i) => `<td class="hide"><input type="text" class="form-control amt${i + 1}"/></td>`).join('')}
-    </tr>
-    <tr>
-      <td>佔營收比</td>
-      ${years.map((y, i) => `
-        <td>
-          <div class="form-inline ${y}-${productCount}">
-            <input type="text" maxlength="3" style="width: 114px" class="form-control rate${i + 1}"/>
-            <span class="input-group-text">%</span>
-          </div>
-        </td>
-      `).join('')}
-    </tr>
-  </>`);
+      </th>
+    `);
+    insertSortedColumn($header, th, year);
+  });
+}
 
-  $tbody.append($productRows);
+// 更新每一列的金額欄位（依排序插入）
+function updateProductRows() {
+  $('#product-body .product-row').each(function () {
+    const $row = $(this);
+    $row.find('td.year-col').remove(); // 先清除原本欄位
+
+    yearList.forEach(year => {
+      const td = $(`
+        <td class="year-col year-col-${year}">
+          <input type="text" class="form-control amount" placeholder="金額">
+        </td>
+      `);
+      insertSortedColumn($row, td, year);
+    });
+  });
+}
+
+// 將元素插入對應年份位置（依照排序）
+function insertSortedColumn($parent, $element, year) {
+  let inserted = false;
+  $parent.children('th.year-col, td.year-col').each(function () {
+    const currentYear = parseInt($(this).text());
+    if (year < currentYear) {
+      $(this).before($element);
+      inserted = true;
+      return false;
+    }
+  });
+  if (!inserted) {
+    $parent.append($element);
+  }
+}
+
+// 新增產品列（可呼叫這個 function）
+function addProductRow() {
+  const $row = $('<tr class="product-row"></tr>');
+
+  $row.append(`
+    <td><textarea class="form-control pname" rows="1" placeholder="產品名稱"></textarea></td>
+    <td>
+      <div class="input-group">
+        <input type="text" class="form-control rate" maxlength="3" placeholder="%">
+        <span class="input-group-addon">%</span>
+      </div>
+    </td>
+  `);
+
+  yearList.forEach(year => {
+    const $td = $(`
+      <td class="year-col year-col-${year}">
+        <input type="text" class="form-control amount" placeholder="金額">
+      </td>
+    `);
+    insertSortedColumn($row, $td, year);
+  });
+
+  $('#product-body').append($row);
 }
