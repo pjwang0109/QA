@@ -1,37 +1,39 @@
 <div class="container">
-  <h3>產品資訊表格</h3>
-  <button id="add-year-btn" class="btn btn-primary">新增年度欄位</button>
+  <h3>產品資料表格</h3>
+  <button id="add-year-btn" class="btn btn-primary">新增年度</button>
   <button id="add-product-btn" class="btn btn-success">新增產品</button>
+
   <table class="table table-bordered">
     <thead>
       <tr class="header-row">
-        <th style="width: 20%">產品名稱</th>
-        <!-- 年度標題欄位插入位置 -->
+        <th>產品名稱</th>
+        <th>佔營收比</th>
+        <!-- 年度欄位插入點 -->
       </tr>
     </thead>
     <tbody id="product-body">
-      <!-- 產品資料列插入位置 -->
+      <!-- 產品資料列插入點 -->
     </tbody>
   </table>
 </div>
 
+
 <script>
-  let maxYearCols = 5;
-  let currentYear = 2024;
-  let yearList = []; // 紀錄目前有哪些年份
+  let maxYears = 3;
+  let currentYear = 2023;
+  let yearList = [];
   let productIndex = 0;
 
-  // 新增年度欄位
   $('#add-year-btn').on('click', function () {
-    if (yearList.length >= maxYearCols) {
-      alert("最多只能新增 " + maxYearCols + " 個年度欄位");
+    if (yearList.length >= maxYears) {
+      alert("最多只能新增 " + maxYears + " 個年份！");
       return;
     }
 
     const year = currentYear++;
     yearList.push(year);
 
-    // 標題列新增 th
+    // 在標題列加入新年度欄位
     $('.header-row').append(`
       <th class="year-${year}">
         ${year}
@@ -41,36 +43,47 @@
       </th>
     `);
 
-    // 每筆產品都新增金額和比率欄位
+    // 在每一筆產品資料列加入對應 input 欄位
     $('.product-row').each(function () {
-      $(this).find('.amount-row').append(`<td class="year-${year}"><input type="text" class="form-control" /></td>`);
-      $(this).find('.rate-row').append(`<td class="year-${year}"><input type="text" class="form-control" />%</td>`);
+      $(this).append(`
+        <td class="year-${year}">
+          <input type="text" class="form-control amount" placeholder="金額">
+        </td>
+      `);
     });
   });
 
-  // 移除某個年度欄位
   function removeYear(year) {
+    // 移除標題與每一列的對應欄位
     $(`.year-${year}`).remove();
     yearList = yearList.filter(y => y !== year);
   }
 
-  // 新增產品資料列
   $('#add-product-btn').on('click', function () {
     productIndex++;
-    let newProduct = $(`
-      <tr class="product-row" data-index="${productIndex}">
-        <td rowspan="2">
-          <textarea class="form-control pname" rows="1"></textarea>
-        </td>
-        <!-- 金額列 -->
-        ${yearList.map(y => `<td class="year-${y}"><input type="text" class="form-control" /></td>`).join('')}
-      </tr>
-      <tr class="product-row" data-index="${productIndex}">
-        <!-- 佔營收比列 -->
-        <td>佔營收比</td>
-        ${yearList.map(y => `<td class="year-${y}"><input type="text" class="form-control" />%</td>`).join('')}
-      </tr>
+    const newRow = $('<tr class="product-row"></tr>');
+
+    newRow.append(`
+      <td>
+        <textarea class="form-control pname" rows="1" placeholder="產品名稱"></textarea>
+      </td>
+      <td>
+        <div class="input-group">
+          <input type="text" class="form-control rate" maxlength="3" placeholder="%" />
+          <span class="input-group-addon">%</span>
+        </div>
+      </td>
     `);
-    $('#product-body').append(newProduct);
+
+    // 為每個已新增的年度補欄位
+    yearList.forEach(year => {
+      newRow.append(`
+        <td class="year-${year}">
+          <input type="text" class="form-control amount" placeholder="金額">
+        </td>
+      `);
+    });
+
+    $('#product-body').append(newRow);
   });
 </script>
