@@ -1,1 +1,43 @@
 
+function addPrimaryProductTableData(obj) {
+  if (years.length === 0) {
+    alert("請先新增年份");
+    return;
+  }
+  if (productCount >= 3) {
+    alert("最多只能新增 3 列產品");
+    return;
+  }
+
+  const $tbody = $(obj).closest(".card-body").find(".mainProductss-div .mainProduct-unit table tbody");
+  productCount++;
+
+  // 建立資料列（產品名 + 每年金額與比重）
+  const $productRows = $(`<>
+    <tr>
+      <td rowspan="2" class="v-middle">
+        <button data-num="2" data-row="${productCount}" class="del-btn btn btn-danger btn-sm">
+          <i class="fa fa-times"></i>
+        </button>
+      </td>
+      <td rowspan="2">
+        <textarea class="form-control pname p-${productCount}" cols="30" rows="1"></textarea>
+      </td>
+      <td class="hide">金額</td>
+      ${years.map((y, i) => `<td class="hide"><input type="text" class="form-control amt${i + 1}"/></td>`).join('')}
+    </tr>
+    <tr>
+      <td>佔營收比</td>
+      ${years.map((y, i) => `
+        <td>
+          <div class="form-inline ${y}-${productCount}">
+            <input type="text" maxlength="3" style="width: 114px" class="form-control rate${i + 1}"/>
+            <span class="input-group-text">%</span>
+          </div>
+        </td>
+      `).join('')}
+    </tr>
+  </>`);
+
+  $tbody.append($productRows);
+}
