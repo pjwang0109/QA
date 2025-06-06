@@ -1,0 +1,10 @@
+要怎麼把 button 跟 textarea 放在同一行 不要換行
+<td>
+
+                  <button class="btn btn-danger" onclick="delete401Unit(this)">
+                    <i class="fa fa-times"></i>
+                  </button>
+                  <textarea class="form-control pname" rows="1" placeholder="產品名稱"></textarea>
+
+                   
+</td>
