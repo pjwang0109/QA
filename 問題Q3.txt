@@ -1,22 +1,35 @@
-我想新增 data-row="1" 
-在 <button class="btn btn-danger data-row="1"  mr-2" onclick="deleteProductsUnit(this)">
-然後每增加一個產品列  data-row 的值會增加1
-刪除產品列時 也會隨著改變
-怎麼修改
-
+我可以根據 有幾個 product-row 來控制 productNum嗎
 
 //新增產品列
+
 function addProductTableData(obj) {
+    let productNum = 1;
     // console.log('obj:', $(obj));
     const $row = $('<tr class="product-row"></tr>');
     const $div = $(obj).closest('.card-body');
 
     $row.append(`
         <td class="d-flex">
-        <button class="btn btn-danger mr-2" onclick="deleteProductsUnit(this)">
+        <button class="btn btn-danger mr-2" data-row="${productNum}" onclick="deleteProductsUnit(this)">
             <i class="fa fa-times"></i>
         </button>
         <textarea class="form-control pname" rows="1"></textarea>
         </td>
         <td style="vertical-align:middle" class="text-center">佔營收比</td>
     `);
+
+    $.each(yearList, function (i, year) {
+        const $td = $(`
+        <td class="year-col year-col-${year}">
+            <div class="form-inline rate-${year}">
+            <input type="text" maxlength="3" style="width: 114px" class="form-control rate-input"/>
+            <span class="input-group-text">%</span>
+            </div>
+        </td>
+        `);
+        insertSortedColumn($row, $td, year);
+    });
+
+    $div.find('#product-body').append($row);
+    productNum ++;
+}
