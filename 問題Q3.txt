@@ -1,35 +1,22 @@
-我可以根據 有幾個 product-row 來控制 productNum嗎
+我一定要保留 $(obj).closest('.card-body')
 
-//新增產品列
+可以幫我用同樣方式根據有幾個 product-row 來控制 productNum嗎
 
-function addProductTableData(obj) {
-    let productNum = 1;
-    // console.log('obj:', $(obj));
-    const $row = $('<tr class="product-row"></tr>');
-    const $div = $(obj).closest('.card-body');
 
-    $row.append(`
-        <td class="d-flex">
-        <button class="btn btn-danger mr-2" data-row="${productNum}" onclick="deleteProductsUnit(this)">
-            <i class="fa fa-times"></i>
-        </button>
-        <textarea class="form-control pname" rows="1"></textarea>
-        </td>
-        <td style="vertical-align:middle" class="text-center">佔營收比</td>
-    `);
+//刪除產品列
+function deleteProductsUnit(obj){
+    $(obj).closest('tr.product-row').remove();
+    // console.log($(obj).closest('tr.product-row'));
 
-    $.each(yearList, function (i, year) {
-        const $td = $(`
-        <td class="year-col year-col-${year}">
-            <div class="form-inline rate-${year}">
-            <input type="text" maxlength="3" style="width: 114px" class="form-control rate-input"/>
-            <span class="input-group-text">%</span>
-            </div>
-        </td>
-        `);
-        insertSortedColumn($row, $td, year);
-    });
+    console.log($(obj).closest('.card-body').find('#product-body .product-row'));
+    console.log($('#product-body .product-row'));
 
-    $div.find('#product-body').append($row);
-    productNum ++;
+    productNum = 1;
+    $(obj).closest('.card-body').find('#product-body .product-row').each(function () {
+        $(this).find('.btn-danger').attr('data-row', productNum);
+        productNum ++;
+
+        console.log($(this));
+        console.log("HHH");
+    })
 }
