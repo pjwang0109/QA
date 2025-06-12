@@ -1,15 +1,12 @@
-const columnCount = yearList.length;
+那我要取得12345464785 怎麼取
 
-    for (let colIndex = 0; colIndex < columnCount; colIndex++) {
-        $cardBody.find(`#product-body .product-row`).each(function () {
-            const $rateInputs = $(this).find('.rate-input');
-            const $input = $rateInputs.eq(colIndex);
-
-            if ($input.length) {
-                const updatedClass = $input.attr('class')
-                    .split(' ')
-                    .filter(cls => !/^rate-\d+$/.test(cls))
-                    .join(' ');
-                $input.attr('class', `${updatedClass} rate-${colIndex + 1}`);
-            }
-        });
+<li class="nav-item" id="caseNoTabeItem">
+        <a
+          class="nav-link disabled font-weight-bold"
+          data-toggle="tab"
+          href="#acceptCasePage"
+          disabled
+        >
+          案件編號:12345464785</a
+        >
+      </li>
