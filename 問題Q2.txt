@@ -1,21 +1,15 @@
-當我刪除年份 rate-${rateN} 要重新排序 請幫我
-//刪除年份
-function deleteYearUnit(obj){
-    const $th = $(obj).closest('th');
-    const yearClass = $th.find('input.product-year').val();
-    const year = parseInt(yearClass);
-    const $yearDiv = $(obj).closest('.card-body');
+const columnCount = yearList.length;
 
-    yearList = yearList.filter(y => y !== year);
-    yearList.sort((a, b) => a - b);
+    for (let colIndex = 0; colIndex < columnCount; colIndex++) {
+        $cardBody.find(`#product-body .product-row`).each(function () {
+            const $rateInputs = $(this).find('.rate-input');
+            const $input = $rateInputs.eq(colIndex);
 
-    $(obj).closest('.card-body').find(`.year-col-${year}`).remove();
-    
-    // console.log($yearDiv);
-    $yearDiv.find('.product-year').each(function (index) {
-        const updateClass = $(this).attr('class').split(' ').filter(cls => !/^yy-\d+$/.test(cls)).join(' ');
-        $(this).attr('class', updateClass);
-
-        $(this).addClass(`yy-${index + 1}`);
-    })
-}
+            if ($input.length) {
+                const updatedClass = $input.attr('class')
+                    .split(' ')
+                    .filter(cls => !/^rate-\d+$/.test(cls))
+                    .join(' ');
+                $input.attr('class', `${updatedClass} rate-${colIndex + 1}`);
+            }
+        });
