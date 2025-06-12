@@ -1,29 +1,33 @@
-我想讓 $(this)的 yy-${i+1} 重新排列
-
-若有兩欄: yy-1, yy-2
-若有一欄: yy-1
-
+我想新增一個class 名稱 rate-${rateN} 為 rate-1, rate-2, rate-3
 但是不知道怎麼改
 
-//刪除年份
-function deleteYearUnit(obj){
-    const $th = $(obj).closest('th');
-    const yearClass = $th.find('input.product-year').val();
-    const year = parseInt(yearClass);
-    const $yearDiv = $(obj).closest('.card-body');
+//新增產品列
+function addProductTableData(obj) {
+    const $div = $(obj).closest('.card-body');
+    const $row = $('<tr class="product-row"></tr>');
+    let productNum = $div.find('.product-row').length + 1;
 
-    yearList = yearList.filter(y => y !== year);
-    yearList.sort((a, b) => a - b);
+    $row.append(`
+        <td class="d-flex">
+        <button class="btn btn-danger mr-2 del-pro-btn" data-row="${productNum}" onclick="deleteProductsUnit(this)">
+            <i class="fa fa-times"></i>
+        </button>
+        <textarea class="form-control pname" rows="1"></textarea>
+        </td>
+        <td style="vertical-align:middle" class="text-center">佔營收比</td>
+    `);
 
-    $(obj).closest('.card-body').find(`.year-col-${year}`).remove();
-    
-    // console.log($yearDiv);
-    $yearDiv.find('.product-year').each(function (index) {
-        // $(this).removeClass(function (i, className) { 
-        //   return (className.match(/yy-\d+/g) || []).join('');
-        // })
-        console.log($(this));
-        console.log($(this).attr('class'));
+    $.each(yearList, function (i, year) {
+        const $td = $(`
+        <td class="year-col year-col-${year}">
+            <div class="form-inline rate-${year}">
+            <input type="text" maxlength="3" style="width: 114px" class="form-control rate-input rate-${rateN}"/>
+            <span class="input-group-text">%</span>
+            </div>
+        </td>
+        `);
+        insertSortedColumn($row, $td, year);
+    });
 
-    })
+    $div.find('#product-body').append($row);
 }
