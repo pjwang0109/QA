@@ -1,47 +1,29 @@
-主要是根據 yy-${i+1} 去更改刪除年份deleteYearUnit 
-$yearDiv.find('.product-year').each(function (index) {
-        $(this).attr('data-row', index + 1);
-    })
+我想讓 $(this)的 yy-${i+1} 重新排列
+
+若有兩欄: yy-1, yy-2
+若有一欄: yy-1
+
 但是不知道怎麼改
-
-//更新表格標題列
-function updateTableHeader($trigger) {
-    // console.log('$trigger:', $trigger.closest('.card-body'));
-    const $header = $trigger.closest('.card-body').find('#table-header');
-    $header.find('th.year-col').remove(); //清除舊欄位
-
-    $.each(yearList, function (i, year) {
-        const $th = $(`
-        <th class="year-col year-col-${year}">
-            <div class="form-inline year-${year}">
-            <input type="text" style="width:100px" class="form-control product-year yy-${i+1} form-digit-5 text-center" name="product-year" readonly/>
-            <span class="input-group-addon">年</span>
-            <button class="btn btn-danger" onclick="deleteYearUnit(this)">
-                <i class="fa fa-times"></i>
-            </button>
-            </div>
-        </th>
-        `);
-
-        $th.find('.product-year').val(year);
-        insertSortedColumn($header, $th, year);
-    });
-}
-
 
 //刪除年份
 function deleteYearUnit(obj){
     const $th = $(obj).closest('th');
     const yearClass = $th.find('input.product-year').val();
     const year = parseInt(yearClass);
+    const $yearDiv = $(obj).closest('.card-body');
 
     yearList = yearList.filter(y => y !== year);
     yearList.sort((a, b) => a - b);
 
     $(obj).closest('.card-body').find(`.year-col-${year}`).remove();
-
-    const $yearDiv = $(obj).closest('.card-body');
+    
+    // console.log($yearDiv);
     $yearDiv.find('.product-year').each(function (index) {
-        $(this).attr('data-row', index + 1);
+        // $(this).removeClass(function (i, className) { 
+        //   return (className.match(/yy-\d+/g) || []).join('');
+        // })
+        console.log($(this));
+        console.log($(this).attr('class'));
+
     })
 }
