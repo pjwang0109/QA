@@ -1,11 +1,47 @@
-新增年度 改為讓使用者填寫，而且填完後input數字增加1
-然後使用者填寫這個數字會影響每個增加年度直欄的排序 會自動幫我排序 怎麼修改
+主要是根據 yy-${i+1} 去更改刪除年份deleteYearUnit 
+$yearDiv.find('.product-year').each(function (index) {
+        $(this).attr('data-row', index + 1);
+    })
+但是不知道怎麼改
 
-<div class="d-flex align-items-center">
-                    <span class="infoText" >新增或引入資料:</span>
-                    <input type="text" class="form-control text-center infoYearData ml-3" name="" id="" >
-                    <span class="input-group-text yearTxt">年</span>
-                    <button class="btn btn-success add-btitem-btn ml-2" id="add-year-btn" onclick="addYearDataUnit(this)">
-                        <i class="fa fa-plus"></i>
-                    </button>
-                </div>
+//更新表格標題列
+function updateTableHeader($trigger) {
+    // console.log('$trigger:', $trigger.closest('.card-body'));
+    const $header = $trigger.closest('.card-body').find('#table-header');
+    $header.find('th.year-col').remove(); //清除舊欄位
+
+    $.each(yearList, function (i, year) {
+        const $th = $(`
+        <th class="year-col year-col-${year}">
+            <div class="form-inline year-${year}">
+            <input type="text" style="width:100px" class="form-control product-year yy-${i+1} form-digit-5 text-center" name="product-year" readonly/>
+            <span class="input-group-addon">年</span>
+            <button class="btn btn-danger" onclick="deleteYearUnit(this)">
+                <i class="fa fa-times"></i>
+            </button>
+            </div>
+        </th>
+        `);
+
+        $th.find('.product-year').val(year);
+        insertSortedColumn($header, $th, year);
+    });
+}
+
+
+//刪除年份
+function deleteYearUnit(obj){
+    const $th = $(obj).closest('th');
+    const yearClass = $th.find('input.product-year').val();
+    const year = parseInt(yearClass);
+
+    yearList = yearList.filter(y => y !== year);
+    yearList.sort((a, b) => a - b);
+
+    $(obj).closest('.card-body').find(`.year-col-${year}`).remove();
+
+    const $yearDiv = $(obj).closest('.card-body');
+    $yearDiv.find('.product-year').each(function (index) {
+        $(this).attr('data-row', index + 1);
+    })
+}
