@@ -1,95 +1,47 @@
-let years = [];
+function render401mpritemToProductTable(result) {
+  const data = result["401mpritem"];
+  if (!Array.isArray(data) || data.length === 0) return;
 
-function addYearDataUnit(obj) {
-  const $input = $(obj).closest(".d-flex").find(".infoYearData");
-  let inputYear = $input.val().trim();
-  const yearNumber = Number(inputYear);
+  // 找到表格 DOM
+  const $table = $("#product-table");
+  const $thead = $table.find("#table-header");
+  const $tbody = $table.find("#product-body");
 
-  if (!inputYear || isNaN(yearNumber)) {
-    alert("請輸入有效的西元年數字");
-    return;
-  }
-  if (years.includes(inputYear)) {
-    alert("該年份已存在");
-    return;
-  }
-  if (years.length >= 3) {
-    alert("最多只能新增 3 個年份");
-    return;
-  }
+  // 清空欄位
+  $thead.find(".year-header").remove();
+  $tbody.empty();
 
-  years.push(inputYear);
-  years.sort(); // 保持排序
-
-  const $mainProductDiv = $(obj).closest(".card-body").find(".mainProductss-div .mainProduct-unit table tr");
-
-  // 對每一列 tr 新增對應欄位
-  $mainProductDiv.each(function () {
-    const isTitleRow = $(this).find("th").length > 0;
-    const isRateRow = $(this).text().includes("佔營收比");
-
-    const $td = $('<td>');
-    const content = isTitleRow ? `
-      <div class="input-group form-inline year-${inputYear}">
-        <input type="text" class="form-control product-year yy-${years.length} text-center" value="${inputYear}" readonly/>
-        <span class="input-group-addon">年</span>
-        <button class="btn btn-danger" onclick="delete401Unit(this)"><i class="fa fa-times"></i></button>
-      </div>` :
-      isRateRow ? `
-      <div class="form-inline ${inputYear}">
-        <input type="text" maxlength="3" style="width: 114px" class="form-control rate${years.length}"/>
-        <span class="input-group-text">%</span>
-      </div>` :
-      `
-      <input type="text" class="form-control amt${years.length}"/>
-      `;
-
-    $td.html(content);
-    $(this).append($td);
+  // 假設最多支援3年
+  const yearSet = new Set();
+  data.forEach(item => {
+    if (item.yyy1) yearSet.add(item.yyy1);
+    if (item.yyy2) yearSet.add(item.yyy2);
+    if (item.yyy3) yearSet.add(item.yyy3);
   });
 
-  // 輸入欄位加 1
-  $input.val(yearNumber + 1);
+  const years = Array.from(yearSet);
+
+  // 動態新增年份欄位到 header
+  years.forEach(year => {
+    $thead.append(`<th class="year-header text-center">${year} 年</th>`);
+  });
+
+  // 動態新增每一列產品資料
+  data.forEach(item => {
+    const $row = $(`<tr></tr>`);
+    $row.append(`<td><input type="text" class="form-control pname" value="${item.pname}"/></td>`);
+    $row.append(`<td><input type="text" class="form-control rratio" value=""/></td>`); // 可視情況放 rratio 合計
+
+    // 根據年份插入對應的 rratio
+    years.forEach(year => {
+      let ratio = "";
+      if (item.yyy1 === year) ratio = item.rratio1;
+      else if (item.yyy2 === year) ratio = item.rratio2;
+      else if (item.yyy3 === year) ratio = item.rratio3;
+
+      $row.append(`<td><input type="text" class="form-control" value="${ratio}"/></td>`);
+    });
+
+    $tbody.append($row);
+  });
 }
-
-
-let productCount = 0;
-function addPrimaryProductTableData(obj) {
-  if (years.length === 0) {
-    alert("請先新增年份");
-    return;
-  }
-
-  productCount++;
-
-  const $tbody = $(obj).closest(".card-body").find(".mainProductss-div .mainProduct-unit table tbody");
-
-  const $productRow = $(`
-    <tr>
-      <td rowspan="2" class="v-middle">
-        <button data-num="2" data-row="${productCount}" class="del-btn btn btn-danger btn-sm">
-          <i class="fa fa-times"></i>
-        </button>
-      </td>
-      <td rowspan="2">
-        <textarea class="form-control pname p-${productCount}" cols="30" rows="1"></textarea>
-      </td>
-      <td class="hide">金額</td>
-      ${years.map((y, i) => `<td class="hide"><input type="text" class="form-control amt${i + 1}"/></td>`).join('')}
-    </tr>
-    <tr>
-      <td>佔營收比</td>
-      ${years.map((y, i) => `
-        <td>
-          <div class="form-inline ${y}-${productCount}">
-            <input type="text" maxlength="3" style="width: 114px" class="form-control rate${i + 1}"/>
-            <span class="input-group-text">%</span>
-          </div>
-        </td>
-      `).join('')}
-    </tr>
-  `);
-
-  $tbody.append($productRow);
-}
-
