@@ -1,28 +1,80 @@
-可以重新整理這些方法給我嗎
+function set401PageDataCR($target, dataObj) {
+    const mpritemArr = dataObj["401mpritem"] || [];
+    const $productDiv = $target.find('#primaryProductDiv_401');
 
-set401PageDataCR($target, data){
-    //主要產品營收比重
-        let mpritemArr = dataObj["401mpritem"] || [];
-        ....
+    if (mpritemArr.length > 0) {
+        // 先取出所有出現過的年份，建 yearList
+        const yearSet = new Set();
+        mpritemArr.forEach(item => {
+            Object.keys(item.year_rate || {}).forEach(year => {
+                yearSet.add(parseInt(year));
+            });
+        });
+
+        const yearList = Array.from(yearSet).sort((a, b) => a - b);
+        setYearList($productDiv, yearList); // 儲存在對應的容器
+
+        updateTableHeader($productDiv);
+    }
+
+    // 接著依照每個產品項目新增列
+    mpritemArr.forEach(v => {
+        addPrimaryProductTableDataCR($productDiv, v);
+    });
 }
 
 
-addPrimaryProductTableDataCR(addMprItemBtn, v);
 
+function addPrimaryProductTableDataCR($container, item) {
+    const yearList = getYearList($container);
+    const $row = $('<tr class="product-row"></tr>');
 
-function getYearList($container) {
-    
+    $row.append(`
+        <td class="d-flex">
+            <button class="btn btn-danger mr-2 del-pro-btn" onclick="deleteProductsUnit(this)">
+                <i class="fa fa-times"></i>
+            </button>
+            <textarea class="form-control pname" rows="1">${item.name || ''}</textarea>
+        </td>
+        <td style="vertical-align:middle" class="text-center">佔營收比</td>
+    `);
+
+    $.each(yearList, function (i, year) {
+        const rate = item.year_rate?.[year] || '';
+        const rateN = i + 1;
+
+        const $td = $(`
+            <td class="year-col year-col-${year}">
+                <div class="form-inline rate-${year}">
+                    <input type="text" maxlength="3" style="width: 114px" 
+                           class="form-control rate-input rate-${rateN}" value="${rate}" />
+                    <span class="input-group-text">%</span>
+                </div>
+            </td>
+        `);
+
+        insertSortedColumn($row, $td, year);
+    });
+
+    $container.find('#product-body').append($row);
 }
 
-function setYearList($container, yearList) {
- 
+
+function insertSortedColumn($parent, $element, year) {
+    let inserted = false;
+
+    $parent.children('th.year-col, td.year-col').each(function () {
+        const currentYearText = $(this).find('.product-year').val() || $(this).text();
+        const currentYear = parseInt(currentYearText);
+
+        if (!isNaN(currentYear) && year < currentYear) {
+            $(this).before($element);
+            inserted = true;
+            return false;
+        }
+    });
+
+    if (!inserted) {
+        $parent.append($element);
+    }
 }
-
-
-addYearDataUnit(obj) 
-
-
-
-
-deleteYearUnit(obj)
-
