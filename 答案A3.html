@@ -1,36 +1,47 @@
-function addPrimaryProductTableDataCR($btn, data) {
-  const $cardBody = $btn.closest('.card-body');
-  const $tbody = $cardBody.find('#product-body');
+function addPrimaryProductTableDataCR($triggerBtn, item) {
+    const $container = $triggerBtn.closest('.card-body');
+    const $row = $('<tr class="product-row"></tr>');
 
-  // 1. 把 yyy1 ~ yyy3 的年份加入 yearList
-  for (let i = 1; i <= 3; i++) {
-    const year = parseInt(data["yyy" + i]);
-    if (!isNaN(year) && !yearList.includes(year)) {
-      yearList.push(year);
+    // 填入產品名稱欄位
+    $row.append(`
+        <td class="d-flex">
+            <button class="btn btn-danger mr-2 del-pro-btn" onclick="deleteProductsUnit(this)">
+                <i class="fa fa-times"></i>
+            </button>
+            <textarea class="form-control pname" rows="1">${item.pname || ''}</textarea>
+        </td>
+        <td style="vertical-align:middle" class="text-center">佔營收比</td>
+    `);
+
+    const yearList = getYearList($container);
+
+    // 從原始格式中解析出 rratio1~3 與 yyy1~3 的對應資料
+    const rawRates = {};
+    for (let i = 1; i <= 3; i++) {
+        const year = item[`yyy${i}`];
+        const rate = item[`rratio${i}`];
+        if (year && year.trim() !== '') {
+            rawRates[parseInt(year)] = rate || '';
+        }
     }
-  }
-  yearList.sort((a, b) => a - b);
 
-  // 2. 建立欄位（模擬 addYearDataUnit 效果）
-  updateTableHeader($btn);
-  updateProductRows($btn);
+    // 根據現有的 yearList 插入對應欄位
+    $.each(yearList, function (i, year) {
+        const rate = rawRates[year] || '';
+        const rateN = i + 1;
 
-  // 3. 新增一筆產品列
-  addProductTableData($btn);
+        const $td = $(`
+            <td class="year-col year-col-${year}">
+                <div class="form-inline rate-${year}">
+                    <input type="text" maxlength="3" style="width: 114px"
+                           class="form-control rate-input rate-${rateN}" value="${rate}" />
+                    <span class="input-group-text">%</span>
+                </div>
+            </td>
+        `);
 
-  // 4. 對剛剛新增的列進行填值
-  const $lastRow = $tbody.find('tr.product-row:last');
+        insertSortedColumn($row, $td, year);
+    });
 
-  // 填入產品名稱
-  $lastRow.find('textarea.pname').val(data["pname"]);
-
-  // 填入各年佔比
-  $.each(yearList, function (i, year) {
-    const ratioKey = "rratio" + (i + 1);
-    const ratioVal = data[ratioKey];
-    if (ratioVal !== undefined) {
-      $lastRow.find('.year-col-' + year).find('.rate-input').val(ratioVal);
-    }
-  });
+    $container.find('#product-body').append($row);
 }
-
