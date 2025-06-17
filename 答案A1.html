@@ -1,24 +1,87 @@
+function addYearDataUnit(obj) {
+    const $input = $(obj).closest('.d-flex').find('.infoYearData');
+    const year = parseInt($input.val());
+    const maxYears = 3;
+    const $cardBody = $(obj).closest('.card-body');
+
+    let yearList = getYearList($cardBody);
+
+    if (isNaN(year)) {
+        alert('請輸入數字');
+        $input.val("");
+        return;
+    }
+
+    if (yearList.length >= maxYears) {
+        alert('已達3個');
+        return;
+    }
+
+    if (yearList.includes(year)) {
+        alert('此年份已存在');
+        return;
+    }
+
+    yearList.push(year);
+    yearList.sort((a, b) => a - b);
+    setYearList($cardBody, yearList);
+
+    updateTableHeader($cardBody);
+    updateProductRows($cardBody);
+
+    $input.val(year + 1);
+}
+
+function deleteYearUnit(obj) {
+    const $th = $(obj).closest('th');
+    const year = parseInt($th.find('input.product-year').val());
+    const $cardBody = $(obj).closest('.card-body');
+
+    let yearList = getYearList($cardBody);
+    yearList = yearList.filter(y => y !== year);
+    yearList.sort((a, b) => a - b);
+    setYearList($cardBody, yearList);
+
+    $cardBody.find(`.year-col-${year}`).remove();
+
+    $cardBody.find('.product-year').each(function (index) {
+        const updateClass = $(this).attr('class').split(' ').filter(cls => !/^yy-\d+$/.test(cls)).join(' ');
+        $(this).attr('class', updateClass + ` yy-${index + 1}`);
+    });
+
+    const columnCount = yearList.length;
+    $cardBody.find('#product-body .product-row').each(function () {
+        const $rateInputs = $(this).find('.rate-input');
+        for (let colIndex = 0; colIndex < columnCount; colIndex++) {
+            const $input = $rateInputs.eq(colIndex);
+            if ($input.length) {
+                const updatedClass = $input.attr('class').split(' ').filter(cls => !/^rate-\d+$/.test(cls)).join(' ');
+                $input.attr('class', `${updatedClass} rate-${colIndex + 1}`);
+            }
+        }
+    });
+}
+
+
 function set401PageDataCR($target, dataObj) {
     const mpritemArr = dataObj["401mpritem"] || [];
     const $productDiv = $target.find('#primaryProductDiv_401');
 
     if (mpritemArr.length > 0) {
-        // 先取出所有出現過的年份，建 yearList
         const yearSet = new Set();
-        mpritemArr.forEach(item => {
-            Object.keys(item.year_rate || {}).forEach(year => {
+        $.each(mpritemArr, function (_, item) {
+            $.each(item.year_rate || {}, function (year, _) {
                 yearSet.add(parseInt(year));
             });
         });
 
         const yearList = Array.from(yearSet).sort((a, b) => a - b);
-        setYearList($productDiv, yearList); // 儲存在對應的容器
+        setYearList($productDiv, yearList);
 
         updateTableHeader($productDiv);
     }
 
-    // 接著依照每個產品項目新增列
-    mpritemArr.forEach(v => {
+    $.each(mpritemArr, function (_, v) {
         addPrimaryProductTableDataCR($productDiv, v);
     });
 }
@@ -60,21 +123,20 @@ function addPrimaryProductTableDataCR($container, item) {
 }
 
 
-function insertSortedColumn($parent, $element, year) {
+
+function insertSortedColumn($parentRow, $newColumn, year) {
     let inserted = false;
 
-    $parent.children('th.year-col, td.year-col').each(function () {
-        const currentYearText = $(this).find('.product-year').val() || $(this).text();
-        const currentYear = parseInt(currentYearText);
-
+    $parentRow.children('td.year-col').each(function () {
+        const currentYear = parseInt($(this).attr('class').match(/year-col-(\d+)/)?.[1]);
         if (!isNaN(currentYear) && year < currentYear) {
-            $(this).before($element);
+            $(this).before($newColumn);
             inserted = true;
             return false;
         }
     });
 
     if (!inserted) {
-        $parent.append($element);
+        $parentRow.append($newColumn);
     }
 }
