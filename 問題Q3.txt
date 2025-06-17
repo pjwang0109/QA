@@ -1,21 +1,58 @@
-我的資料長這樣
+addPrimaryProductTableDataCR
+除了新增產品欄位 應該也要幫我新增年分欄位 如下 所以請幫我修改addPrimaryProductTableDataCR
 
-401mpritem:[
-{dataseq:"1", pname: "xxx", rratio1:"10", rratio2:"11", rratio3:"12", yyy1: "99",  yyy2: "100",  yyy3: ""},
-{dataseq:"2", pname: "aass", rratio1:"25", rratio2:"26", rratio3:"", yyy1: "99",  yyy2: "100",  yyy3: ""},
-{dataseq:"3", pname: "rr123", rratio1:"31", rratio2:"33", rratio3:"39", yyy1: "99",  yyy2: "100",  yyy3: ""},
-{dataseq:"4", pname: "ffgghh", rratio1:"47", rratio2:"42", rratio3:"44", yyy1: "99",  yyy2: "100",  yyy3: ""},
-]
+function addYearDataUnit(obj) {
+    const $input = $(obj).closest('.d-flex').find('.infoYearData');
+    const year = parseInt($input.val());
+    const maxYears = 3;
+    const $cardBody = $(obj).closest('.card-body');
+    let yearList = getYearList($cardBody);
 
-function addPrimaryProductTableDataCR($triggerBtn, item) {
-<textarea class="form-control pname" rows="1">${item.pname || ''}</textarea> 有塞入pname且有欄位
+    if (isNaN(year)) {
+        alert('請輸入數字');
+        $input.val("");
+        return;
+    }
 
-但是年分 product-year 沒有欄位也沒有資料
+    if (yearList.length >= maxYears) {
+        alert('已達3個');
+        return;
+    }
 
-另外 rate-input  沒有欄位也沒有資料
-<input type="text" maxlength="3" style="width: 114px" 
-                           class="form-control rate-input rate-${rateN}" value="${rate}" />
+    if (yearList.includes(year)) {
+        alert('此年份已存在');
+        return;
+    }
 
-請幫我修改
+    yearList.push(year);
+    yearList.sort((a, b) => a - b);
+    setYearList($cardBody, yearList);
 
+    updateTableHeader($cardBody);
+    updateProductRows($cardBody);
 
+    $input.val(year + 1);
+}
+
+function updateTableHeader($trigger) {
+    const $cardBody = $trigger.closest('.card-body');
+    const yearList = getYearList($cardBody);
+    const $header = $cardBody.find('#table-header');
+    $header.find('th.year-col').remove();
+
+    $.each(yearList, function (i, year) {
+        const $th = $(`
+        <th class="year-col year-col-${year}">
+            <div class="form-inline year-${year}">
+                <input type="text" style="width:100px" class="form-control product-year yy-${i + 1} form-digit-5 text-center" name="product-year" readonly/>
+                <span class="input-group-addon">年</span>
+                <button class="btn btn-danger" onclick="deleteYearUnit(this)">
+                    <i class="fa fa-times"></i>
+                </button>
+            </div>
+        </th>
+        `);
+        $th.find('.product-year').val(year);
+        insertSortedColumn($header, $th, year);
+    });
+}
