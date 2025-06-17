@@ -1,70 +1,58 @@
-let yearList = []; 不行這樣設置 因為我有好幾個產品頁面，根據每個產品頁面去控制:達到3個, 此年份已存在, 請輸入數字, 以及排序
-該怎麼更改
+他沒有把table欄位顯示出來 資料也沒有帶入
 
+let mpritemArr = dataObj["401mpritem"] || [];
+        const $productDiv = $target.find('.primaryProductDiv');
 
-//新增年份
-function addYearDataUnit(obj) {
-    const $input = $(obj).closest('.d-flex').find('.infoYearData');
-    const year = parseInt($input.val());
-    const maxYears = 3;
+        if (mpritemArr.length > 0) {
+            const yearSet = new Set();
+            $.each(mpritemArr, function (i, item) {
+                $.each(item.year_rate || {}, function (year, _) {
+                    yearSet.add(parseInt(year));
+                });
+            });
 
-    if (isNaN(year)) {
-        alert('請輸入數字');
-        $input.val("");
-        return;
-    }
+            const yearList = Array.from(yearSet).sort((a, b) => a - b);
+            setYearList($productDiv, yearList);
 
-    if (yearList.length >= maxYears) {
-        alert('已達3個');
-        return;
-    }
+            updateTableHeader($productDiv);
+        }
 
-    if (yearList.includes(year)) {
-        alert('此年份已存在');
-        return;
-    }
-
-    yearList.push(year); //例如: [100, 99, 101]
-    yearList.sort((a, b) => a - b); //排序 [99, 100, 101]
-
-    updateTableHeader($(obj)); //更新表格標題列
-    updateProductRows($(obj)); //更新產品資料列
-
-    $input.val(year + 1); //自動 +1
-}
-
-
-//刪除年份
-function deleteYearUnit(obj){
-    const $th = $(obj).closest('th');
-    const yearClass = $th.find('input.product-year').val();
-    const year = parseInt(yearClass);
-    const $yearDiv = $(obj).closest('.card-body');
-
-    yearList = yearList.filter(y => y !== year);
-    yearList.sort((a, b) => a - b);
-
-    $yearDiv.find(`.year-col-${year}`).remove();
-    
-    //年份 yy-${n}
-    $yearDiv.find('.product-year').each(function (index) {
-        const updateClass = $(this).attr('class').split(' ').filter(cls => !/^yy-\d+$/.test(cls)).join(' ');
-        $(this).attr('class', updateClass);
-
-        $(this).addClass(`yy-${index + 1}`);
-    })
-
-    //比率 rate-${n}
-    const columnCount = yearList.length;
-    for (let colIndex = 0; colIndex < columnCount; colIndex++) {
-        $yearDiv.find(`#product-body .product-row`).each(function () {
-            const $rateInputs = $(this).find('.rate-input');
-            const $input = $rateInputs.eq(colIndex);
-
-            if ($input.length) {
-                const updatedClass = $input.attr('class').split(' ').filter(cls => !/^rate-\d+$/.test(cls)).join(' ');
-                $input.attr('class', `${updatedClass} rate-${colIndex + 1}`);
-            }
+        $.each(mpritemArr, function (i, v) {
+            addPrimaryProductTableDataCR($productDiv, v);
         });
-    }
+
+
+
+function addPrimaryProductTableDataCR($container, item) {
+    const yearList = getYearList($container);
+    const $row = $('<tr class="product-row"></tr>');
+
+    $row.append(`
+        <td class="d-flex">
+            <button class="btn btn-danger mr-2 del-pro-btn" onclick="deleteProductsUnit(this)">
+                <i class="fa fa-times"></i>
+            </button>
+            <textarea class="form-control pname" rows="1">${item.name || ''}</textarea>
+        </td>
+        <td style="vertical-align:middle" class="text-center">佔營收比</td>
+    `);
+
+    $.each(yearList, function (i, year) {
+        const rate = item.year_rate?.[year] || '';
+        const rateN = i + 1;
+
+        const $td = $(`
+            <td class="year-col year-col-${year}">
+                <div class="form-inline rate-${year}">
+                    <input type="text" maxlength="3" style="width: 114px" 
+                           class="form-control rate-input rate-${rateN}" value="${rate}" />
+                    <span class="input-group-text">%</span>
+                </div>
+            </td>
+        `);
+
+        insertSortedColumn($row, $td, year);
+    });
+
+    $container.find('#product-body').append($row);
 }
