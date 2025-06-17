@@ -1,16 +1,70 @@
-可以幫我保留他原本的寫法去改寫嗎
-
+這並沒有將 table 欄位顯示出來，儲存的資料也沒有存進去 
 //主要產品營收比重
         let mpritemArr = dataObj["401mpritem"] || [];
         const addMprItemBtn = $target.find(".product-add-btn:first");
-        const $mprTable = $target.find(".primaryProductDiv").find("table");
+        const $productDiv = $target.find(".primaryProductDiv");
+        const $mprTable = $productDiv.find("table");
+
         mpritemArr = mpritemArr.sort((a, b) => {
             const aN = Number(a["dataseq"]);
             const bN = Number(b["dataseq"]);
-            return a - b;
-        })
-        for (v of mpritemArr) {
+            return aN - bN;
+        });
 
-                await addPrimaryProductTableDataCR(addMprItemBtn, v);
+        // 先統整出所有年份，並儲存在該表格的 data 屬性中
+        if (mpritemArr.length > 0) {
+            const yearSet = new Set();
 
+            $.each(mpritemArr, function (_, item) {
+                $.each(item.year_rate || {}, function (year, _) {
+                    yearSet.add(parseInt(year));
+                });
+            });
+
+            const yearList = Array.from(yearSet).sort((a, b) => a - b);
+
+            setYearList($productDiv, yearList);       // ⭐ 設定年份
+            updateTableHeader($productDiv);           // ⭐ 畫出 <th>
         }
+
+        for (const v of mpritemArr) {
+            await addPrimaryProductTableDataCR(addMprItemBtn, v); // ⭐ 必須等年份列先畫好，才能正常畫每一列
+        }
+
+
+
+//取得連動:主要產品營收比重  ** addPrimaryProductTableData
+function addPrimaryProductTableDataCR($triggerBtn, item) {
+    const $container = $triggerBtn.closest('.card-body');
+    const yearList = getYearList($container);
+    const $row = $('<tr class="product-row"></tr>');
+
+    $row.append(`
+        <td class="d-flex">
+            <button class="btn btn-danger mr-2 del-pro-btn" onclick="deleteProductsUnit(this)">
+                <i class="fa fa-times"></i>
+            </button>
+            <textarea class="form-control pname" rows="1">${item.name || ''}</textarea>
+        </td>
+        <td style="vertical-align:middle" class="text-center">佔營收比</td>
+    `);
+
+    $.each(yearList, function (i, year) {
+        const rate = item.year_rate?.[year] || '';
+        const rateN = i + 1;
+
+        const $td = $(`
+            <td class="year-col year-col-${year}">
+                <div class="form-inline rate-${year}">
+                    <input type="text" maxlength="3" style="width: 114px" 
+                           class="form-control rate-input rate-${rateN}" value="${rate}" />
+                    <span class="input-group-text">%</span>
+                </div>
+            </td>
+        `);
+
+        insertSortedColumn($row, $td, year);
+    });
+
+    $container.find('#product-body').append($row);
+}
