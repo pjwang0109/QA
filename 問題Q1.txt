@@ -1,108 +1,32 @@
-這是在 openCaseWebCR 方法中找到set401PageDataCR原先寫的
-async function set401PageDataCR($target, data) {
+addPrimaryProductTableDataCR 有產品資訊了 但是還沒有年份資料跟table欄位
 
-....
-        //主要產品營收比重
-        let mpritemArr = dataObj["401mpritem"] || [];
-        const addMprItemBtn = $target.find(".product-add-btn:first");
-        const $mprTable = $target.find(".primaryProductDiv").find("table");
-        mpritemArr = mpritemArr.sort((a, b) => {
-            const aN = Number(a["dataseq"]);
-            const bN = Number(b["dataseq"]);
-            return a - b;
-        })
-        console.log("mpritemArr:", mpritemArr);
-        for (v of mpritemArr) {
+//新增年份
+function addYearDataUnit(obj) {
+    const $input = $(obj).closest('.d-flex').find('.infoYearData');
+    const year = parseInt($input.val());
+    const maxYears = 3;
 
-            await addPrimaryProductTableDataCR(addMprItemBtn, v);
-
-            $mprTable.find(".yy-1").val(v["yyy1"]);
-            $mprTable.find(".yy-2").val(v["yyy2"]);
-            $mprTable.find(".yy-3").val(v["yyy3"]);
-        }
+    if (isNaN(year)) {
+        alert('請輸入數字');
+        $input.val("");
+        return;
     }
-    return $target;
-}
-我想用 addPrimaryProductTableDataCR去取出 相對應的table(我現在已修改完成的HTML，跟以前不同)
 
-這是他原本寫的addPrimaryProductTableDataCR 方法，請幫我修改
-//取得連動:主要產品營收比重  
-function addPrimaryProductTableDataCR(obj, data) {
-    const $tableDiv = $(obj).prevAll(".table:first");
-    const $eleLast = $tableDiv.find("button[data-row]:last");
-    const num = ($eleLast.length > 0) ? $eleLast.data("row") + 1 : 1;
-    const $html = $(`
-        <tr>
-            <td rowspan="2" class="v-middle">
-            <button data-num="2"  data-row="${num}" class="del-btn btn btn-danger btn-sm">
-                ×
-            </button>
-            </td>
-            <td rowspan="2">
-            <textarea class="form-control pname" cols="30" rows="1"></textarea>
-            </td>
-            <td class="hide">金額</td>
-            <td class="hide">
-            <input
-                type="text"
-                onblur="set_money_Thousands(this)"
-                onfocus="cancel_money_Thousands(this)"
-                oninput=" digitalboxHandler(this)"
-                class="form-control amt1"
-            />
-            </td>
-            <td class="hide">
-            <input
-                type="text"
-                onblur="set_money_Thousands(this)"
-                onfocus="cancel_money_Thousands(this)"
-                oninput=" digitalboxHandler(this)"
-                class="form-control amt2"
-            />
-            </td>
-            <td class="hide">
-            <input
-                type="text"
-                onblur="set_money_Thousands(this)"
-                onfocus="cancel_money_Thousands(this)"
-                oninput=" digitalboxHandler(this)"
-                class="form-control amt3"
-            />
-            </td>
-        </tr>
-        <tr>
-            <td>佔營收比</td>
-            <td>
-            <div class="input-group form-inline">
-                <input
-                type="text"
-                maxlength="3"
-                class="form-control rratio1"
-                /><span class="input-group-addon">%</span>
-            </div>
-            </td>
-            <td>
-            <div class="input-group form-inline">
-                <input
-                type="text"
-                maxlength="3"
-                class="form-control rratio2"
-                /><span class="input-group-addon">%</span>
-            </div>
-            </td>
-            <td>
-            <div class="input-group form-inline">
-                <input
-                type="text"
-                maxlength="3"
-                class="form-control rratio3"
-                /><span class="input-group-addon">%</span>
-            </div>
-            </td>
-        </tr>
-  `);
-    if (data) {
-        setPageDataByJsonClassNameMappingCR(data, $html);
+    if (yearList.length >= maxYears) {
+        alert('已達3個');
+        return;
     }
-    $tableDiv.append($html);
+
+    if (yearList.includes(year)) {
+        alert('此年份已存在');
+        return;
+    }
+
+    yearList.push(year); //例如: [100, 99, 101]
+    yearList.sort((a, b) => a - b); //排序 [99, 100, 101]
+
+    updateTableHeader($(obj)); //更新表格標題列
+    updateProductRows($(obj)); //更新產品資料列
+
+    $input.val(year + 1); //自動 +1
 }
