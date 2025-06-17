@@ -1,56 +1,77 @@
-set401PageDataCR
+function getYearList($container) {
+    return $container.data('yearList') || [];
+}
 
-let mpritemArr = dataObj["401mpritem"] || [];
-const $primaryProductDiv = $target.find(".primaryProductDiv");
-const $addBtn = $primaryProductDiv.find(".product-add-btn");
+function setYearList($container, yearList) {
+    $container.data('yearList', yearList);
+}
 
-mpritemArr = mpritemArr.sort((a, b) => Number(a.dataseq) - Number(b.dataseq));
 
-if (mpritemArr.length > 0) {
-  // 從每筆資料中找出所有年份 key，建立 yearList
-  yearList = [];
-  mpritemArr.forEach(item => {
-    for (let i = 1; i <= 3; i++) {
-      const year = parseInt(item[`yyy${i}`]);
-      if (!isNaN(year) && !yearList.includes(year)) {
-        yearList.push(year);
-      }
+function addYearDataUnit(obj) {
+    const $input = $(obj).closest('.d-flex').find('.infoYearData');
+    const year = parseInt($input.val());
+    const maxYears = 3;
+    const $cardBody = $(obj).closest('.card-body');
+
+    let yearList = getYearList($cardBody);
+
+    if (isNaN(year)) {
+        alert('請輸入數字');
+        $input.val("");
+        return;
     }
-  });
-  yearList.sort((a, b) => a - b);
 
-  // 根據 yearList 建立欄位結構
-  updateTableHeader($addBtn);
-  updateProductRows($addBtn);
+    if (yearList.length >= maxYears) {
+        alert('已達3個');
+        return;
+    }
 
-  // 填入資料
-  for (const v of mpritemArr) {
-    addPrimaryProductTableDataCR($addBtn, v);
-  }
+    if (yearList.includes(year)) {
+        alert('此年份已存在');
+        return;
+    }
+
+    yearList.push(year);
+    yearList.sort((a, b) => a - b);
+    setYearList($cardBody, yearList);
+
+    updateTableHeader($(obj));
+    updateProductRows($(obj));
+
+    $input.val(year + 1);
 }
 
 
 
-function addPrimaryProductTableDataCR($target, data) {
-  const $cardBody = $target.closest('.card-body');
-  const $tbody = $cardBody.find('#product-body');
 
-  // 先新增一列產品資料列
-  addProductTableData($target);
+function deleteYearUnit(obj) {
+    const $th = $(obj).closest('th');
+    const year = parseInt($th.find('input.product-year').val());
+    const $cardBody = $(obj).closest('.card-body');
 
-  const $lastRow = $tbody.find('.product-row:last');
+    let yearList = getYearList($cardBody);
+    yearList = yearList.filter(y => y !== year);
+    yearList.sort((a, b) => a - b);
+    setYearList($cardBody, yearList);
 
-  // 填入產品名稱
-  $lastRow.find('textarea.pname').val(data["pname"]);
+    $cardBody.find(`.year-col-${year}`).remove();
 
-  // 填入每一年的佔營收比
-  Object.keys(data).forEach(key => {
-    const match = key.match(/^rratio(\d)$/);
-    if (match) {
-      const idx = parseInt(match[1], 10) - 1; // rratio1 對應 yearList[0]
-      const year = yearList[idx];
-      const $input = $lastRow.find(`.year-col-${year} .rate-input`);
-      $input.val(data[key]);
+    // 更新年份 class: yy-n
+    $cardBody.find('.product-year').each(function (index) {
+        const updateClass = $(this).attr('class').split(' ').filter(cls => !/^yy-\d+$/.test(cls)).join(' ');
+        $(this).attr('class', updateClass + ` yy-${index + 1}`);
+    });
+
+    // 更新 rate class: rate-n
+    const columnCount = yearList.length;
+    for (let colIndex = 0; colIndex < columnCount; colIndex++) {
+        $cardBody.find(`#product-body .product-row`).each(function () {
+            const $rateInputs = $(this).find('.rate-input');
+            const $input = $rateInputs.eq(colIndex);
+            if ($input.length) {
+                const updatedClass = $input.attr('class').split(' ').filter(cls => !/^rate-\d+$/.test(cls)).join(' ');
+                $input.attr('class', `${updatedClass} rate-${colIndex + 1}`);
+            }
+        });
     }
-  });
 }
