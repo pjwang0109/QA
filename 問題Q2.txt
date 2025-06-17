@@ -1,12 +1,51 @@
-那我要取得12345464785 怎麼取
+我現在要做暫存之後的預取，當我點選案件(openCaseWebCR方法)，我會打一個api:S120010007
 
-<li class="nav-item" id="caseNoTabeItem">
-        <a
-          class="nav-link disabled font-weight-bold"
-          data-toggle="tab"
-          href="#acceptCasePage"
-          disabled
-        >
-          案件編號:12345464785</a
-        >
-      </li>
+當他的result裡面的401mpritem為以下
+401mpritem:[
+{dataseq:"1", pname: "xxx", rratio1:"10", rratio2:"11", rratio3:"12", yyy1: "99",  yyy2: "100",  yyy3: ""},
+{dataseq:"2", pname: "aass", rratio1:"25", rratio2:"26", rratio3:"", yyy1: "99",  yyy2: "100",  yyy3: ""},
+{dataseq:"3", pname: "rr123", rratio1:"31", rratio2:"33", rratio3:"39", yyy1: "99",  yyy2: "100",  yyy3: ""},
+{dataseq:"4", pname: "ffgghh", rratio1:"47", rratio2:"42", rratio3:"44", yyy1: "99",  yyy2: "100",  yyy3: ""},
+]
+
+我必須在product-table增加table資料，並且將欄位資料顯示在input裡面，請幫我在openCaseWebCR另外寫個方法讓他出現這些資料以及html。也可以另外寫一個新的html讓他連動，例如: main_product401.html
+
+
+<div id="primaryProductDiv_${import401_num}" class="primaryProductDiv collapse show">
+        <!-- 新增或引入資料 -->
+         <!-- 測試寫法 START -->
+        <div class="card-body">
+          <div id="importInfo" class="form-group form-inline d-flex justify-content-center">
+            <div class="d-flex align-items-center">
+              <span class="infoText">新增或引入資料:</span>
+              <input type="text" class="form-control text-center infoYearData ml-3">
+              <span class="input-group-text yearTxt">年</span>
+              <button class="btn btn-success add-btitem-btn ml-2" id="addYearBtn" onclick="addYearDataUnit(this)">
+                <i class="fa fa-plus"></i>
+              </button>
+            </div>
+          </div>
+          
+          <!-- 連動:Table -->
+          <table class="table table-bordered" id="product-table">
+            <thead>
+              <tr id="table-header">
+                <th style="width: 25%;vertical-align:middle">產品名稱</th>
+                <th style="vertical-align:middle">佔營收比</th>
+                <!-- 年份欄位 插入位置 -->
+              </tr>
+            </thead>
+            <tbody id="product-body">
+              <!-- 產品資料 插入位置 -->
+            </tbody>
+          </table>
+          
+          <!-- 連動:產品btn  -->
+          <div id="ProductBtnDiv">
+            <button class="btn btn-success product-add-btn" onclick="addProductTableData(this)">
+              <i class="fa fa-plus"></i>
+            </button>
+          </div>
+        </div>
+        <!-- 測試寫法 END -->
+      </div>
