@@ -1,77 +1,28 @@
+可以重新整理這些方法給我嗎
+
+set401PageDataCR($target, data){
+    //主要產品營收比重
+        let mpritemArr = dataObj["401mpritem"] || [];
+        ....
+}
+
+
+addPrimaryProductTableDataCR(addMprItemBtn, v);
+
+
 function getYearList($container) {
-    return $container.data('yearList') || [];
+    
 }
 
 function setYearList($container, yearList) {
-    $container.data('yearList', yearList);
+ 
 }
 
 
-function addYearDataUnit(obj) {
-    const $input = $(obj).closest('.d-flex').find('.infoYearData');
-    const year = parseInt($input.val());
-    const maxYears = 3;
-    const $cardBody = $(obj).closest('.card-body');
-
-    let yearList = getYearList($cardBody);
-
-    if (isNaN(year)) {
-        alert('請輸入數字');
-        $input.val("");
-        return;
-    }
-
-    if (yearList.length >= maxYears) {
-        alert('已達3個');
-        return;
-    }
-
-    if (yearList.includes(year)) {
-        alert('此年份已存在');
-        return;
-    }
-
-    yearList.push(year);
-    yearList.sort((a, b) => a - b);
-    setYearList($cardBody, yearList);
-
-    updateTableHeader($(obj));
-    updateProductRows($(obj));
-
-    $input.val(year + 1);
-}
+addYearDataUnit(obj) 
 
 
 
 
-function deleteYearUnit(obj) {
-    const $th = $(obj).closest('th');
-    const year = parseInt($th.find('input.product-year').val());
-    const $cardBody = $(obj).closest('.card-body');
+deleteYearUnit(obj)
 
-    let yearList = getYearList($cardBody);
-    yearList = yearList.filter(y => y !== year);
-    yearList.sort((a, b) => a - b);
-    setYearList($cardBody, yearList);
-
-    $cardBody.find(`.year-col-${year}`).remove();
-
-    // 更新年份 class: yy-n
-    $cardBody.find('.product-year').each(function (index) {
-        const updateClass = $(this).attr('class').split(' ').filter(cls => !/^yy-\d+$/.test(cls)).join(' ');
-        $(this).attr('class', updateClass + ` yy-${index + 1}`);
-    });
-
-    // 更新 rate class: rate-n
-    const columnCount = yearList.length;
-    for (let colIndex = 0; colIndex < columnCount; colIndex++) {
-        $cardBody.find(`#product-body .product-row`).each(function () {
-            const $rateInputs = $(this).find('.rate-input');
-            const $input = $rateInputs.eq(colIndex);
-            if ($input.length) {
-                const updatedClass = $input.attr('class').split(' ').filter(cls => !/^rate-\d+$/.test(cls)).join(' ');
-                $input.attr('class', `${updatedClass} rate-${colIndex + 1}`);
-            }
-        });
-    }
-}
