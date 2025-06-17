@@ -1,58 +1,16 @@
-他沒有把table欄位顯示出來 資料也沒有帶入
+可以幫我保留他原本的寫法去改寫嗎
 
-let mpritemArr = dataObj["401mpritem"] || [];
-        const $productDiv = $target.find('.primaryProductDiv');
+//主要產品營收比重
+        let mpritemArr = dataObj["401mpritem"] || [];
+        const addMprItemBtn = $target.find(".add-mpritem-btn:first");
+        const $mprTable = $target.find(".primaryProductDiv").find("table");
+        mpritemArr = mpritemArr.sort((a, b) => {
+            const aN = Number(a["dataseq"]);
+            const bN = Number(b["dataseq"]);
+            return a - b;
+        })
+        for (v of mpritemArr) {
 
-        if (mpritemArr.length > 0) {
-            const yearSet = new Set();
-            $.each(mpritemArr, function (i, item) {
-                $.each(item.year_rate || {}, function (year, _) {
-                    yearSet.add(parseInt(year));
-                });
-            });
+                await addPrimaryProductTableData(addMprItemBtn, v);
 
-            const yearList = Array.from(yearSet).sort((a, b) => a - b);
-            setYearList($productDiv, yearList);
-
-            updateTableHeader($productDiv);
         }
-
-        $.each(mpritemArr, function (i, v) {
-            addPrimaryProductTableDataCR($productDiv, v);
-        });
-
-
-
-function addPrimaryProductTableDataCR($container, item) {
-    const yearList = getYearList($container);
-    const $row = $('<tr class="product-row"></tr>');
-
-    $row.append(`
-        <td class="d-flex">
-            <button class="btn btn-danger mr-2 del-pro-btn" onclick="deleteProductsUnit(this)">
-                <i class="fa fa-times"></i>
-            </button>
-            <textarea class="form-control pname" rows="1">${item.name || ''}</textarea>
-        </td>
-        <td style="vertical-align:middle" class="text-center">佔營收比</td>
-    `);
-
-    $.each(yearList, function (i, year) {
-        const rate = item.year_rate?.[year] || '';
-        const rateN = i + 1;
-
-        const $td = $(`
-            <td class="year-col year-col-${year}">
-                <div class="form-inline rate-${year}">
-                    <input type="text" maxlength="3" style="width: 114px" 
-                           class="form-control rate-input rate-${rateN}" value="${rate}" />
-                    <span class="input-group-text">%</span>
-                </div>
-            </td>
-        `);
-
-        insertSortedColumn($row, $td, year);
-    });
-
-    $container.find('#product-body').append($row);
-}
