@@ -1,1 +1,36 @@
+function addPrimaryProductTableDataCR($btn, data) {
+  const $cardBody = $btn.closest('.card-body');
+  const $tbody = $cardBody.find('#product-body');
+
+  // 1. 把 yyy1 ~ yyy3 的年份加入 yearList
+  for (let i = 1; i <= 3; i++) {
+    const year = parseInt(data["yyy" + i]);
+    if (!isNaN(year) && !yearList.includes(year)) {
+      yearList.push(year);
+    }
+  }
+  yearList.sort((a, b) => a - b);
+
+  // 2. 建立欄位（模擬 addYearDataUnit 效果）
+  updateTableHeader($btn);
+  updateProductRows($btn);
+
+  // 3. 新增一筆產品列
+  addProductTableData($btn);
+
+  // 4. 對剛剛新增的列進行填值
+  const $lastRow = $tbody.find('tr.product-row:last');
+
+  // 填入產品名稱
+  $lastRow.find('textarea.pname').val(data["pname"]);
+
+  // 填入各年佔比
+  $.each(yearList, function (i, year) {
+    const ratioKey = "rratio" + (i + 1);
+    const ratioVal = data[ratioKey];
+    if (ratioVal !== undefined) {
+      $lastRow.find('.year-col-' + year).find('.rate-input').val(ratioVal);
+    }
+  });
+}
 
