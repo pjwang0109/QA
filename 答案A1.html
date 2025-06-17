@@ -1,142 +1,106 @@
-function addYearDataUnit(obj) {
-    const $input = $(obj).closest('.d-flex').find('.infoYearData');
-    const year = parseInt($input.val());
-    const maxYears = 3;
-    const $cardBody = $(obj).closest('.card-body');
+也請幫我修改 他找不到 yearList
 
-    let yearList = getYearList($cardBody);
+//更新表格標題列
+function updateTableHeader($trigger) {
+    // console.log('$trigger:', $trigger.closest('.card-body'));
+    const $header = $trigger.closest('.card-body').find('#table-header');
+    $header.find('th.year-col').remove(); //清除舊欄位
 
-    if (isNaN(year)) {
-        alert('請輸入數字');
-        $input.val("");
-        return;
-    }
+    $.each(yearList, function (i, year) {
+        const $th = $(`
+        <th class="year-col year-col-${year}">
+            <div class="form-inline year-${year}">
+            <input type="text" style="width:100px" class="form-control product-year yy-${i+1} form-digit-5 text-center" name="product-year" readonly/>
+            <span class="input-group-addon">年</span>
+            <button class="btn btn-danger" onclick="deleteYearUnit(this)">
+                <i class="fa fa-times"></i>
+            </button>
+            </div>
+        </th>
+        `);
 
-    if (yearList.length >= maxYears) {
-        alert('已達3個');
-        return;
-    }
-
-    if (yearList.includes(year)) {
-        alert('此年份已存在');
-        return;
-    }
-
-    yearList.push(year);
-    yearList.sort((a, b) => a - b);
-    setYearList($cardBody, yearList);
-
-    updateTableHeader($cardBody);
-    updateProductRows($cardBody);
-
-    $input.val(year + 1);
+        $th.find('.product-year').val(year);
+        insertSortedColumn($header, $th, year);
+    });
 }
 
-function deleteYearUnit(obj) {
-    const $th = $(obj).closest('th');
-    const year = parseInt($th.find('input.product-year').val());
-    const $cardBody = $(obj).closest('.card-body');
+//更新產品資料列
+function updateProductRows(data) {
+    // console.log('data:', $(data));
+    $(data).closest('.card-body').find('#product-body .product-row').each(function () {
+        const $row = $(this);
 
-    let yearList = getYearList($cardBody);
-    yearList = yearList.filter(y => y !== year);
-    yearList.sort((a, b) => a - b);
-    setYearList($cardBody, yearList);
-
-    $cardBody.find(`.year-col-${year}`).remove();
-
-    $cardBody.find('.product-year').each(function (index) {
-        const updateClass = $(this).attr('class').split(' ').filter(cls => !/^yy-\d+$/.test(cls)).join(' ');
-        $(this).attr('class', updateClass + ` yy-${index + 1}`);
-    });
-
-    const columnCount = yearList.length;
-    $cardBody.find('#product-body .product-row').each(function () {
-        const $rateInputs = $(this).find('.rate-input');
-        for (let colIndex = 0; colIndex < columnCount; colIndex++) {
-            const $input = $rateInputs.eq(colIndex);
-            if ($input.length) {
-                const updatedClass = $input.attr('class').split(' ').filter(cls => !/^rate-\d+$/.test(cls)).join(' ');
-                $input.attr('class', `${updatedClass} rate-${colIndex + 1}`);
-            }
+        //暫存原本欄位的值：{年份: %數值}
+        const rateMap = {};
+        $row.find('td.year-col').each(function () {
+        const yearClass = $(this).attr('class').match(/year-col-(\d+)/);
+        if (yearClass) {
+            const year = parseInt(yearClass[1]);
+            const rate = $(this).find('.rate-input').val(); //儲存原本輸入的 %
+            rateMap[year] = rate;
         }
-    });
-}
-
-
-function set401PageDataCR($target, dataObj) {
-    const mpritemArr = dataObj["401mpritem"] || [];
-    const $productDiv = $target.find('#primaryProductDiv_401');
-
-    if (mpritemArr.length > 0) {
-        const yearSet = new Set();
-        $.each(mpritemArr, function (_, item) {
-            $.each(item.year_rate || {}, function (year, _) {
-                yearSet.add(parseInt(year));
-            });
         });
 
-        const yearList = Array.from(yearSet).sort((a, b) => a - b);
-        setYearList($productDiv, yearList);
+        $row.find('td.year-col').remove(); //移除舊年份欄位
 
-        updateTableHeader($productDiv);
-    }
-
-    $.each(mpritemArr, function (_, v) {
-        addPrimaryProductTableDataCR($productDiv, v);
+        //重新插入欄位（含舊值）
+        $.each(yearList, function (i, year) {
+        const rateN = i + 1;
+        const $td = $(`
+            <td class="year-col year-col-${year}">
+            <div class="form-inline rate-${year}">
+                <input type="text" maxlength="3" style="width: 114px" class="form-control rate-input rate-${rateN}"/>
+                <span class="input-group-text">%</span>
+            </div>
+            </td>
+        `);
+        if (rateMap[year]) {
+            $td.find('.rate-input').val(rateMap[year]); //套回舊值
+        }
+        insertSortedColumn($row, $td, year);
+        });
     });
 }
 
 
-
-function addPrimaryProductTableDataCR($container, item) {
-    const yearList = getYearList($container);
+//新增產品列
+function addProductTableData(obj) {
+    const $div = $(obj).closest('.card-body');
     const $row = $('<tr class="product-row"></tr>');
+    let productNum = $div.find('.product-row').length + 1;
 
     $row.append(`
         <td class="d-flex">
-            <button class="btn btn-danger mr-2 del-pro-btn" onclick="deleteProductsUnit(this)">
-                <i class="fa fa-times"></i>
-            </button>
-            <textarea class="form-control pname" rows="1">${item.name || ''}</textarea>
+        <button class="btn btn-danger mr-2 del-pro-btn" data-row="${productNum}" onclick="deleteProductsUnit(this)">
+            <i class="fa fa-times"></i>
+        </button>
+        <textarea class="form-control pname" rows="1"></textarea>
         </td>
         <td style="vertical-align:middle" class="text-center">佔營收比</td>
     `);
 
     $.each(yearList, function (i, year) {
-        const rate = item.year_rate?.[year] || '';
         const rateN = i + 1;
-
         const $td = $(`
-            <td class="year-col year-col-${year}">
-                <div class="form-inline rate-${year}">
-                    <input type="text" maxlength="3" style="width: 114px" 
-                           class="form-control rate-input rate-${rateN}" value="${rate}" />
-                    <span class="input-group-text">%</span>
-                </div>
-            </td>
+        <td class="year-col year-col-${year}">
+            <div class="form-inline rate-${year}">
+            <input type="text" maxlength="3" style="width: 114px" class="form-control rate-input rate-${rateN}"/>
+            <span class="input-group-text">%</span>
+            </div>
+        </td>
         `);
-
         insertSortedColumn($row, $td, year);
     });
 
-    $container.find('#product-body').append($row);
+    $div.find('#product-body').append($row);
 }
 
+//刪除產品列
+function deleteProductsUnit(obj){
+    const $cardBody = $(obj).closest('.card-body');
+    $(obj).closest('tr.product-row').remove();
 
-
-function insertSortedColumn($parentRow, $newColumn, year) {
-    let inserted = false;
-
-    $parentRow.children('td.year-col').each(function () {
-        const currentYear = parseInt($(this).attr('class').match(/year-col-(\d+)/)?.[1]);
-        if (!isNaN(currentYear) && year < currentYear) {
-            $(this).before($newColumn);
-            inserted = true;
-            return false;
-        }
-    });
-
-    if (!inserted) {
-        $parentRow.append($newColumn);
-    }
+    $cardBody.find('#product-body .product-row').each(function (index) {
+        $(this).find('.btn-danger').attr('data-row', index + 1);
+    })
 }
