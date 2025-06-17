@@ -1,473 +1,108 @@
-但是我的 openCaseWebCR 是這樣寫的
+這是在 openCaseWebCR 方法中找到set401PageDataCR原先寫的
+async function set401PageDataCR($target, data) {
 
-...
-let res = [];
-    try {
-        res = await Promise.all([
-            apiS120010007(uid, token, crpt_pk, isEditPage),
-            apiS120010001(uid, token, crpt_pk),
-            apiS120010002(uid, token, crpt_pk),
-    ])
-    }catch (e) {
-        console.error(e);
-    }
-...
+....
+        //主要產品營收比重
+        let mpritemArr = dataObj["401mpritem"] || [];
+        const addMprItemBtn = $target.find(".product-add-btn:first");
+        const $mprTable = $target.find(".primaryProductDiv").find("table");
+        mpritemArr = mpritemArr.sort((a, b) => {
+            const aN = Number(a["dataseq"]);
+            const bN = Number(b["dataseq"]);
+            return a - b;
+        })
+        console.log("mpritemArr:", mpritemArr);
+        for (v of mpritemArr) {
 
+            await addPrimaryProductTableDataCR(addMprItemBtn, v);
 
-而且我的資料其實長這樣，而我要找到 crptlist -> basedata_401 -> 401mpritem 當這個資料有東西 才會連動table
-{
-  "msg": "成功",
-  "result": {
-    "flag_mf": "0",
-    "biz_ver": "BIZ111",
-    "flag_judicial": "1",
-    "cname": "陳筱",
-    "flag_estate": "2",
-    "isclosed": "0",
-    "desc_mf": "",
-    "btn_finish": "1",
-    "branch": "037",
-    "btn_invalid": "1",
-    "desc_estate": "vcvcv",
-    "desc_credit": "家家",
-    "desc_judicial": "",
-    "business_cht": "企金",
-    "desc_jcic": "HHH",
-    "flag_credit": "2",
-    "crptlist": [
-      {
-        "crpt_datatype": "1",
-        "cname": "陳筱",
-        "kycdata": "1",
-        "flag_jcic": "1",
-        "basedata_cr": {
-          "p_brc": "",
-          "p_idcheck_2": "",
-          "p_hhr": "",
-          "p_idcheck_1": "",
-          "p_idcheck_3": "",
-          "p_rp": "",
-          "p_idquery": ""
-        },
-        "flag_nonjcic": "1",
-        "basedata_mshareholder_rate1": "",
-        "basedata_re": {
-          "re_set": "",
-          "re_flag": "0",
-          "re_desc": "",
-          "re_YN": "0",
-          "re_total": "0",
-          "reitem": []
-        },
-        "basedata_mshareholder_rate2": "",
-        "basedata_mshareholder_rate3": "",
-        "basedata_mshareholder": [],
-        "flag_tch": "1",
-        "basedata_person": {
-          "cHomeAly": "",
-          "cMarrO": "",
-          "cLiveAddZip": "",
-          "cEduFlag": "0",
-          "cComTelFlag": "1",
-          "cSY": "10",
-          "cCompFlr": "",
-          "TAX_FAMT": "",
-          "cBirthD": "70-12-09",
-          "cLiveO": "",
-          "cName": "陳筱",
-          "cEmail": "Milla_Huang@ubot.com.tw",
-          "TAX_DATAFLAG": "",
-          "cPosFlag": "1",
-          "cCompCity": "",
-          "c993Tag": "N",
-          "cHomeCity": "臺北市",
-          "cFax1": "",
-          "cCompOf": "",
-          "cHomeNum": "１００",
-          "cHomeTelFlag": "1",
-          "cMailVil": "",
-          "cFax2": "",
-          "cComTelH": "02",
-          "cHomeTel1": "1234",
-          "cHomeTel2": "1234",
-          "cHomeStreet": "",
-          "cHomeAdd": "",
-          "cLiveCity": "臺北市",
-          "cMailOwnerType": "2",
-          "cLiveOwnerType": "4",
-          "cComTelO": "",
-          "cNation": "1",
-          "cCompzip": "",
-          "cCompArea": "",
-          "cHomeEtc": "",
-          "spouseCA": "",
-          "cCellO": "",
-          "cHomeFlr": "",
-          "cMailAly": "",
-          "cNationO": "",
-          "cComTel2": "2233",
-          "cCompVil": "",
-          "cComTel1": "2719",
-          "cMailAdd": "",
-          "cHomeAddZip": "",
-          "cFaxH": "",
-          "cJobCom": "聯邦銀行",
-          "cLiveNum": "３９９",
-          "cLiveOwnerTypeEtc": "",
-          "cLiveAddFlag": "1",
-          "cHomeOf": "",
-          "cLiveEtc": "",
-          "cMailStreet": "",
-          "cJob": "27",
-          "cMailLane": "",
-          "cLiveAly": "",
-          "cLiveAdd": "",
-          "cHomeOwnerTypeEtc": "",
-          "cMailFlr": "５",
-          "LIVE_COPY_HOME": "0",
-          "cMailAddFlag": "1",
-          "TAX_AMT": "",
-          "cMailO": "",
-          "cHomezip": "",
-          "cMailAddZip": "",
-          "cCompLane": "",
-          "cLivezip": "00000",
-          "cLiveOf": "",
-          "cCompStreet": "",
-          "cJobO": "",
-          "cCompO": "",
-          "cMailEtc": "",
-          "cRARank": "L",
-          "cHomeOwnerType": "1",
-          "cLiveFlr": "５",
-          "cLiveLane": "",
-          "cHomeO": "",
-          "cMailNum": "３９９",
-          "cHomeVil": "",
-          "cHomeLane": "",
-          "MAIL_COPY_HOME": "0",
-          "cMarrFlag": "1",
-          "cHomeTelO": "",
-          "cHomeArea": "",
-          "cMailOf": "",
-          "Childs": "",
-          "cMailArea": "",
-          "cEduO": "",
-          "cCompAly": "",
-          "cCompEtc": "",
-          "cLiveArea": "",
-          "cComTelExt": "",
-          "cHomeTelH": "02",
-          "cCompAdd": "",
-          "cIPY": "10000",
-          "cLiveVil": "",
-          "cMailOwnerTypeEtc": "",
-          "cCompNum": "",
-          "cPosO": "",
-          "cCellFlag": "",
-          "cMailCity": "臺北市",
-          "cMailzip": "114",
-          "LIVE_COPY_MAIL": "0",
-          "cCompAddFlag": "",
-          "cCell": "",
-          "cHomeAddFlag": "1",
-          "cLiveStreet": "",
-          "cCompAddZip": "",
-          "TAX_YYY": ""
-        },
-        "basedata_ch": {},
-        "idcode": "A",
-        "basedata_rel_company": {},
-        "basedata_jcic": {
-          "balanceShort": "",
-          "jtno": "",
-          "balanceMedium": ""
-        },
-        "custid": "A126237213",
-        "crpt_seq": "1",
-        "desc_jcic": "",
-        "crpt_no": "CRPT20250512133517677",
-        "crpt_custtype": "1",
-        "basedata_company": {},
-        "basedata_401": {}
-      },
-      {
-        "crpt_datatype": "2",
-        "cname": "太陽股份有限公司",
-        "kycdata": "1",
-        "flag_jcic": "1",
-        "basedata_cr": {},
-        "flag_nonjcic": "0",
-        "basedata_mshareholder_rate1": "",
-        "basedata_re": {
-          "re_set": "",
-          "re_flag": "",
-          "re_desc": "",
-          "re_YN": "",
-          "re_total": "",
-          "reitem": []
-        },
-        "basedata_mshareholder_rate2": "",
-        "basedata_mshareholder_rate3": "",
-        "basedata_mshareholder": [],
-        "flag_tch": "1",
-        "basedata_person": {},
-        "basedata_ch": {
-          "ch2_camt": "",
-          "ch5_camt": "",
-          "ch3_pname": "",
-          "ch4_pname": "",
-          "ch_chg_id": "",
-          "ch2_pname": "",
-          "ch2": "",
-          "ch1": "",
-          "ch4": "",
-          "ch3": "",
-          "ch_chg_date": "",
-          "ch5": "",
-          "ch1_pname": "",
-          "ch4_camt": "",
-          "ch_chg_flag": "",
-          "ch_chg_name": "",
-          "ch5_pname": "",
-          "ch3_camt": "",
-          "ch_memo": "",
-          "ch1_camt": "",
-          "ch_chg_rel": ""
-        },
-        "idcode": "A",
-        "basedata_rel_company": {
-          "rel_twflag": "0",
-          "relitem": []
-        },
-        "basedata_jcic": {
-          "balanceShort": "",
-          "jtno": "",
-          "balanceMedium": ""
-        },
-        "custid": "10101013",
-        "crpt_seq": "2",
-        "desc_jcic": "",
-        "crpt_no": "CRPT20250512133517688",
-        "crpt_custtype": "5",
-        "basedata_company": {
-          "cHomeAly": "",
-          "cLiveAddZip": "",
-          "cHomeOwnerTypeEtc": "",
-          "cMailFlr": "５",
-          "OTYPE": "",
-          "cBirthD": "99-07-23",
-          "LIVE_COPY_HOME": "0",
-          "cMailAddFlag": "1",
-          "cMailO": "",
-          "cLiveO": "",
-          "cHomezip": "10044",
-          "cName": "太陽股份有限公司",
-          "cEmail": "jcictest@jcic.gov.tw",
-          "cMailAddZip": "",
-          "cLivezip": "",
-          "BIZ1_4": "",
-          "cLiveOf": "",
-          "BIZ1_2": "",
-          "BMDESC": "",
-          "cHomeCity": "臺北市",
-          "cFax1": "2316",
-          "cHomeNum": "２",
-          "cMailVil": "",
-          "cFax2": "3148",
-          "cMailEtc": "",
-          "cRARank": "M",
-          "cHomeStreet": "",
-          "cHomeAdd": "",
-          "cLiveCity": "",
-          "cHomeOwnerType": "5",
-          "cMailOwnerType": "4",
-          "cLiveFlr": "",
-          "cLiveOwnerType": "6",
-          "cLiveLane": "",
-          "cHomeO": "",
-          "cMailNum": "１０",
-          "cHomeVil": "",
-          "cNation": "",
-          "cHomeLane": "",
-          "MAIL_COPY_HOME": "0",
-          "cHomeEtc": "",
-          "SISTATUS": "",
-          "cHomeArea": "",
-          "cDayTel2": "3232",
-          "cCellO": "",
-          "cHomeFlr": "１",
-          "cMailAly": "",
-          "cMailOf": "",
-          "cMailArea": "",
-          "cCAmount": "2,567,890",
-          "BIZ_CHT": "",
-          "cDayTelExt": "",
-          "cNationO": "",
-          "cMailAdd": "",
-          "cLiveArea": "",
-          "MBI": "",
-          "cHomeAddZip": "",
-          "ECOUNT": "",
-          "BIZ2_4": "",
-          "cFaxH": "02",
-          "BIZ2_2": "",
-          "cDayTel1": "2316",
-          "cLiveNum": "",
-          "cLiveVil": "",
-          "cMailOwnerTypeEtc": "",
-          "cLiveOwnerTypeEtc": "",
-          "cCellFlag": "1",
-          "cMailCity": "臺北市",
-          "cDayTelFlag": "1",
-          "cLiveAddFlag": "",
-          "cHomeOf": "",
-          "cLiveEtc": "",
-          "cMailStreet": "",
-          "cMailzip": "10041",
-          "LIVE_COPY_MAIL": "0",
-          "cDayTelH": "02",
-          "cMailLane": "",
-          "cCell": "0963956332",
-          "cLiveAly": "",
-          "cHomeAddFlag": "1",
-          "cLiveStreet": "",
-          "cLiveAdd": "",
-          "cDayTelO": ""
-        },
-        "basedata_401": {
-          "r401_r3_amt": "",
-          "r401_r2_amt": "",
-          "r401_invoice": "1",
-          "401btitem": [
-            {
-              "ns_yyy": "98",
-              "m11": "",
-              "m10": "",
-              "m02": "5",
-              "m01": "6",
-              "m12": "",
-              "sfa": "",
-              "m04": "",
-              "m03": "4",
-              "sfa_type": "",
-              "m06": "",
-              "m05": "",
-              "m08": "",
-              "m07": "",
-              "m09": "",
-              "interval": ""
-            },
-            {
-              "ns_yyy": "99",
-              "m11": "",
-              "m10": "",
-              "m02": "12",
-              "m01": "11",
-              "m12": "",
-              "sfa": "",
-              "m04": "",
-              "m03": "13",
-              "sfa_type": "",
-              "m06": "",
-              "m05": "",
-              "m08": "",
-              "m07": "",
-              "m09": "",
-              "interval": ""
-            }
-          ],
-          "pratio": "",
-          "sratio": "",
-          "401sitem": [],
-          "401mpritem": [
-            {
-              "dataseq": "1",
-              "yyy1": "99",
-              "yyy2": "100",
-              "yyy3": "",
-              "amt1": "",
-              "rratio1": "1",
-              "rratio2": "2",
-              "pname": "xxx",
-              "amt3": "",
-              "rratio3": "",
-              "amt2": ""
-            },
-            {
-              "dataseq": "2",
-              "yyy1": "99",
-              "yyy2": "100",
-              "yyy3": "",
-              "amt1": "",
-              "rratio1": "3",
-              "rratio2": "4",
-              "pname": "uui",
-              "amt3": "",
-              "rratio3": "",
-              "amt2": ""
-            },
-            {
-              "dataseq": "3",
-              "yyy1": "99",
-              "yyy2": "100",
-              "yyy3": "",
-              "amt1": "",
-              "rratio1": "5",
-              "rratio2": "6",
-              "pname": "bbnn",
-              "amt3": "",
-              "rratio3": "",
-              "amt2": ""
-            },
-            {
-              "dataseq": "4",
-              "yyy1": "99",
-              "yyy2": "100",
-              "yyy3": "",
-              "amt1": "",
-              "rratio1": "7",
-              "rratio2": "8",
-              "pname": "ffff",
-              "amt3": "",
-              "rratio3": "",
-              "amt2": ""
-            },
-            {
-              "dataseq": "5",
-              "yyy1": "99",
-              "yyy2": "100",
-              "yyy3": "",
-              "amt1": "",
-              "rratio1": "9",
-              "rratio2": "10",
-              "pname": "wert",
-              "amt3": "",
-              "rratio3": "",
-              "amt2": ""
-            }
-          ],
-          "r401_r1_amt": "",
-          "r401_invoice_type2": "",
-          "r401_invoice_type1": "",
-          "401pitem": []
+            $mprTable.find(".yy-1").val(v["yyy1"]);
+            $mprTable.find(".yy-2").val(v["yyy2"]);
+            $mprTable.find(".yy-3").val(v["yyy3"]);
         }
-      }
-    ],
-    "business": "40",
-    "desc_payment": "",
-    "mflist": [],
-    "flag_jcic": "1",
-    "btn_save": "1",
-    "flag_tch": "1",
-    "times_payment": "",
-    "isreopen": "0",
-    "crpt_pk": "CRPTM2025051200001 ",
-    "custid": "A126237213",
-    "flag_payment": "1",
-    "flag_other": "1",
-    "branch_cht": "內湖分行"
-  },
-  "rc": "M0000",
-  "token": "5A3CB98CB34E098CCA33B8313E8974EBB7EB46531858CEC1E629CD8A81D2354B"
+    }
+    return $target;
+}
+我想用 addPrimaryProductTableDataCR去取出 相對應的table(我現在已修改完成的HTML，跟以前不同)
+
+這是他原本寫的addPrimaryProductTableDataCR 方法，請幫我修改
+//取得連動:主要產品營收比重  
+function addPrimaryProductTableDataCR(obj, data) {
+    const $tableDiv = $(obj).prevAll(".table:first");
+    const $eleLast = $tableDiv.find("button[data-row]:last");
+    const num = ($eleLast.length > 0) ? $eleLast.data("row") + 1 : 1;
+    const $html = $(`
+        <tr>
+            <td rowspan="2" class="v-middle">
+            <button data-num="2"  data-row="${num}" class="del-btn btn btn-danger btn-sm">
+                ×
+            </button>
+            </td>
+            <td rowspan="2">
+            <textarea class="form-control pname" cols="30" rows="1"></textarea>
+            </td>
+            <td class="hide">金額</td>
+            <td class="hide">
+            <input
+                type="text"
+                onblur="set_money_Thousands(this)"
+                onfocus="cancel_money_Thousands(this)"
+                oninput=" digitalboxHandler(this)"
+                class="form-control amt1"
+            />
+            </td>
+            <td class="hide">
+            <input
+                type="text"
+                onblur="set_money_Thousands(this)"
+                onfocus="cancel_money_Thousands(this)"
+                oninput=" digitalboxHandler(this)"
+                class="form-control amt2"
+            />
+            </td>
+            <td class="hide">
+            <input
+                type="text"
+                onblur="set_money_Thousands(this)"
+                onfocus="cancel_money_Thousands(this)"
+                oninput=" digitalboxHandler(this)"
+                class="form-control amt3"
+            />
+            </td>
+        </tr>
+        <tr>
+            <td>佔營收比</td>
+            <td>
+            <div class="input-group form-inline">
+                <input
+                type="text"
+                maxlength="3"
+                class="form-control rratio1"
+                /><span class="input-group-addon">%</span>
+            </div>
+            </td>
+            <td>
+            <div class="input-group form-inline">
+                <input
+                type="text"
+                maxlength="3"
+                class="form-control rratio2"
+                /><span class="input-group-addon">%</span>
+            </div>
+            </td>
+            <td>
+            <div class="input-group form-inline">
+                <input
+                type="text"
+                maxlength="3"
+                class="form-control rratio3"
+                /><span class="input-group-addon">%</span>
+            </div>
+            </td>
+        </tr>
+  `);
+    if (data) {
+        setPageDataByJsonClassNameMappingCR(data, $html);
+    }
+    $tableDiv.append($html);
 }
