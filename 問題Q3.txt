@@ -1,22 +1,197 @@
-我一定要保留 $(obj).closest('.card-body')
+不對，我要取出我現在已經修改過的樣子，
+這是在操作時的連動，而我現在要的是在取出案件時
+能夠以此方法取出TABLE
 
-可以幫我用同樣方式根據有幾個 product-row 來控制 productNum嗎
+//////////主要產品營收比重 START//////////
+let yearList = [];
 
+//新增年份
+function addYearDataUnit(obj) {
+    const $input = $(obj).closest('.d-flex').find('.infoYearData');
+    const year = parseInt($input.val());
+    const maxYears = 3;
+
+    if (isNaN(year)) {
+        alert('請輸入數字');
+        $input.val("");
+        return;
+    }
+
+    if (yearList.length >= maxYears) {
+        alert('已達3個');
+        return;
+    }
+
+    if (yearList.includes(year)) {
+        alert('此年份已存在');
+        return;
+    }
+
+    yearList.push(year); //例如: [100, 99, 101]
+    yearList.sort((a, b) => a - b); //排序 [99, 100, 101]
+
+    updateTableHeader($(obj)); //更新表格標題列
+    updateProductRows($(obj)); //更新產品資料列
+
+    $input.val(year + 1); //自動 +1
+}
+
+//刪除年份
+function deleteYearUnit(obj){
+    const $th = $(obj).closest('th');
+    const yearClass = $th.find('input.product-year').val();
+    const year = parseInt(yearClass);
+    const $yearDiv = $(obj).closest('.card-body');
+
+    yearList = yearList.filter(y => y !== year);
+    yearList.sort((a, b) => a - b);
+
+    $yearDiv.find(`.year-col-${year}`).remove();
+    
+    //年份 yy-${n}
+    $yearDiv.find('.product-year').each(function (index) {
+        const updateClass = $(this).attr('class').split(' ').filter(cls => !/^yy-\d+$/.test(cls)).join(' ');
+        $(this).attr('class', updateClass);
+
+        $(this).addClass(`yy-${index + 1}`);
+    })
+
+    //比率 rate-${n}
+    const columnCount = yearList.length;
+    for (let colIndex = 0; colIndex < columnCount; colIndex++) {
+        $yearDiv.find(`#product-body .product-row`).each(function () {
+            const $rateInputs = $(this).find('.rate-input');
+            const $input = $rateInputs.eq(colIndex);
+
+            if ($input.length) {
+                const updatedClass = $input.attr('class').split(' ').filter(cls => !/^rate-\d+$/.test(cls)).join(' ');
+                $input.attr('class', `${updatedClass} rate-${colIndex + 1}`);
+            }
+        });
+    }
+}
+
+//更新表格標題列
+function updateTableHeader($trigger) {
+    // console.log('$trigger:', $trigger.closest('.card-body'));
+    const $header = $trigger.closest('.card-body').find('#table-header');
+    $header.find('th.year-col').remove(); //清除舊欄位
+
+    $.each(yearList, function (i, year) {
+        const $th = $(`
+        <th class="year-col year-col-${year}">
+            <div class="form-inline year-${year}">
+            <input type="text" style="width:100px" class="form-control product-year yy-${i+1} form-digit-5 text-center" name="product-year" readonly/>
+            <span class="input-group-addon">年</span>
+            <button class="btn btn-danger" onclick="deleteYearUnit(this)">
+                <i class="fa fa-times"></i>
+            </button>
+            </div>
+        </th>
+        `);
+
+        $th.find('.product-year').val(year);
+        insertSortedColumn($header, $th, year);
+    });
+}
+
+//更新產品資料列
+function updateProductRows(data) {
+    // console.log('data:', $(data));
+    $(data).closest('.card-body').find('#product-body .product-row').each(function () {
+        const $row = $(this);
+
+        //暫存原本欄位的值：{年份: %數值}
+        const rateMap = {};
+        $row.find('td.year-col').each(function () {
+        const yearClass = $(this).attr('class').match(/year-col-(\d+)/);
+        if (yearClass) {
+            const year = parseInt(yearClass[1]);
+            const rate = $(this).find('.rate-input').val(); //儲存原本輸入的 %
+            rateMap[year] = rate;
+        }
+        });
+
+        $row.find('td.year-col').remove(); //移除舊年份欄位
+
+        //重新插入欄位（含舊值）
+        $.each(yearList, function (i, year) {
+        const rateN = i + 1;
+        const $td = $(`
+            <td class="year-col year-col-${year}">
+            <div class="form-inline rate-${year}">
+                <input type="text" maxlength="3" style="width: 114px" class="form-control rate-input rate-${rateN}"/>
+                <span class="input-group-text">%</span>
+            </div>
+            </td>
+        `);
+        if (rateMap[year]) {
+            $td.find('.rate-input').val(rateMap[year]); //套回舊值
+        }
+        insertSortedColumn($row, $td, year);
+        });
+    });
+}
+
+//依照年份排序插入欄位
+function insertSortedColumn($parent, $element, year) {
+    let inserted = false;
+
+    $parent.children('th.year-col, td.year-col').each(function () {
+        const currentYearText = $(this).find('.product-year').val() || $(this).text();
+        const currentYear = parseInt(currentYearText);
+
+        if (!isNaN(currentYear) && year < currentYear) {
+        $(this).before($element);
+        inserted = true;
+        return false;
+        }
+    });
+
+    if (!inserted) {
+        $parent.append($element);
+    }
+}
+
+//新增產品列
+function addProductTableData(obj) {
+    const $div = $(obj).closest('.card-body');
+    const $row = $('<tr class="product-row"></tr>');
+    let productNum = $div.find('.product-row').length + 1;
+
+    $row.append(`
+        <td class="d-flex">
+        <button class="btn btn-danger mr-2 del-pro-btn" data-row="${productNum}" onclick="deleteProductsUnit(this)">
+            <i class="fa fa-times"></i>
+        </button>
+        <textarea class="form-control pname" rows="1"></textarea>
+        </td>
+        <td style="vertical-align:middle" class="text-center">佔營收比</td>
+    `);
+
+    $.each(yearList, function (i, year) {
+        const rateN = i + 1;
+        const $td = $(`
+        <td class="year-col year-col-${year}">
+            <div class="form-inline rate-${year}">
+            <input type="text" maxlength="3" style="width: 114px" class="form-control rate-input rate-${rateN}"/>
+            <span class="input-group-text">%</span>
+            </div>
+        </td>
+        `);
+        insertSortedColumn($row, $td, year);
+    });
+
+    $div.find('#product-body').append($row);
+}
 
 //刪除產品列
 function deleteProductsUnit(obj){
+    const $cardBody = $(obj).closest('.card-body');
     $(obj).closest('tr.product-row').remove();
-    // console.log($(obj).closest('tr.product-row'));
 
-    console.log($(obj).closest('.card-body').find('#product-body .product-row'));
-    console.log($('#product-body .product-row'));
-
-    productNum = 1;
-    $(obj).closest('.card-body').find('#product-body .product-row').each(function () {
-        $(this).find('.btn-danger').attr('data-row', productNum);
-        productNum ++;
-
-        console.log($(this));
-        console.log("HHH");
+    $cardBody.find('#product-body .product-row').each(function (index) {
+        $(this).find('.btn-danger').attr('data-row', index + 1);
     })
 }
+//////////主要產品營收比重 END//////////
