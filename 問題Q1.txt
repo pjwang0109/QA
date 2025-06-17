@@ -1,4 +1,6 @@
-addPrimaryProductTableDataCR 有產品資訊了 但是還沒有年份資料跟年份table欄位
+let yearList = []; 不行這樣設置 因為我有好幾個產品頁面，根據每個產品頁面去控制:達到3個, 此年份已存在, 請輸入數字, 以及排序
+該怎麼更改
+
 
 //新增年份
 function addYearDataUnit(obj) {
