@@ -2,7 +2,7 @@
 
 //主要產品營收比重
         let mpritemArr = dataObj["401mpritem"] || [];
-        const addMprItemBtn = $target.find(".add-mpritem-btn:first");
+        const addMprItemBtn = $target.find(".product-add-btn:first");
         const $mprTable = $target.find(".primaryProductDiv").find("table");
         mpritemArr = mpritemArr.sort((a, b) => {
             const aN = Number(a["dataseq"]);
@@ -11,6 +11,6 @@
         })
         for (v of mpritemArr) {
 
-                await addPrimaryProductTableData(addMprItemBtn, v);
+                await addPrimaryProductTableDataCR(addMprItemBtn, v);
 
         }
