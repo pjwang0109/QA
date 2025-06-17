@@ -1,47 +1,56 @@
-function render401mpritemToProductTable(result) {
-  const data = result["401mpritem"];
-  if (!Array.isArray(data) || data.length === 0) return;
+set401PageDataCR
 
-  // 找到表格 DOM
-  const $table = $("#product-table");
-  const $thead = $table.find("#table-header");
-  const $tbody = $table.find("#product-body");
+let mpritemArr = dataObj["401mpritem"] || [];
+const $primaryProductDiv = $target.find(".primaryProductDiv");
+const $addBtn = $primaryProductDiv.find(".product-add-btn");
 
-  // 清空欄位
-  $thead.find(".year-header").remove();
-  $tbody.empty();
+mpritemArr = mpritemArr.sort((a, b) => Number(a.dataseq) - Number(b.dataseq));
 
-  // 假設最多支援3年
-  const yearSet = new Set();
-  data.forEach(item => {
-    if (item.yyy1) yearSet.add(item.yyy1);
-    if (item.yyy2) yearSet.add(item.yyy2);
-    if (item.yyy3) yearSet.add(item.yyy3);
+if (mpritemArr.length > 0) {
+  // 從每筆資料中找出所有年份 key，建立 yearList
+  yearList = [];
+  mpritemArr.forEach(item => {
+    for (let i = 1; i <= 3; i++) {
+      const year = parseInt(item[`yyy${i}`]);
+      if (!isNaN(year) && !yearList.includes(year)) {
+        yearList.push(year);
+      }
+    }
   });
+  yearList.sort((a, b) => a - b);
 
-  const years = Array.from(yearSet);
+  // 根據 yearList 建立欄位結構
+  updateTableHeader($addBtn);
+  updateProductRows($addBtn);
 
-  // 動態新增年份欄位到 header
-  years.forEach(year => {
-    $thead.append(`<th class="year-header text-center">${year} 年</th>`);
-  });
+  // 填入資料
+  for (const v of mpritemArr) {
+    addPrimaryProductTableDataCR($addBtn, v);
+  }
+}
 
-  // 動態新增每一列產品資料
-  data.forEach(item => {
-    const $row = $(`<tr></tr>`);
-    $row.append(`<td><input type="text" class="form-control pname" value="${item.pname}"/></td>`);
-    $row.append(`<td><input type="text" class="form-control rratio" value=""/></td>`); // 可視情況放 rratio 合計
 
-    // 根據年份插入對應的 rratio
-    years.forEach(year => {
-      let ratio = "";
-      if (item.yyy1 === year) ratio = item.rratio1;
-      else if (item.yyy2 === year) ratio = item.rratio2;
-      else if (item.yyy3 === year) ratio = item.rratio3;
 
-      $row.append(`<td><input type="text" class="form-control" value="${ratio}"/></td>`);
-    });
+function addPrimaryProductTableDataCR($target, data) {
+  const $cardBody = $target.closest('.card-body');
+  const $tbody = $cardBody.find('#product-body');
 
-    $tbody.append($row);
+  // 先新增一列產品資料列
+  addProductTableData($target);
+
+  const $lastRow = $tbody.find('.product-row:last');
+
+  // 填入產品名稱
+  $lastRow.find('textarea.pname').val(data["pname"]);
+
+  // 填入每一年的佔營收比
+  Object.keys(data).forEach(key => {
+    const match = key.match(/^rratio(\d)$/);
+    if (match) {
+      const idx = parseInt(match[1], 10) - 1; // rratio1 對應 yearList[0]
+      const year = yearList[idx];
+      const $input = $lastRow.find(`.year-col-${year} .rate-input`);
+      $input.val(data[key]);
+    }
   });
 }
