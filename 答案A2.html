@@ -1,101 +1,15 @@
-let yearList = []; // 儲存年份
-const maxYears = 3;
+function openCaseWebCR() {
+  // 打 API 取得資料
+  $.ajax({
+    url: "/api/S120010007",
+    method: "POST",
+    data: { ... },
+    success: function(result) {
+      if (result && result["401mpritem"]) {
+        render401mpritemToProductTable(result);
+      }
 
-$(document).ready(function () {
-  $('#add-year-btn').click(handleAddYear);
-  $('#add-product-btn').click(addProductRow);
-});
-
-function handleAddYear() {
-  const input = $('#year-input');
-  let year = parseInt(input.val());
-
-  if (isNaN(year)) {
-    alert('請輸入有效的年份');
-    return;
-  }
-
-  if (yearList.includes(year)) {
-    alert('該年份已存在');
-    return;
-  }
-
-  if (yearList.length >= maxYears) {
-    alert('最多只能新增 3 個年份');
-    return;
-  }
-
-  yearList.push(year);
-  yearList.sort(); // 排序
-
-  updateTableHeader();
-  updateProductRows();
-
-  input.val(year + 1); // 自動 +1
-}
-
-function updateTableHeader() {
-  const $header = $('#table-header');
-  $header.find('th.year-col').remove(); // 清除舊欄位
-
-  yearList.forEach(year => {
-    const th = $(`<th class="year-col year-col-${year}">${year}</th>`);
-    insertSortedColumn($header, th, year);
-  });
-}
-
-function updateProductRows() {
-  $('#product-body .product-row').each(function () {
-    const $row = $(this);
-    $row.find('td.year-col').remove(); // 清除原有金額欄
-
-    yearList.forEach(year => {
-      const td = $(`
-        <td class="year-col year-col-${year}">
-          <input type="text" class="form-control amount" placeholder="金額">
-        </td>
-      `);
-      insertSortedColumn($row, td, year);
-    });
-  });
-}
-
-function insertSortedColumn($parent, $element, year) {
-  let inserted = false;
-  $parent.children('th.year-col, td.year-col').each(function () {
-    const currentYear = parseInt($(this).text());
-    if (year < currentYear) {
-      $(this).before($element);
-      inserted = true;
-      return false;
+      // 其他處理...
     }
   });
-  if (!inserted) {
-    $parent.append($element);
-  }
-}
-
-function addProductRow() {
-  const $row = $('<tr class="product-row"></tr>');
-
-  $row.append(`
-    <td><textarea class="form-control pname" rows="1" placeholder="產品名稱"></textarea></td>
-    <td>
-      <div class="input-group">
-        <input type="text" class="form-control rate" maxlength="3" placeholder="%">
-        <span class="input-group-addon">%</span>
-      </div>
-    </td>
-  `);
-
-  yearList.forEach(year => {
-    const $td = $(`
-      <td class="year-col year-col-${year}">
-        <input type="text" class="form-control amount" placeholder="金額">
-      </td>
-    `);
-    insertSortedColumn($row, $td, year);
-  });
-
-  $('#product-body').append($row);
 }
