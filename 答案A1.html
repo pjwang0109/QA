@@ -1,98 +1,32 @@
-function updateTableHeader($trigger) {
-    const $cardBody = $trigger.closest('.card-body');
-    const yearList = getYearList($cardBody);
-    const $header = $cardBody.find('#table-header');
-    $header.find('th.year-col').remove();
+// 主要產品營收比重
+let mpritemArr = dataObj["401mpritem"] || [];
 
-    $.each(yearList, function (i, year) {
-        const $th = $(`
-        <th class="year-col year-col-${year}">
-            <div class="form-inline year-${year}">
-                <input type="text" style="width:100px" class="form-control product-year yy-${i + 1} form-digit-5 text-center" name="product-year" readonly/>
-                <span class="input-group-addon">年</span>
-                <button class="btn btn-danger" onclick="deleteYearUnit(this)">
-                    <i class="fa fa-times"></i>
-                </button>
-            </div>
-        </th>
-        `);
-        $th.find('.product-year').val(year);
-        insertSortedColumn($header, $th, year);
-    });
-}
+const addMprItemBtn = $target.find(".product-add-btn:first");
+const $productDiv = $target.find(".primaryProductDiv");
+const $mprTable = $productDiv.find("table");
 
+mpritemArr = mpritemArr.sort((a, b) => {
+    const aN = Number(a["dataseq"]);
+    const bN = Number(b["dataseq"]);
+    return aN - bN;
+});
 
+// 先統整出所有年份，並儲存在該表格的 data 屬性中
+if (mpritemArr.length > 0) {
+    const yearSet = new Set();
 
-
-function updateProductRows($trigger) {
-    const $cardBody = $trigger.closest('.card-body');
-    const yearList = getYearList($cardBody);
-
-    $cardBody.find('#product-body .product-row').each(function () {
-        const $row = $(this);
-        const rateMap = {};
-
-        $row.find('td.year-col').each(function () {
-            const match = $(this).attr('class').match(/year-col-(\d+)/);
-            if (match) {
-                const year = parseInt(match[1]);
-                const rate = $(this).find('.rate-input').val();
-                rateMap[year] = rate;
-            }
-        });
-
-        $row.find('td.year-col').remove();
-
-        $.each(yearList, function (i, year) {
-            const rateN = i + 1;
-            const $td = $(`
-                <td class="year-col year-col-${year}">
-                    <div class="form-inline rate-${year}">
-                        <input type="text" maxlength="3" style="width: 114px" class="form-control rate-input rate-${rateN}"/>
-                        <span class="input-group-text">%</span>
-                    </div>
-                </td>
-            `);
-            if (rateMap[year]) {
-                $td.find('.rate-input').val(rateMap[year]);
-            }
-            insertSortedColumn($row, $td, year);
+    $.each(mpritemArr, function (_, item) {
+        $.each(item.year_rate || {}, function (year, _) {
+            yearSet.add(parseInt(year));
         });
     });
+
+    const yearList = Array.from(yearSet).sort((a, b) => a - b);
+
+    setYearList($productDiv, yearList);       // ⭐ 設定年份
+    updateTableHeader($productDiv);           // ⭐ 畫出 <th>
 }
 
-
-
-
-function addProductTableData(obj) {
-    const $cardBody = $(obj).closest('.card-body');
-    const yearList = getYearList($cardBody);
-    const $row = $('<tr class="product-row"></tr>');
-    const productNum = $cardBody.find('.product-row').length + 1;
-
-    $row.append(`
-        <td class="d-flex">
-            <button class="btn btn-danger mr-2 del-pro-btn" data-row="${productNum}" onclick="deleteProductsUnit(this)">
-                <i class="fa fa-times"></i>
-            </button>
-            <textarea class="form-control pname" rows="1"></textarea>
-        </td>
-        <td style="vertical-align:middle" class="text-center">佔營收比</td>
-    `);
-
-    $.each(yearList, function (i, year) {
-        const rateN = i + 1;
-        const $td = $(`
-            <td class="year-col year-col-${year}">
-                <div class="form-inline rate-${year}">
-                    <input type="text" maxlength="3" style="width: 114px" class="form-control rate-input rate-${rateN}"/>
-                    <span class="input-group-text">%</span>
-                </div>
-            </td>
-        `);
-        insertSortedColumn($row, $td, year);
-    });
-
-    $cardBody.find('#product-body').append($row);
+for (const v of mpritemArr) {
+    await addPrimaryProductTableDataCR(addMprItemBtn, v); // ⭐ 必須等年份列先畫好，才能正常畫每一列
 }
-
