@@ -1,3 +1,6 @@
+<span class="error-message text-danger"></span>
+
+
 function validateFile(input) {
     const file = input.files[0];
     const errorSpan = $(input).next('.error-message');
