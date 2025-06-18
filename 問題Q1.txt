@@ -1,14 +1,15 @@
-<span class="error-message text-danger"></span>
-
-
-function validateFile(input) {
-    const file = input.files[0];
-    const errorSpan = $(input).next('.error-message');
-
-    if (file && !file.name.toLowerCase().endsWith('.xlsx')) {
-        errorSpan.text('請上傳 .xlsx 檔案');
-        input.value = ''; // 清空不合格的檔案
-    } else {
-        errorSpan.text('');
-    }
-}
+可以幫我把 $(errorDiv) 在0.5秒後移除視窗嗎
+if (filejson.rc != "M0401") {
+                        let $modal = $("#loadingOpView").find('tbody tr:nth(' + i + ')');
+                        let $bar = $modal.find('.progress-bar');
+                        let $percent = $modal.find('.percentVal');
+                        let $msg = $modal.find('.msg');
+                        let percentVal = '0%';
+                        let errorDiv = $("#loadingOpView").find('.modal-content');
+                        console.log($(errorDiv));
+                        $(errorDiv)
+                        $bar.width(percentVal);
+                        $percent.html(percentVal);
+                        $msg.addClass('text-danger').html('錯誤訊息：' + filejson.msg);
+                        return $.Deferred().resolve();
+                    }
