@@ -1,3 +1,5 @@
 這是蛇麼意思
-const $modal = $(obj).closest(".modal");
+function closeThisModal(obj) {
+    const $modal = $(obj).closest(".modal");
     $modal.modal("hide");
+}
