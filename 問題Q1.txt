@@ -1,5 +1,20 @@
-這是蛇麼意思
-function closeThisModal(obj) {
-    const $modal = $(obj).closest(".modal");
-    $modal.modal("hide");
-}
+
+
+if (filejson.rc != "M0401") {
+                        let $modal = $("#loadingOpView").find('tbody tr:nth(' + i + ')');
+                        let $bar = $modal.find('.progress-bar');
+                        let $percent = $modal.find('.percentVal');
+                        let $msg = $modal.find('.msg');
+                        let percentVal = '0%';
+                        let $loadingDiv = $("#loadingOpView");
+                        let $uploadDiv = $("#loadingOpView").find('.modal-content');
+                        $uploadDiv 我要再打開 怎麼改
+                        $bar.width(percentVal);
+                        $percent.html(percentVal);
+                        $msg.addClass('text-danger').html('錯誤訊息：' + filejson.msg);
+                        setTimeout(function () { 
+                            $uploadDiv.hide();
+                            $loadingDiv.modal("hide");
+                        }, 200);
+                        return $.Deferred().resolve();
+                    }
