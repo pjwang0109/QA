@@ -1,15 +1,3 @@
-可以幫我把 $(errorDiv) 在0.5秒後移除視窗嗎
-if (filejson.rc != "M0401") {
-                        let $modal = $("#loadingOpView").find('tbody tr:nth(' + i + ')');
-                        let $bar = $modal.find('.progress-bar');
-                        let $percent = $modal.find('.percentVal');
-                        let $msg = $modal.find('.msg');
-                        let percentVal = '0%';
-                        let errorDiv = $("#loadingOpView").find('.modal-content');
-                        console.log($(errorDiv));
-                        $(errorDiv)
-                        $bar.width(percentVal);
-                        $percent.html(percentVal);
-                        $msg.addClass('text-danger').html('錯誤訊息：' + filejson.msg);
-                        return $.Deferred().resolve();
-                    }
+這是蛇麼意思
+const $modal = $(obj).closest(".modal");
+    $modal.modal("hide");
