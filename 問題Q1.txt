@@ -1,11 +1,2 @@
-if ($(this).find('input[type="checkbox"]').prop('checked')) {
-            let gotouid = $(this).find('select').val();
-            if (gotouid == "default") { return; }
-            let jsondata = dataTable.row(this).data()[0];
-            let data = new Object;
-            data.crpt_pk = jsondata.crpt_pk;
-            data.gotouid = gotouid;
-            dataList.push(data);
-        }
-
-let jsondata = dataTable.row(this).data()[0]; 這裡的this 是指什麼
+我想找第七個td怎麼寫
+$(obj).closest('tr').find("td");
