@@ -1,3 +1,11 @@
-可以改變他的input寬度嗎
+if ($(this).find('input[type="checkbox"]').prop('checked')) {
+            let gotouid = $(this).find('select').val();
+            if (gotouid == "default") { return; }
+            let jsondata = dataTable.row(this).data()[0];
+            let data = new Object;
+            data.crpt_pk = jsondata.crpt_pk;
+            data.gotouid = gotouid;
+            dataList.push(data);
+        }
 
-<input type="text" name="cHomeOwnTypeOther" class="cHomeOwnTypeOther ownerTypeOther form-control form-digit-20 hide"/>
+let jsondata = dataTable.row(this).data()[0]; 這裡的this 是指什麼
