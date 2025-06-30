@@ -1,6 +1,6 @@
-let t1 = $(obj).closest('tr').find('td').eq(6).find('a');
+這是什麼意思
 
-我想要得到他的 <a href="javascript: void(0)" onclick="openCaseWebCR(this, false)">${obj.crpt_pk} </a> 怎麼寫
-<td>
-  <a href="javascript: void(0)" onclick="openCaseWebCR(this, false)">${obj.crpt_pk} </a>
-</td/>
+$(".dataTables_length").parent('div').after('<div class="col-sm-12 col-md-3 my-1"><div class="dataTables_length" id="middle"><label>收件人：' +
+            '<select id="consigneeName" onchange="addresseeNameSelect(this)" class="w-100 form-control form-control-sm mr-2"><option value="default">請選擇...</option>'
+            + consigneeNameHtml + '</select>' + '</label></div></div>');
+        $('.dataTables_length,#resualtTable_filter').parent('div:first-child()').removeClass('col-md-6').addClass('col-md-3');
