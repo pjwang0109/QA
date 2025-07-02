@@ -1,3 +1,57 @@
-這是什麼意思
+我想當 if($('#useoldcase').is(':checked')) 時 需要打API  res = await apiS120010005(uid, token, id, idTailCode);
+但是當 $('#useoldcase')沒有勾選時 就不打 只做 addCreditUnitCR()
+怎麼改寫
 
-let abName = dataRes.cname ? dataRes.cname : dataRes.custid;
+//新增資料表BTN  **參考 searchForOldCrpt
+async function addNewDataTable() {
+    const id = $("#model_id").val();
+    const idTailCode = $("#addNewPersonModal").find(".idTailCode").val();
+    const userObj = getUidToken();
+    const uid = userObj.uid;
+    const token = userObj.token;
+    const custtype = $("#model_identity").val();
+     if($('#useoldcase').is(':checked')){
+
+    }else{
+
+     }
+
+    if (!custtype) {
+        alert("請選擇身分別");
+        return;
+    }
+    if ($("#addNewPersonModal").find(".crptResultTableDiv table").length > 0) {
+        const fullId = `${id}${idTailCode}`;
+        if ($("#addNewPersonModal").find(".crptResultTableDiv table").data("id") == fullId) {
+            addCreditUnitCR();
+            return;
+        }
+        // 查詢ID 與 TABLE 顯示ID不同 將crpt_no清除
+        $("#addNewPersonModal").find(".crpt_no").val('');
+        $("#addNewPersonModal").find(".crptResultTableDiv").empty();
+    }
+    
+    let res = "";
+    try { 
+        res = await apiS120010005(uid, token, id, idTailCode);
+    } catch (e) { 
+        console.error(e); 
+    }
+    if (res && res.rc == "M0000") {
+        const crptArr = res.result.oldcaselist;
+        if (crptArr.length == 1) {
+            if (crptArr.length > 0) {
+                const crptUniNo = crptArr[0].crpt_no;
+                $("#addNewPersonModal").find(".crpt_no").val(crptUniNo);
+            }
+            setSelOldListTableCR(crptArr, $("#addNewPersonModal").find(".crptResultTableDiv"));
+            addCreditUnitCR();
+            return;
+        } else if (crptArr.length == 0) {
+            addCreditUnitCR();
+            return;
+        } else {
+            setSelOldListTableCR(crptArr, $("#addNewPersonModal").find(".crptResultTableDiv"));
+        }
+    }
+}
