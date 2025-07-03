@@ -1,30 +1,8 @@
-當res.rc 不等於M0000的時候，不能往後送，那我先寫 if (!confirm("是否要完成徵信報告？")) { return;} 在此方法，會有影響嗎
+這是什麼意思?
 
-//徵信報告-完成
-async function btnFinishCR(obj){
-    if (!confirm("是否要完成徵信報告？")) { 
-        return; 
-    }
-    loadingShow();
-    let userObj = getUidToken();
-    let uid = userObj.uid;
-    let token = userObj.token;
-    let crpt_pk = $('.crpt_pk').val().trim()|| ""; //案件編號
-    let todo = "1";
-    const storeSuccess = await btnStoreCR(obj, false);
 
-    let res = await apiS120010011(uid, token, crpt_pk, todo);
-
-    if(storeSuccess){
-        if(res && res.rc == "M0000"){
-            alert(res.msg);
-            $(".breadcrumb").text("");
-            $("#createReportAll").addClass("hide");
-            $("#createReportAll").text("");
-            loadingHide();
-        }else{
-            apiErrorHandler(res);
-            loadingHide();
-        }
-    }
-}
+$.each($this.find('.modalallowcode'), function (a, b) {
+                        if ($this.find('.modalallowcode').eq(a).val() != "") {
+                            data[dataName] = $this.find(className).eq(a).val() || "";
+                        }
+                    });
