@@ -1,122 +1,24 @@
-//主要產品營收比重
-let mpritemArr = dataObj["401mpritem"] || [];
-const addMprItemBtn = $target.find(".product-add-btn:first");
-const $productDiv = $target.find(".primaryProductDiv");
-const $mprTable = $productDiv.find("table");
+let res = [];
+try {
+  const apiArr = [
+    ajaxhttpIPHostHtml('/NEW_adaptationCR/create_adaptationCR.html'),
+    getS020010012(uid, token, appNumber),
+    getS130010005(uid, token, appNumber, isre, cid),
+    apiCRA_Controller.getS130020003(uid, token, appNumber, cid),
+    getCRA000040010(uid, token, appNumber, isre, cid)
+  ];
 
-mpritemArr = mpritemArr.sort((a, b) => {
-    const aN = Number(a["dataseq"]);
-    const bN = Number(b["dataseq"]);
-    return aN - bN;
-});
+  // 如果 aaa ≠ "1"，就再加上四個 API
+  if (aaa !== "1") {
+    apiArr.push(
+      apiS120010007(uid, token, crpt_pk, isEditPage),
+      apiS120010001(uid, token, crpt_pk),
+      apiS120010002(uid, token, crpt_pk),
+      apiS000040010(uid, token, caseno)
+    );
+  }
 
-if (mpritemArr.length > 0) {
-    const yearSet = new Set();
-
-    $.each(mpritemArr, function (_, item) {
-        $.each(item.year_rate || {}, function (year, _) {
-            yearSet.add(parseInt(year));
-        });
-    });
-
-    const yearList = Array.from(yearSet).sort((a, b) => a - b);
-
-    setYearList($productDiv, yearList);
-    updateTableHeader($productDiv);
-}
-
-for (const v of mpritemArr) {
-    await addPrimaryProductTableDataCR(addMprItemBtn, v);
-}
-
-function addPrimaryProductTableDataCR($triggerBtn, item) {
-    const $container = $triggerBtn.closest('.card-body');
-    const yearList = getYearList($container);
-    const $row = $('<tr class="product-row"></tr>');
-
-    $row.append(`
-        <td class="d-flex">
-            <button class="btn btn-danger mr-2 del-pro-btn" onclick="deleteProductsUnit(this)">
-                <i class="fa fa-times"></i>
-            </button>
-            <textarea class="form-control pname" rows="1">${item.name || ''}</textarea>
-        </td>
-        <td style="vertical-align:middle" class="text-center">佔營收比</td>
-    `);
-
-    $.each(yearList, function (i, year) {
-        const rate = item.year_rate?.[year] || '';
-        const rateN = i + 1;
-
-        const $td = $(`
-            <td class="year-col year-col-${year}">
-                <div class="form-inline rate-${year}">
-                    <input type="text" maxlength="3" style="width: 114px" 
-                           class="form-control rate-input rate-${rateN}" value="${rate}" />
-                    <span class="input-group-text">%</span>
-                </div>
-            </td>
-        `);
-
-        insertSortedColumn($row, $td, year);
-    });
-
-    $container.find('#product-body').append($row);
-
-    // 若無任何年份欄位，則補充提示
-    if (yearList.length === 0) {
-        const noDataRow = $('<tr class="no-year-warning"><td colspan="99" class="text-center text-muted">尚未設定年份，請先新增年份</td></tr>');
-        $container.find('#product-body').append(noDataRow);
-    }
-}
-
-function getYearList($container) {
-    return $container.data('yearList') || [];
-}
-
-function setYearList($container, yearList) {
-    $container.data('yearList', yearList);
-    if (yearList.length > 0) {
-        $container.find('.no-year-warning').remove();
-    }
-}
-
-function insertSortedColumn($parentRow, $newColumn, year) {
-    let inserted = false;
-
-    $parentRow.children('td.year-col').each(function () {
-        const currentYear = parseInt($(this).attr('class').match(/year-col-(\d+)/)?.[1]);
-        if (!isNaN(currentYear) && year < currentYear) {
-            $(this).before($newColumn);
-            inserted = true;
-            return false;
-        }
-    });
-
-    if (!inserted) {
-        $parentRow.append($newColumn);
-    }
-}
-
-function updateTableHeader($trigger) {
-    const $cardBody = $trigger.closest('.card-body');
-    const yearList = getYearList($cardBody);
-    const $header = $cardBody.find('#table-header');
-    $header.find('th.year-col').remove();
-
-    $.each(yearList, function (i, year) {
-        const $th = $(`
-        <th class="year-col year-col-${year}">
-            <div class="form-inline year-${year}">
-                <input type="text" style="width:100px" class="form-control product-year yy-${i + 1} form-digit-5 text-center" name="product-year" readonly/>
-                <span class="input-group-addon">年</span>
-                <button class="btn btn-danger" onclick="deleteYearUnit(this)">
-                    <i class="fa fa-times"></i>
-                </button>
-            </div>
-        </th>
-        `);
-        $th.find('.product-year').val(year);
-        insertSortedColumn($header, $th, year);
-    });
+  res = await Promise.all(apiArr);
+} catch (e) {
+  console.error(e);
 }
