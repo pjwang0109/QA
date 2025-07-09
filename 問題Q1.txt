@@ -1,3 +1,5 @@
+改成這樣呢?
+
 
     //重評頁面
     // let url = ajaxhttpIPHostHtml('/NEW_adaptationCR/create_adaptationCR.html');
