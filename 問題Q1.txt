@@ -1,30 +1,51 @@
-當aaa  = "1" 我只要打  $.ajax(url),$.ajax(s020010012),$.ajax(s130010005),$.ajax(s130020003),$.ajax(s000040010_CRA)  5個API 但是他會打9個API 為什麼
+我改成這樣還是不行 為什麼
 
+    //抓取批覆書建立案件
+    let s020010012 = getS020010012(uid, token, appNumber);
 
-let aaa = "1";
+    // 徵信改編及重評預取 && 選單
+    let s130010005 = getS130010005(uid, token, appNumber,isre, cid);
+    let s130020003 = apiCRA_Controller.getS130020003(uid, token, appNumber, cid);
+    let s000040010_CRA = getCRA000040010(uid, token, appNumber,isre, cid); 
+
+    //徵信報告
+    let s120010007 = apiS120010007(uid, token, crpt_pk, isEditPage);
+    let s120010001 = apiS120010001(uid, token, crpt_pk);
+    let s120010002 = apiS120010002(uid, token, crpt_pk);
+    let s000040010 = apiS000040010(uid, token, caseno);
+
+    // console.log(uid,token,appNumber,cid,isre,isDisabled)
+    let aaa = "1";
+    let apiArr = [
+        $.ajax(url),
+        $.ajax(s020010012),
+        $.ajax(s130010005),
+        $.ajax(s130020003),
+        $.ajax(s000040010_CRA)
+    ]
+
+    if(aaa === "2"){
+        apiArr.push(
+            $.ajax(s120010007),
+            $.ajax(s120010001),
+            $.ajax(s120010002),
+            $.ajax(s000040010)
+        )
+    }
+
     let res = [];
     try {
-        if(aaa == "1"){
-            res = await Promise.all([
-                $.ajax(url),
-                $.ajax(s020010012),
-                $.ajax(s130010005),
-                $.ajax(s130020003),
-                $.ajax(s000040010_CRA)
-            ]);
-        }else{
-            res = await Promise.all([
-                $.ajax(url),
-                $.ajax(s020010012),
-                $.ajax(s130010005),
-                $.ajax(s130020003),
-                $.ajax(s000040010_CRA),
-                $.ajax(s120010007),
-                $.ajax(s120010001),
-                $.ajax(s120010002),
-                $.ajax(s000040010)
-            ]);
-        }
+        res = await Promise.all(apiArr);
     } catch (e) {
         console.error(e);
     }
+
+    let html = res[0]
+    let jsondata0112 = res[1];
+    let jsondata0105 = res[2];
+    let jsondata0203 = res[3];
+    let jsondata0410 = res[4];
+    let baseData = res[5];
+    let allSelect = res[6];
+    let jobSelect = res[7];
+    let fileData = res[8];
