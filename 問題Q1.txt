@@ -1,8 +1,30 @@
-這是什麼意思?
+當aaa  = "1" 我只要打  $.ajax(url),$.ajax(s020010012),$.ajax(s130010005),$.ajax(s130020003),$.ajax(s000040010_CRA)  5個API 但是他會打9個API 為什麼
 
 
-$.each($this.find('.modalallowcode'), function (a, b) {
-                        if ($this.find('.modalallowcode').eq(a).val() != "") {
-                            data[dataName] = $this.find(className).eq(a).val() || "";
-                        }
-                    });
+let aaa = "1";
+    let res = [];
+    try {
+        if(aaa == "1"){
+            res = await Promise.all([
+                $.ajax(url),
+                $.ajax(s020010012),
+                $.ajax(s130010005),
+                $.ajax(s130020003),
+                $.ajax(s000040010_CRA)
+            ]);
+        }else{
+            res = await Promise.all([
+                $.ajax(url),
+                $.ajax(s020010012),
+                $.ajax(s130010005),
+                $.ajax(s130020003),
+                $.ajax(s000040010_CRA),
+                $.ajax(s120010007),
+                $.ajax(s120010001),
+                $.ajax(s120010002),
+                $.ajax(s000040010)
+            ]);
+        }
+    } catch (e) {
+        console.error(e);
+    }
