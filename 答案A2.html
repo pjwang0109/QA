@@ -1,15 +1,1 @@
-function openCaseWebCR() {
-  // 打 API 取得資料
-  $.ajax({
-    url: "/api/S120010007",
-    method: "POST",
-    data: { ... },
-    success: function(result) {
-      if (result && result["401mpritem"]) {
-        render401mpritemToProductTable(result);
-      }
 
-      // 其他處理...
-    }
-  });
-}
