@@ -1,49 +1,47 @@
-改成這樣可以嗎
+// 第一次 API 呼叫：先拿到 jsondata0203
+let apiArr = [
+    $.ajax(url),                      // 0
+    $.ajax(s020010012),              // 1
+    $.ajax(s130010005),              // 2
+    $.ajax(s130020003),              // 3 ← 等一下會從這裡拿 jsondata0203
+    $.ajax(s000040010)               // 4
+];
 
-//重評頁面
-    let url = ajaxhttpIPHostHtml('/NEW_adaptationCR/create_adaptationCR.html');
+let res = [];
+try {
+    res = await Promise.all(apiArr);
+} catch (e) {
+    console.error(e);
+}
 
-    //抓取批覆書建立案件
-    let s020010012 = getS020010012(uid, token, appNumber);
+// 解構前五支回傳
+let html = res[0];
+let jsondata0112 = res[1];
+let jsondata0105 = res[2];
+let jsondata0203 = res[3];
+let jsondata0410 = res[4];
 
-    // 徵信改編及重評預取 && 選單
-    let s130010005 = getS130010005(uid, token, appNumber,isre, cid);
-    let s130020003 = apiCRA_Controller.getS130020003(uid, token, appNumber, cid);
-    let s000040010 = getCRA000040010(uid, token, appNumber,isre, cid); 
+// 檢查 jsondata0203 是否有 result.cid
+if (jsondata0203?.result?.cid) {
+    let crpt_pk = ...; // 這邊請填入正確的 crpt_pk 資料
+    let isEditPage = ...; // 同樣請補入對應值
 
-    // console.log(uid,token,appNumber,cid,isre,isDisabled)
-    let aaa = "1";
-
-    let apiArr = [
-        $.ajax(url),
-        $.ajax(s020010012),
-        $.ajax(s130010005),
-        $.ajax(s130020003),
-        $.ajax(s000040010)
-    ]
-
-    if (aaa !== "1") {
-        apiArr.push(
-            apiS120010007(uid, token, crpt_pk, isEditPage),
-            apiS120010001(uid, token, crpt_pk),
-            apiS120010002(uid, token, crpt_pk),
-            apiS000040010(uid, token, caseno)
-        );
-    }
-
-    let res = [];
     try {
-        res = await Promise.all(apiArr);
+        const extraRes = await Promise.all([
+            $.ajax(apiS120010007(uid, token, crpt_pk, isEditPage, jsondata0203.result.cid)),
+            $.ajax(apiS120010001(uid, token, crpt_pk)),
+            $.ajax(apiS120010002(uid, token, crpt_pk)),
+            $.ajax(apiS000040010(uid, token, crpt_pk))
+        ]);
+
+        // 再解構四筆額外資料
+        let baseData = extraRes[0];
+        let allSelect = extraRes[1];
+        let jobSelect = extraRes[2];
+        let fileData = extraRes[3];
+
+        // 在這裡可以繼續你原本的邏輯處理
     } catch (e) {
         console.error(e);
     }
-
-    let html = res[0];
-    let jsondata0112 = res[1];
-    let jsondata0105 = res[2];
-    let jsondata0203 = res[3];
-    let jsondata0410 = res[4];
-    let baseData = res[5];
-    let allSelect = res[6];
-    let jobSelect = res[7];
-    let fileData = res[8];
+}
