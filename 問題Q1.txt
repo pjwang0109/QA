@@ -1,66 +1,49 @@
-改成這樣呢?
+我現在的條件不要 aaa !== "1"了 我要改為當jsondata0203.result.cid存在時 apiArr 才會增加4支API 我要怎麼改
 
-
-    //重評頁面
-    // let url = ajaxhttpIPHostHtml('/NEW_adaptationCR/create_adaptationCR.html');
+//重評頁面
+    let url = ajaxhttpIPHostHtml('/NEW_adaptationCR/create_adaptationCR.html');
 
     //抓取批覆書建立案件
-    // let s020010012 = getS020010012(uid, token, appNumber);
+    let s020010012 = getS020010012(uid, token, appNumber);
 
     // 徵信改編及重評預取 && 選單
-    // let s130010005 = getS130010005(uid, token, appNumber,isre, cid);
-    // let s130020003 = apiCRA_Controller.getS130020003(uid, token, appNumber, cid);
-    // let s000040010_CRA = getCRA000040010(uid, token, appNumber,isre, cid); 
-
-    //徵信報告
-    // let s120010007 = apiS120010007(uid, token, crpt_pk, isEditPage);
-    // let s120010001 = apiS120010001(uid, token, crpt_pk);
-    // let s120010002 = apiS120010002(uid, token, crpt_pk);
-    // let s000040010 = apiS000040010(uid, token, caseno);
+    let s130010005 = getS130010005(uid, token, appNumber, isre, cid);
+    let s130020003 = apiCRA_Controller.getS130020003(uid, token, appNumber, cid);
+    let s000040010 = getCRA000040010(uid, token, appNumber, isre, cid); 
 
     // console.log(uid,token,appNumber,cid,isre,isDisabled)
-    let aaa = "1";
-    // let apiArr = [
-    //     $.ajax(url),
-    //     $.ajax(s020010012),
-    //     $.ajax(s130010005),
-    //     $.ajax(s130020003),
-    //     $.ajax(s000040010_CRA)
-    // ]
+    let aaa = "2";
 
-    // if(aaa === "2"){
-    //     apiArr.push(
-    //         $.ajax(s120010007),
-    //         $.ajax(s120010001),
-    //         $.ajax(s120010002),
-    //         $.ajax(s000040010)
-    //     )
-    // }
+    let apiArr = [
+        $.ajax(url),
+        $.ajax(s020010012),
+        $.ajax(s130010005),
+        $.ajax(s130020003),
+        $.ajax(s000040010)
+    ];
+
+    if (aaa !== "1") {
+        apiArr.push(
+            $.ajax(apiS120010007(uid, token, crpt_pk, isEditPage, cid)),
+            $.ajax(apiS120010001(uid, token, crpt_pk)),
+            $.ajax(apiS120010002(uid, token, crpt_pk)),
+            $.ajax(apiS000040010(uid, token, crpt_pk))
+        );
+    }
 
     let res = [];
     try {
-        if(aaa === "2"){
-            res = await Promise.all(
-                ajaxhttpIPHostHtml('/NEW_adaptationCR/create_adaptationCR.html'),
-                getS020010012(uid, token, appNumber),
-                getS130010005(uid, token, appNumber,isre, cid),
-                apiCRA_Controller.getS130020003(uid, token, appNumber, cid),
-                getCRA000040010(uid, token, appNumber,isre, cid),
-
-                apiS120010007(uid, token, crpt_pk, isEditPage),
-                apiS120010001(uid, token, crpt_pk),
-                apiS120010002(uid, token, crpt_pk),
-                apiS000040010(uid, token, caseno),
-            );
-        }else{
-            res = await Promise.all(
-                ajaxhttpIPHostHtml('/NEW_adaptationCR/create_adaptationCR.html'),
-                getS020010012(uid, token, appNumber),
-                getS130010005(uid, token, appNumber,isre, cid),
-                apiCRA_Controller.getS130020003(uid, token, appNumber, cid),
-                getCRA000040010(uid, token, appNumber,isre, cid),
-            );
-        }
+        res = await Promise.all(apiArr);
     } catch (e) {
         console.error(e);
     }
+
+    let html = res[0];
+    let jsondata0112 = res[1];
+    let jsondata0105 = res[2];
+    let jsondata0203 = res[3];
+    let jsondata0410 = res[4];
+    let baseData = res[5];
+    let allSelect = res[6];
+    let jobSelect = res[7];
+    let fileData = res[8];
