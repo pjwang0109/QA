@@ -1,9 +1,60 @@
+這樣寫好像有問題 請幫我解決
 
-我寫了一個方法
-function apiS120010007(uid, token, crpt_pk, isEditPage, is_recrcid) {
-        .....
-}
+        // 第一次 API 呼叫：先拿到 jsondata0203
+    let apiArr = [
+        $.ajax(url),                      // 0
+        $.ajax(s020010012),              // 1
+        $.ajax(s130010005),              // 2
+        $.ajax(s130020003),              // 3 ← 等一下會從這裡拿 jsondata0203
+        $.ajax(s000040010)               // 4
+    ];
 
+    let res = [];
+    try {
+        res = await Promise.all(apiArr);
+    } catch (e) {
+        console.error(e);
+    }
 
-但我引用的時候，不想給is_recrcid值 可以直接不寫嗎? 像這樣
-apiS120010007(uid, token, crpt_pk, isEditPage)
+    // 解構前五支回傳
+    let html = res[0];
+    let jsondata0112 = res[1];
+    let jsondata0105 = res[2];
+    let jsondata0203 = res[3];
+    let jsondata0410 = res[4];
+
+    // 檢查 jsondata0203 是否有 result.crpt_pk
+    let extraRes = [];
+    if(jsondata0203.rc == "M0000"){
+        if (jsondata0203.result.crpt_pk) {
+        console.log("hhhhhhhhhhhh");
+        let crpt_pk = jsondata0203.result.crpt_pk; // 這邊請填入正確的 crpt_pk 資料
+        let cid = jsondata0203.result.cid;
+
+            try {
+                extraRes = await Promise.all([
+                    $.ajax(apiS120010007(uid, token, crpt_pk, isEditPage, cid)),
+                    $.ajax(apiS120010001(uid, token, crpt_pk)),
+                    $.ajax(apiS120010002(uid, token, crpt_pk)),
+                    $.ajax(apiS000040010(uid, token, crpt_pk))
+                ]);
+            } catch (e) { 
+                console.error(e); 
+            }
+        }else{
+            console.log("nooonnonon");
+        }
+    }
+    
+    // 再解構四筆額外資料
+    let baseData = extraRes[0];
+    let allSelect = extraRes[1];
+    let jobSelect = extraRes[2];
+    let fileData = extraRes[3];
+
+    ///////////////後2 END///////////////
+
+    console.log("baseData@@:", baseData);  //會有問題
+    console.log("allSelect@@:", allSelect); //會有問題
+    console.log("jobSelect@@:", jobSelect); //會有問題
+    console.log("fileData@@:", fileData); //會有問題
