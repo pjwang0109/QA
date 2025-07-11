@@ -1,49 +1,9 @@
-我現在的條件不要 aaa !== "1"了 我要改為當jsondata0203.result.cid存在時 apiArr 才會增加4支API 我要怎麼改
 
-//重評頁面
-    let url = ajaxhttpIPHostHtml('/NEW_adaptationCR/create_adaptationCR.html');
+我寫了一個方法
+function apiS120010007(uid, token, crpt_pk, isEditPage, is_recrcid) {
+        .....
+}
 
-    //抓取批覆書建立案件
-    let s020010012 = getS020010012(uid, token, appNumber);
 
-    // 徵信改編及重評預取 && 選單
-    let s130010005 = getS130010005(uid, token, appNumber, isre, cid);
-    let s130020003 = apiCRA_Controller.getS130020003(uid, token, appNumber, cid);
-    let s000040010 = getCRA000040010(uid, token, appNumber, isre, cid); 
-
-    // console.log(uid,token,appNumber,cid,isre,isDisabled)
-    let aaa = "2";
-
-    let apiArr = [
-        $.ajax(url),
-        $.ajax(s020010012),
-        $.ajax(s130010005),
-        $.ajax(s130020003),
-        $.ajax(s000040010)
-    ];
-
-    if (aaa !== "1") {
-        apiArr.push(
-            $.ajax(apiS120010007(uid, token, crpt_pk, isEditPage, cid)),
-            $.ajax(apiS120010001(uid, token, crpt_pk)),
-            $.ajax(apiS120010002(uid, token, crpt_pk)),
-            $.ajax(apiS000040010(uid, token, crpt_pk))
-        );
-    }
-
-    let res = [];
-    try {
-        res = await Promise.all(apiArr);
-    } catch (e) {
-        console.error(e);
-    }
-
-    let html = res[0];
-    let jsondata0112 = res[1];
-    let jsondata0105 = res[2];
-    let jsondata0203 = res[3];
-    let jsondata0410 = res[4];
-    let baseData = res[5];
-    let allSelect = res[6];
-    let jobSelect = res[7];
-    let fileData = res[8];
+但我引用的時候，不想給is_recrcid值 可以直接不寫嗎? 像這樣
+apiS120010007(uid, token, crpt_pk, isEditPage)
