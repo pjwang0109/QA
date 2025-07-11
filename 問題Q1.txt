@@ -1,3 +1,31 @@
-當2個條件成立時 才會打四個API 若未成立，只會打原先的API 該怎麼處理才好
-if(jsondata0203.rc == "M0000"){
-        if (jsondata0203.result.crpt_pk) {
+ 為什麼 $.ajax(getS120010007 跟 $.ajax(apiS120010002 取出來的東西會不一樣?
+我的API 寫法都是像 // 徵信報告-預取選單API
+
+
+try {
+                let extraRes = await Promise.all([
+                    $.ajax(getS120010007(uid, token, crpt_pk, isEditPage, cid)),
+                    $.ajax(getS120010001(uid, token, crpt_pk)),
+                    // $.ajax(s120010001),
+                    $.ajax(apiS120010002(uid, token, crpt_pk)),
+                    $.ajax(apiS000040010(uid, token, crpt_pk))
+                ]);
+
+
+// 徵信報告-預取選單API
+function apiS120010001(uid, token, crpt_pk) {
+    let opt = getS120010001(uid, token, crpt_pk);
+    return $.ajax(opt);
+}
+function getS120010001(uid, token, crpt_pk) {
+    return {
+        url: ajaxhttpIPHost("/res/S120010001"), 
+        type: "POST",
+        contentType: "application/json",
+        data: JSON.stringify({
+            "uid": uid,
+            "token": token,
+            "crpt_pk": crpt_pk
+        }),
+    };
+}
