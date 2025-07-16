@@ -1,31 +1,58 @@
- 為什麼 $.ajax(getS120010007 跟 $.ajax(apiS120010002 取出來的東西會不一樣?
-我的API 寫法都是像 // 徵信報告-預取選單API
+原先saveCRA方法只有打一個s130020004 API
+但我現在要改成 當 jsondata.rc == "M0000" 時 再做await btnStoreCR 方法(這裡面包含一個API)
+這樣寫法OK嗎
 
+//徵信改編及重評-暫存Api   **參考 saveCRR
+async function saveCRA(target, showMsg) {
+    let userObj = getUidToken();
+    let uid = userObj.uid;
+    let token = userObj.token;
+    let apiResult = false;
+    let data = saveJsonCRA(target);//企金評等
 
-try {
-                let extraRes = await Promise.all([
-                    $.ajax(getS120010007(uid, token, crpt_pk, isEditPage, cid)),
-                    $.ajax(getS120010001(uid, token, crpt_pk)),
-                    // $.ajax(s120010001),
-                    $.ajax(apiS120010002(uid, token, crpt_pk)),
-                    $.ajax(apiS000040010(uid, token, crpt_pk))
-                ]);
+    const s130020004 = apiCRA_Controller.getS130020004(uid, token, data);
 
+    let crpt_pk = $('.crpt_pk').val() || "";
+    console.log('!!!!!!!!!', crpt_pk);
 
-// 徵信報告-預取選單API
-function apiS120010001(uid, token, crpt_pk) {
-    let opt = getS120010001(uid, token, crpt_pk);
-    return $.ajax(opt);
-}
-function getS120010001(uid, token, crpt_pk) {
-    return {
-        url: ajaxhttpIPHost("/res/S120010001"), 
-        type: "POST",
-        contentType: "application/json",
-        data: JSON.stringify({
-            "uid": uid,
-            "token": token,
-            "crpt_pk": crpt_pk
-        }),
-    };
+    let is_recrcid = $('.cid_CRA').val();
+    console.log("s130020004:", is_recrcid);
+
+    let res = [];
+    try {
+        res = await Promise.all([
+            $.ajax(s130020004),
+        ]);
+    } catch (e) {
+        console.error(e);
+    }
+
+    if (res.length > 0) {
+        let jsondata = res[0];
+
+        if (jsondata.rc == "M0000") {
+            let cid = jsondata.result.cid
+            $("#creditRatingTittle").attr("cid",cid)
+            // console.log(jsondata.result.cid)
+
+            apiResult = true;
+            console.log("showMsg:", showMsg);
+            if (showMsg) {
+                alert(jsondata.msg);
+            }
+
+            apiResult = true;
+
+            if(crpt_pk){
+                await btnStoreCR(target, false, "1", is_recrcid);
+            }
+        } else {
+            apiErrorHandler(jsondata);
+            apiResult = false;
+            loadingHide();
+        }
+    }
+
+    // console.log(apiResult)
+    return apiResult;
 }
