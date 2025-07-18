@@ -1,3 +1,5 @@
+ 我的a、b是這個:typeLabel、abName 該怎麼改?
+
 let abName = crptItem.cname ? crptItem.cname : crptItem.custid;
     let num = $(".idBorrowerDiv").length + 1;
     let textNum = typeLabel + abName;
