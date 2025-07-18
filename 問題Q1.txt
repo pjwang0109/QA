@@ -1,3 +1,12 @@
-在#myTab裡面有很多nav-item pageNav，而我要取得第一筆資料怎麼寫
+我想把 $showPageOne addClass('active') 和 addClass('show') 其他有 $('#createReportAll').find('#myTab .nav-item.pageNav') 都removeClass('active') removeClass('show')怎麼寫
 
-$('#myTab').find('.nav-item pageNav')
+let $showPageOne = $('#createReportAll').find('#myTab .nav-item.pageNav').first() || "";
+        let $noShowPage = $('#createReportAll').find('#myTab .nav-item.pageNav');
+
+
+        console.log($showPageOne);
+
+        if($showPageOne){
+            $showPageOne.find('a').addClass('active');
+            $showPageOne.find('a').addClass('show');
+        }
