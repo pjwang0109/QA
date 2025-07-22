@@ -1,1 +1,2 @@
-我是要改寫到這一行的${abName}我要怎麼改  <span class="widthHide ml-2" style="width:300px">${abName}</span>
+我想要在這個div增加  style="border: 3px solid red; 我要怎麼改  
+<div class="form-inline home-company-red"">
