@@ -1,1 +1,9 @@
-
+bootstrap 使用 class="form-inline"
+我可以用什麼style 取代
+<td class="form-inline">
+            <button class="btn btn-danger btn-sm mr-2 del-pro-btn" data-row="${productNum}" onclick="deleteProductsUnit(this)">
+                <i class="fa fa-times"></i>
+            </button>
+            <textarea class="form-control pname" rows="1">${item.pname || ''}</textarea>
+            <span class="ml-3">佔營收比</span>
+        </td>
