@@ -1,47 +1,137 @@
-// 第一次 API 呼叫：先拿到 jsondata0203
-let apiArr = [
-    $.ajax(url),                      // 0
-    $.ajax(s020010012),              // 1
-    $.ajax(s130010005),              // 2
-    $.ajax(s130020003),              // 3 ← 等一下會從這裡拿 jsondata0203
-    $.ajax(s000040010)               // 4
-];
+// 假設你在 HTML 中已經有三個固定欄位 year-col-1, year-col-2, year-col-3
+// 這裡我們只更新這些欄位的內容，不再動態新增 <th>/<td>
 
-let res = [];
-try {
-    res = await Promise.all(apiArr);
-} catch (e) {
-    console.error(e);
+function getYearList($container) {
+    return $container.data('yearList') || [];
 }
 
-// 解構前五支回傳
-let html = res[0];
-let jsondata0112 = res[1];
-let jsondata0105 = res[2];
-let jsondata0203 = res[3];
-let jsondata0410 = res[4];
+function setYearList($container, yearList) {
+    $container.data('yearList', yearList);
+}
 
-// 檢查 jsondata0203 是否有 result.cid
-if (jsondata0203?.result?.cid) {
-    let crpt_pk = ...; // 這邊請填入正確的 crpt_pk 資料
-    let isEditPage = ...; // 同樣請補入對應值
+function addYearDataUnit(obj) {
+    const $input = $(obj).closest('.d-flex').find('.infoYearData');
+    const year = parseInt($input.val());
+    const maxYears = 3;
+    const $cardBody = $(obj).closest('.card-body');
+    let yearList = getYearList($cardBody);
 
-    try {
-        const extraRes = await Promise.all([
-            $.ajax(apiS120010007(uid, token, crpt_pk, isEditPage, jsondata0203.result.cid)),
-            $.ajax(apiS120010001(uid, token, crpt_pk)),
-            $.ajax(apiS120010002(uid, token, crpt_pk)),
-            $.ajax(apiS000040010(uid, token, crpt_pk))
-        ]);
-
-        // 再解構四筆額外資料
-        let baseData = extraRes[0];
-        let allSelect = extraRes[1];
-        let jobSelect = extraRes[2];
-        let fileData = extraRes[3];
-
-        // 在這裡可以繼續你原本的邏輯處理
-    } catch (e) {
-        console.error(e);
+    if (isNaN(year)) {
+        alert('請輸入數字');
+        $input.val("");
+        return;
     }
+
+    if (yearList.length >= maxYears) {
+        alert('已達3個');
+        return;
+    }
+
+    if (yearList.includes(year)) {
+        alert('此年份已存在');
+        return;
+    }
+
+    yearList.push(year);
+    yearList.sort((a, b) => a - b);
+    setYearList($cardBody, yearList);
+
+    updateTableHeader($cardBody);
+    updateProductRows($cardBody);
+
+    $input.val(year + 1);
+}
+
+function updateTableHeader($cardBody) {
+    const yearList = getYearList($cardBody);
+    for (let i = 0; i < 3; i++) {
+        const year = yearList[i] || "";
+        const $th = $cardBody.find(`#table-header .year-col-${i + 1}`);
+        $th.html( year ? `
+            <div class="form-inline">
+                <input type="text" value="${year}" class="form-control text-center product-year" style="width: 100px" readonly />
+                <span class="input-group-addon">年</span>
+                <button class="btn btn-danger" onclick="deleteYearByIndex(${i})">
+                    <i class="fa fa-times"></i>
+                </button>
+            </div>
+        ` : "");
+    }
+}
+
+function deleteYearByIndex(index) {
+    const $cardBody = $('.card-body');
+    let yearList = getYearList($cardBody);
+    yearList.splice(index, 1);
+    setYearList($cardBody, yearList);
+    updateTableHeader($cardBody);
+    updateProductRows($cardBody);
+}
+
+function updateProductRows($cardBody) {
+    const yearList = getYearList($cardBody);
+
+    $cardBody.find('#product-body .product-row').each(function () {
+        const $row = $(this);
+        for (let i = 0; i < 3; i++) {
+            const $td = $row.find(`.year-col-${i + 1}`);
+            const year = yearList[i];
+            if (year) {
+                $td.html(`
+                    <div class="form-inline">
+                        <input type="text" maxlength="3" style="width:75px" class="form-control rate-input" />
+                        <span class="input-group-text">%</span>
+                    </div>
+                `);
+            } else {
+                $td.html("");
+            }
+        }
+    });
+}
+
+function addProductTableData(obj) {
+    const $cardBody = $(obj).closest('.card-body');
+    const yearList = getYearList($cardBody);
+    const $row = $('<tr class="product-row"></tr>');
+    const productNum = $cardBody.find('.product-row').length + 1;
+
+    $row.append(`
+        <td style="width:5%">
+            <button class="btn btn-danger btn-sm del-pro-btn" data-row="${productNum}" onclick="deleteProductsUnit(this)">
+                <i class="fa fa-times"></i>
+            </button>
+        </td>
+        <td style="width:25%">
+            <textarea class="form-control pname" rows="1"></textarea>
+        </td>
+        <td style="width:10%">
+            <span>佔營收比</span>
+        </td>
+    `);
+
+    for (let i = 0; i < 3; i++) {
+        const year = yearList[i];
+        const $td = $(`<td class="year-col-${i + 1}" style="width:20%"></td>`);
+        if (year) {
+            $td.html(`
+                <div class="form-inline">
+                    <input type="text" maxlength="3" style="width:75px" class="form-control rate-input" />
+                    <span class="input-group-text">%</span>
+                </div>
+            `);
+        }
+        $row.append($td);
+    }
+
+    $cardBody.find('#product-body').append($row);
+}
+
+function deleteProductsUnit(obj) {
+    const $cardBody = $(obj).closest('.card-body');
+    $(obj).closest('tr.product-row').remove();
+
+    $cardBody.find('#product-body .product-row').each(function (index) {
+        $(this).find('.btn-danger').attr('data-row', index + 1);
+    });
 }
