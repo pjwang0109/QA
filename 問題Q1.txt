@@ -1,1 +1,9 @@
+function setPageDataByJsonClassNameMappingCR(jsondata, $div) {
+    $.each(jsondata, (k, v) => {
+        const $input = $div.find(`.${k}`);
+        if ($input.is("select")) {
+            $div.find(`select.${k}`).val(v);
+            $div.find(`select.${k}`).data("selected", v);
+        }
 
+這每一段程式是什麼意思
