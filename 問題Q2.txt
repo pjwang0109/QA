@@ -1,1 +1,7 @@
 
+$div.find("select.address-country").selectpicker({ liveSearch: true });
+        $div.find("select.address-country").selectpicker('refresh');
+        $div.find("select.address-country").selectpicker('render');
+
+
+這是什麼意思
