@@ -1,7 +1,6 @@
-
-$div.find("select.address-country").selectpicker({ liveSearch: true });
+        setCreditDefaultSelect($div);
+        $div.find("select.address-country").selectpicker({ liveSearch: true });
         $div.find("select.address-country").selectpicker('refresh');
         $div.find("select.address-country").selectpicker('render');
 
-
-這是什麼意思
+        $div.find('select.nation').val("TH"); 為何這段沒有作用
