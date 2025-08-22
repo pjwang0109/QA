@@ -1,22 +1,7 @@
+可以幫我做點特別的樣式嗎
 
-只能點選一個 radio 怎麼做 而且他要一行一行的排列方式
-<div class="modal-body">
-                    <div class="addressChoose">
-                        <div class="form-group form-inline">
-                            <input type="radio" name="censusAddress" id="census">
-                            <label for="census">戶籍地址</label>
-                        </div>
-                        <div class="form-group form-inline">
-                            <input type="radio" name="newsletterAddress" id="newsletter">
-                            <label for="newsletter">通訊地址</label>
-                        </div>
-                        <div class="form-group form-inline">
-                            <input type="radio" name="liveAddress" id="live">
-                            <label for="live">居住地址</label>
-                        </div>
-                        <div class="form-group form-inline">
-                            <input type="radio" name="otherAddress" id="other">
-                            <label for="other">其他</label>
-                        </div>
-                    </div>
-                </div>
+===============
+資訊部 XX
+Tel : xxxx
+分機 : XX
+================
