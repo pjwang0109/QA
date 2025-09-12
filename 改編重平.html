@@ -1,0 +1,480 @@
+<!-- 借保戶一般信評及往來情形表 -->
+            <div class="card my-1 hide" id="situationTable">
+              <div class="card-header justify-content-between form-group form-inline">
+                <h5 class="mb-0">
+                  <a data-toggle="collapse" href="#creditRatingDiv">借保戶一般信評及往來情形表</a>
+                </h5>
+              </div>
+              <div id="creditRatingDiv" class="creditRatingDiv collapse">
+                <div class="card-body">
+                  <div class="form-group form-inline my-2">
+                    <span class="questionStyleA">一、聯徵中心及票交所回覆查詢情形：</span>
+                  </div>
+
+                  <!-- 連動借保戶資料 START  -->
+                  <div class="form-group form-inline idBorrowerAllDiv my-2"></div>
+                  <!-- 連動借保戶資料 END -->
+
+                  <!-- 負責人(或借戶)配偶  -->
+                  <div class="form-group form-inline responsPersonDiv my-2">
+                    <div id="responsible" class="responsibleDiv my-2">
+                      <!-- 1聯徵 -->
+                      <div class="form-group form-inline creditDiv">
+                        <span class="resPerson ml-2" style="width:300px">負責人(或借戶)配偶</span>
+                        <span class="questionStyleA">聯徵：</span>
+                        <label class="form-check-label jointCreditLabel">
+                          <input type="radio" class="form-check-input flag_jcic" id="jointCredit_Y" name="jointCredit" value="0" onchange="jointCToggle(this)">正常
+                        </label>
+                        <label class="form-check-label jointCreditLabel ml-2">
+                          <input type="radio" class="form-check-input flag_jcic" id="jointCredit_N" name="jointCredit" value="1" onchange="jointCToggle(this)">不正常
+                        </label>
+                        <label class="form-check-label jointCreditLabel mx-2">
+                          <input type="radio" class="form-check-input flag_jcic" id="jointCredit_YO" name="jointCredit" value="2" onchange="jointCToggle(this)">正常，曾有延遲
+                        </label>
+                        <label class="form-check-label captionRe hide">說明：<input type="text" class="desc_jcic" style="width:220px"/></label>
+                      </div>
+                      <!-- 2票信 -->
+                      <div class="form-group form-inline letterDiv">
+                        <span class="widthHide ml-2" style="width:300px"></span>
+                        <span class="questionStyleA">票信：</span>
+                        <label class="form-check-label ticketCLabel">
+                          <input type="radio" class="form-check-input flag_tch" id="ticketC_Y" name="ticketC" value="0">正常
+                        </label>
+                        <label class="form-check-label ticketCLabel ml-2">
+                          <input type="radio" class="form-check-input flag_tch" id="ticketC_N" name="ticketC" value="1">不正常
+                        </label>
+                        <label class="form-check-label ticketCLabel ml-2">
+                          <input type="radio" class="form-check-input flag_tch" id="ticketC_NS" name="ticketC" value="2">未查詢
+                        </label>
+                      </div>
+                      <!-- 3其他狀況 -->
+                      <div class="form-group form-inline otherStatusDiv">
+                        <span class="widthHide ml-2" style="width:300px"></span>
+                        <span class="questionStyleA">其他狀況：</span>
+                        <label class="form-check-label otherStatuslabel">
+                          <input type="radio" class="form-check-input flag_other" id="otherStatus_NS" name="otherStatus" value="0">無配偶
+                        </label>
+                        <label class="form-check-label otherStatuslabel ml-2">
+                          <input type="radio" class="form-check-input flag_other" id="otherStatus_NP" name="otherStatus" value="1">未提供同意書
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group form-inline my-2">
+                    <span class="questionStyleA">二、借戶本行往來資料是否正常：</span>
+                    <label class="form-check-label contactDataLabel">
+                      <input type="radio" class="form-check-input flag_mf" id="contactData_Y" name="contactData" value="0" onchange="contactDataToggle(this)">正常
+                    </label>
+                    <label class="form-check-label contactDataLabel ml-2">
+                      <input type="radio" class="form-check-input flag_mf" id="contactData_N" name="contactData" value="1" onchange="contactDataToggle(this)">不正常
+                    </label>
+                    <span class="captionBo hide">
+                      <label class="form-check-label">，說明：<input type="text" class="desc_mf" style="width:250px"/>
+                      </label>
+                    </span>
+                  </div>
+                  <div class="form-group form-inline my-2">
+                    <span class="questionStyleA">三、借戶近半年於本行繳息及還款狀況：</span>
+                    <label class="form-check-label payStatusLabel">
+                      <input type="radio" class="form-check-input flag_payment" id="payStatus_New" name="payStatus" value="0" onchange="payStatusToggle(this)">新戶
+                    </label>
+                    <label class="form-check-label payStatusLabel ml-2">
+                      <input type="radio" class="form-check-input flag_payment" id="payStatus_Y" name="payStatus" value="1" onchange="payStatusToggle(this)">均準時繳交
+                    </label>
+                    <label class="form-check-label payStatusLabel ml-2">
+                      <input type="radio" class="form-check-input flag_payment" id="payStatus_OL" name="payStatus" value="2" onchange="payStatusToggle(this)">偶有遲繳
+                    </label>
+                    <label class="form-check-label payStatusWrite hide">：約
+                      <input type="number" class="mx-1 times_payment" min="1" style="width:40px">次，
+                    </label>
+                    <label class="form-check-label reason hide">理由：
+                      <input type="text" class="desc_payment" style="width:250px"/>
+                    </label>
+                  </div>
+                  <div class="form-group form-inline my-2">
+                    <span class="questionStyleA">四、關係人(或保證人)與本行授信往來情形：</span>
+                    <label class="form-check-label contactPersonLabel">
+                      <input type="radio" class="form-check-input flag_credit" id="contactPerson_NOC" name="contactPerson" value="0" onchange="contactPersonToggle(this)">無往來
+                    </label>
+                    <label class="form-check-label contactPersonLabel ml-2">
+                      <input type="radio" class="form-check-input flag_credit" id="contactPerson_Y" name="contactPerson" value="1" onchange="contactPersonToggle(this)">正常
+                    </label>
+                    <label class="form-check-label contactPersonLabel ml-2">
+                      <input type="radio" class="form-check-input flag_credit" id="contactPerson_N" name="contactPerson" value="2" onchange="contactPersonToggle(this)">不正常
+                    </label>
+                    <label class="form-check-label contactPersonLabel ml-2">
+                      <input type="radio" class="form-check-input flag_credit" id="contactPerson_YO" name="contactPerson" value="3" onchange="contactPersonToggle(this)">正常，曾有延遲
+                    </label>
+                    <span class="contactPersonWrite hide">
+                      <label class="form-check-label text-danger">，戶名：
+                        <input type="text" class="desc_credit" style="width:250px"/>
+                      </label>
+                    </span>
+                  </div>
+                  <div class="form-group form-inline my-2">
+                    <span class="questionStyleA">五、企業不動產狀況：</span>
+                    <label class="form-check-label searchJudLabel">
+                      <input type="radio" class="form-check-input flag_estate" id="flag_estate_NO" value="0" name="flag_estate" onclick="flag_estateToggle(this)">無
+                    </label>
+                    <label class="form-check-label searchJudLabel ml-2">
+                      <input type="radio" class="form-check-input flag_estate" id="flag_estate_Y" value="1" name="flag_estate" onclick="flag_estateToggle(this)">正常
+                    </label>
+                    <label class="form-check-label searchJudLabel ml-2">
+                      <input type="radio" class="form-check-input flag_estate" id="flag_estate_N" value="2" name="flag_estate" onclick="flag_estateToggle(this)">不正常
+                    </label>
+                    <span class="businessStatus hide">
+                      <label class="form-check-label">，說明：<input type="text" class="desc_estate" style="width:250px"/>
+                      </label>
+                    </span>
+                  </div>
+                  <div class="form-group form-inline my-2">
+                    <span class="questionStyleA">六、本案有無提供擔保品：</span>
+                    <label class="form-check-label flagCoLabel">
+                      <input type="radio" class="form-check-input is_flag_co" id="flag_co_Y" value="0" name="flag_co">有
+                    </label>
+                    <label class="form-check-label flagCoLabel ml-2">
+                      <input type="radio" class="form-check-input is_flag_co" id="flag_co_N" value="1" name="flag_co">無(信保不算)
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 財報攤列 -->
+            <div class="card my-1 hide" id="financialReport">
+              <div class="card-header justify-content-between form-group form-inline">
+                <h5 class="mb-0">
+                  <a data-toggle="collapse" href="#financialReportDiv">財報攤列</a>
+                </h5>
+              </div>
+              <div id="financialReportDiv" class="financialReport_Div collapse show">
+                <input type="hidden" class="businessFR">
+                <div class="card-body">
+                  <div class="form-group form-inline my-0" id="link-FR">
+                    <div class="mx-2">
+                      <button type="button" class="shadow btn btn-success add-FR-btn" onclick="addDataFR(this)"
+                      style="background-color:#81b964;color:#fff;padding:.375rem 2rem">
+                        連結財報攤列
+                      </button>
+                    </div>
+                    <div class="fs-data-unit hide">
+                      <input type="text" readonly name="fs-no" size="25" class="fs-no form-control mr-3"/>
+                      <button href="javascript:void(0)" class="btn btn-success fs-view-btn view-func-btn mr-1"
+                        onclick="openWindowFR(this)">
+                        預覽</button><button class="btn btn-danger FR-del-btn" onclick="deleteToCaseFR(this)">
+                        <i class="fa fa-times"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 企金評等作業 -->
+            <div class="card my-1" id="creditRatingCard">
+              <div class="card-header form-inline form-group ratingSpan">
+                <h5 class="mb-0">
+                  <a id="creditRatingTittle" data-toggle="collapse" href="#creditRatingBlock">企金評等作業</a>
+                </h5>
+              </div>
+              <div id="creditRatingBlock" class="collapse show">
+                <div class="card-body">
+                  <!-- 建模類別選擇 -->
+                  <div class="input-group">
+                    <span>類別：</span>
+                    <div class="form-check-inline">
+                      <label class="form-check-label">
+                        <input type="radio" class="form-check-input caseType" id="caseTypeRadio0" name="caseType" value="0"
+                          onclick="radioCRController.caseTypeRadioHandler(this)"/>免辦徵信案件
+                      </label>
+                    </div>
+                    <div class="form-check-inline">
+                      <label class="form-check-label">
+                        <input type="radio" class="form-check-input caseType" id="caseTypeRadio1" name="caseType" value="1"
+                          onclick="radioCRController.caseTypeRadioHandler(this)"/>無一完整年度財報資料之公司
+                      </label>
+                    </div>
+                    <div class="form-check-inline">
+                      <label class="form-check-label">
+                        <input type="radio" class="form-check-input caseType" id="caseTypeRadio2" name="caseType" value="2"
+                          onclick="radioCRController.caseTypeRadioHandler(this)"/>OBU虛擬統編
+                      </label>
+                    </div>
+                    <div class="form-check-inline">
+                      <label class="form-check-label">
+                        <input type="radio" class="form-check-input caseType" id="caseTypeRadio3" name="caseType" value="3"
+                          onclick="radioCRController.caseTypeRadioHandler(this)" onchange="caseTypeRadioChangeHandler(this,'1')"/>其他
+                      </label>
+                    </div>
+                  </div>
+                  <!-- 評等作業資訊 -->
+                  <div class="CRDiv hide">
+                    <!-- 案件區分 -->
+                    <div class="form-group form-inline my-3 pjtypeDiv">
+                      <span class="questionStyleA">案件類別：</span>
+                      <div class="input-group">
+                        <select class="form-control pjtype" name="pjtype">
+                          <!-- <option value="3">年度重評案件</option> -->
+                        </select>
+                      </div>
+                    </div>
+                    <!-- 企業戶 -->
+                    <div class="companyAccountDiv hide">
+                      <!-- 股票發行狀況 -->
+              <div class="form-group form-inline my-3">
+                <span class="questionStyleA">股票發行狀況：</span>
+                <div class="input-group">
+                  <select class="form-control stock_status" name="stock_status"></select>
+                </div>
+              </div>
+                      <!-- 企業戶行業別 -->
+                      <div class="form-group form-inline my-3">
+                        <span class="questionStyleA">行業別：</span>
+                        <div class="input-group">
+                          <select class="form-control ctype" name="ctype" onchange="ctypeSelectHandler(this)"></select>
+                        </div>
+                      </div>
+                      <!-- 業種代號 -->
+                      <div class="form-inline my-3 JobQueryDiv hide">
+                        <input type="text" class="form-control form-digit-2 jobf2 BizNum2 BIZ2_2" maxlength="2" size="2" onchange="jobF2ChangeHandler(this)" onkeyup="moveNextHandler(event,'.jobl4')"/>
+                        <input type="text" class="form-control form-digit-4 jobl4 BizNum4 BIZ2_4" maxlength="4" size="4" onchange="jobL4ChangeHandler(this)"/>
+                        <input type="text" class="form-control form-digit-22 jobText BizNumO" disabled size="35"/>
+                        <button class="btn btn-primary JobQueryBtn" onclick="openCreditJobQueryModal(this)">查詢</button>
+                        <div class="form-inline mt-3">【註：行業別前兩碼為01者，後4碼理論上應與營業種類標準代號前4碼一致】</div>
+                        <input type="hidden" class="form-control ptype" name="ptype" readonly/>
+                        <datalist id="jobQuerySelect"></datalist>
+                      </div>
+                    </div>
+                    <!-- 個人戶 -->
+                    <div class="personalAccountDiv hide">
+                      <!-- 個人戶行業別 -->
+                      <div class="form-group form-inline my-3">
+                        <span class="questionStyleA">行業/職業別：</span>
+                        <div class="input-group">
+                          <select class="form-control pctype" name="pctype" onchange="pctypeSelectHandler(this)"></select>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- 建模 & 非建模 -->
+                    <div class="input-group my-3">
+                      <div class="form-check-inline">
+                        <label class="form-check-label">
+                          <input type="radio" class="form-check-input modeling" id="modelingRadio0" name="modeling" value="0" disabled/>建模
+                        </label>
+                      </div>
+                      <div class="form-check-inline">
+                        <label class="form-check-label">
+                          <input type="radio" class="form-check-input modeling" id="modelingRadio1" name="modeling" value="1" disabled/>非建模
+                        </label>
+                      </div>
+                    </div>
+                    <!-- 上傳評等EXCEL檔 -->
+                    <div class="mt-4 my-3 uploadfileSelect uploadfileRating">
+                      <div class="form-inline my-3 uploadfileDiv">
+                        <select class="btn-sm filetype" name="filetype">
+                          <option value="201">評等EXCEL檔</option>
+                        </select>
+                        <span class="d-flex font-weight-bold">：</span>
+                        <label class="btn btn-info btn-sm my-0">
+                          <input type="file" name="file" class="hide" accept=".xls,.xlsm,.xlsx,.jpg,.pdf,.txt,.doc,.docx,.tif"
+                            multiple onchange="chgFileStatus(this)"/>
+                          <i class="fas fa-file-medical"></i>
+                          <span class="ml-1">選擇檔案</span>
+                        </label>
+                        <label class="btn btn-primary btn-sm ml-1 my-0">
+                          <input id="uploadfileMCRInput" name="fileCheckFlag" type="button" class="hide" onclick="uploadfile_old_CRA(this)"/>
+                          <i class="fas fa-file-upload"></i>
+                          <span class="ml-1">夾檔</span>
+                        </label>
+                        <label class="ml-1 mb-1 btn-outline-success fileStatus hide">
+                          <i class="mt-1 fas fa-check-circle"></i>
+                          <span class="fileName"></span>
+                        </label>
+                      </div>
+                      <div class="form-inline mt-3 uploadResultDiv">
+                        <span class="questionStyleA">夾檔結果：</span>
+                        <label class="uploadResultTrue ml-1 mb-1 text-success hide">
+                          <span>成功</span>
+                        </label>
+                        <label class="uploadResultFalse ml-1 mb-1 btn btn-outline-danger hide">
+                          <input id="uploadResult_Failed" name="fileCheckInfo" type="button" class="hide" onclick="uploadResultFailed(this)"/>
+                          <span>失敗</span>
+                        </label>
+                        <span class="promptText ml-2 text-danger font-weight-bold hide">(點選『失敗』按鈕可查閱錯誤訊息)</span>
+                      </div>
+                    </div>
+                    <!-- 評等結果 -->
+                    <div class="card my-1 hide" id="ratingResultCard">
+                      <div class="card-header justify-content-between form-group form-inline">
+                        <h5 class="mb-0">
+                          <a data-toggle="collapse" href="#ratingResultBlock">評等結果</a>
+                        </h5>
+                      </div>
+                      <div id="ratingResultBlock" class="collapse show">
+                        <div class="card-body">
+                          <div class="form-group form-inline mb-3">
+                            <span class="questionStyleA">評等案件編號：</span>
+                            <div class="input-group">
+                              <input type="text" class="form-control cid" name="cid" placeholder="(自動帶入)" readonly/>
+                            </div>
+                          </div>
+                          <!-- <div class="form-group form-inline my-3">
+                            <span class="questionStyleA">案件狀態：</span>
+                            <div class="input-group">
+                              <input type="text" class="form-control" name="" placeholder="(自動帶入)-待調等" readonly/>
+                            </div>
+                          </div> -->
+                          <!-- 模型評等資料 -->
+                          <div class="card my-1">
+                            <div class="card-header justify-content-between form-group form-inline">
+                              <h5 class="mb-0">
+                                <a data-toggle="collapse" href="#modelRatingInfomationDiv">模型評等資料</a>
+                              </h5>
+                            </div>
+                            <div id="modelRatingInfomationDiv" class="modelRatingDiv collapse show">
+                              <div class="card-body">
+                                <div class="form-group form-inline my-3">
+                                  <span class="questionStyleA">模型專案名稱：</span>
+                                  <div class="input-group">
+                                    <input type="text" class="form-control modelName" name="modelName" placeholder="(自動帶入)" readonly/>
+                                  </div>
+                                </div>
+                                <!-- 產製評等後有財簽、無財簽、個人戶 -->
+                                <div class="form-group form-inline my-3">
+                                  <span class="questionStyleA">模型流程名稱：</span>
+                                  <div class="input-group">
+                                    <input type="text" class="form-control processType" name="processType" placeholder="(自動帶入)" readonly/>
+                                  </div>
+                                </div>
+                                <div class="form-group form-inline my-3">
+                                  <span class="questionStyleA">無法評等註記：</span>
+                                  <div class="input-group">
+                                    <input type="text" class="form-control nonRatingFlag" name="nonRatingFlag" placeholder="(自動帶入)" readonly/>
+                                  </div>
+                                </div>
+                                <div class="form-group form-inline my-3">
+                                  <span class="questionStyleA">無法評等理由：</span>
+                                  <div class="input-group">
+                                    <input type="text" class="form-control nonRatingReason" name="nonRatingReason" placeholder="(自動帶入)" size="45" readonly/>
+                                  </div>
+                                </div>
+                                <div class="form-group form-inline my-3">
+                                  <span class="questionStyleA">違約評等註記：</span>
+                                  <div class="input-group">
+                                    <input type="text" class="form-control defaultRatingFlag" name="defaultRatingFlag" placeholder="(自動帶入)" readonly/>
+                                  </div>
+                                </div>
+                                <div class="form-group form-inline my-3">
+                                  <span class="questionStyleA">模型評等等級(Base Rating)：</span>
+                                  <div class="input-group">
+                                    <input type="text" class="form-control baseRating" name="baseRating" placeholder="(自動帶入)" readonly/>
+                                  </div>
+                                </div>
+                                <div class="form-group form-inline my-3">
+                                  <span class="questionStyleA">模型評等PD：</span>
+                                  <div class="input-group ratingDetail">
+                                    <input type="text" class="form-control ratingPD" name="ratingPD" placeholder="(自動帶入)" readonly/>
+                                  </div>
+                                </div>
+                                <div class="form-group form-inline my-3">
+                                  <span class="questionStyleA">模型評等日期：</span>
+                                  <div class="input-group">
+                                    <input type="date" class="form-control ratingDate" name="ratingDate" readonly/>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <!-- 調整評等等級 -->
+                          <div class="input-group my-3">
+                            <span class="questionStyleA">是否調整評等等級：</span>
+                            <div class="form-check-inline">
+                              <label class="form-check-label">
+                                <input type="radio" class="form-check-input adjustWhetherRadio" id="adjustWhetherRadio0" name="adjustWhether" value="0"
+                                  onclick="radioCRController.adjustWhetherRadioHandler(this)"/>是
+                              </label>
+                            </div>
+                            <div class="form-check-inline">
+                              <label class="form-check-label">
+                                <input type="radio" class="form-check-input adjustWhetherRadio" id="adjustWhetherRadio1" name="adjustWhether" value="1"
+                                  onclick="radioCRController.adjustWhetherRadioHandler(this)"/>否
+                              </label>
+                            </div>
+                          </div>
+                          <!-- 調等資料 -->
+                          <div class="card my-1 hide" id="adjustRatingCard">
+                            <div class="card-header justify-content-between form-group form-inline">
+                              <h5 class="mb-0">
+                                <a data-toggle="collapse" href="#adjustRatingInfoDiv">調等資料</a>
+                              </h5>
+                            </div>
+                            <div id="adjustRatingInfoDiv" class="adjustRatingDiv collapse show">
+                              <div class="card-body">
+                                <div class="form-group form-inline my-3">
+                                  <span class="questionStyleA">調等理由連結：</span>
+                                  <div class="input-group">
+                                    <button type="button" class="btn btn-info mx-2 AR_resultLink"
+                                      onclick="openAdjustRatingModal(this)">調等理由列表
+                                    </button>
+                                  </div>
+                                </div>
+                                <div class="input-group form-inline my-3">
+                                  <span class="questionStyleA">調等：</span>
+                                  <div class="form-check-inline">
+                                    <label class="form-check-label">
+                                      <input type="radio" class="form-check-input adjustRadio" id="adjustRadio0" name="adjust" value="0"
+                                        onclick="radioCRController.adjustRadioHandler(this)"/>調升
+                                    </label>
+                                  </div>
+                                  <div class="form-check-inline">
+                                    <label class="form-check-label">
+                                      <input type="radio" class="form-check-input adjustRadio" id="adjustRadio1" name="adjust" value="1"
+                                        onclick="radioCRController.adjustRadioHandler(this)"/>調降
+                                    </label>
+                                  </div>
+                                </div>
+                                <div class="form-group form-inline my-3">
+                                  <span class="questionStyleA">人工干預後評等等級(Final Rating)：</span>
+                                  <div class="input-group">
+                                    <select class="form-control finalRating" name="finalRating" onchange="finalRatingSelectHandler(this)"></select>
+                                  </div>
+                                </div>
+                                <div class="form-group form-inline my-3">
+                                  <span class="questionStyleA">調整評等對應PD：</span>
+                                  <div class="input-group">
+                                    <input type="hidden" class="adjustPD_name" name="adjustPD_name"readonly/>
+                                    <input type="text" class="form-control adjustPD" name="adjustPD" placeholder="(自動帶入)" readonly/>
+                                  </div>
+                                </div>
+                                <div class="form-group form-inline d-flex align-items-start flex-column">
+                                  <span class="questionStyleA">調等理由：</span>
+                                  <!-- 調升 -->
+                                  <div class="hide adjust_U">
+                                    <div class="adjustUpDiv input-group d-flex flex-column ml-3">
+                                      <strong class="form-inline my-3">調升理由</strong>
+                                    </div>
+                                  </div>
+                                  <!-- 調降 -->
+                                  <div class="hide adjust_D">
+                                    <div class="adjustDownDiv input-group d-flex flex-column ml-3">
+                                      <strong class="form-inline my-3">調降理由</strong>
+                                    </div>
+                                  </div>
+                                </div>
+                                <!-- <div class="form-group form-inline my-3">
+                                  <span class="questionStyleA">調等日期：</span>
+                                  <div class="input-group">
+                                    <input type="date" onkeydown="return false" class="form-control adjustDate" name="adjustDate"/>
+                                  </div>
+                                </div> -->
+                                  <input type="hidden" class="form-control adjustPerson" name="adjustPerson" placeholder="(自動帶入)" readonly/>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
