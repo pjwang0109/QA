@@ -1,28 +1,42 @@
-"ch1":是inputYYYMMDDHandler(event);
-其他的 ch2，ch3, ch4, ch5, ch_chg_date 是 inputYYYMMHandler(event)
-我這樣寫對嗎
+這是在寫什麼
+function inputYYYMMHandler(event) {
+    const $input = $(event.target);
+    let oriValue = $input.data("oriStr") || "";
+    const oriEvent = event.originalEvent || "";
+    const inputType = oriEvent.inputType || "";
+    //insertText
+    //insertFromPaste
+    //deleteContentBackward
+    //deleteContentForward
+    const isDel = inputType.substr(0, 6) == "delete";
+    const inputWord = oriEvent.data || "";
+    const format = /^\d{3}\/\d{2}$/;
+    oriValue = oriValue.substr(0, 6);
 
-$($target).on(
-        "input",
-        ".historyCompanyInfomationDiv input[type=text]",
-        (event) => {
-            const $input = $(event.target);
-            const allClass = $input.prop("class");
-            const classArr = allClass ? allClass.split(/\s+/) : [];
-            $.each(classArr, (i, className) => {
-                switch (className) {
-                    //企業沿革 - 時間
-                    case "ch1":
-                        inputYYYMMDDHandler(event);  //包含年月日
-                        break;
-                    case "ch2":
-                    case "ch3":
-                    case "ch4":
-                    case "ch5":
-                    case "ch_chg_date":
-                        inputYYYMMHandler(event);
-                        break;
-                }
-            });
+    if (inputType == "insertText") {
+        if (/[^\d\/]/.test(inputWord)) {
+            $input.val(oriValue);
         }
-    );
+    } else {
+        $input.val($input.val().replace(/[^\d\/]/g, ''));
+    }
+    const inputValue = $input.val();
+    if (inputValue.length >= 6) {
+        if (!format.test(inputValue)) {
+            $input.val(oriValue);
+        }
+    } else if (inputValue.length < 4) {
+        const formatF3 = /^\d{0,3}$/;
+        if (!formatF3.test(inputValue)) {
+            $input.val(oriValue);
+        } else if (inputValue.length == 3 && !isDel) {
+            $input.val(inputValue + "/");
+        }
+    } else if (inputValue < 6) {
+        const formatL3 = /^\d{3}\/\d{0,2}/;
+        if (!formatL3.test(inputValue)) {
+            $input.val(oriValue);
+        }
+    }
+    $input.data("oriStr", $input.val());
+}
