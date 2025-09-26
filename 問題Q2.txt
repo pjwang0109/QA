@@ -1,6 +1,28 @@
-        setCreditDefaultSelect($div);
-        $div.find("select.address-country").selectpicker({ liveSearch: true });
-        $div.find("select.address-country").selectpicker('refresh');
-        $div.find("select.address-country").selectpicker('render');
+"ch1":是inputYYYMMDDHandler(event);
+其他的 ch2，ch3, ch4, ch5, ch_chg_date 是 inputYYYMMHandler(event)
+我這樣寫對嗎
 
-        $div.find('select.nation').val("TH"); 為何這段沒有作用
+$($target).on(
+        "input",
+        ".historyCompanyInfomationDiv input[type=text]",
+        (event) => {
+            const $input = $(event.target);
+            const allClass = $input.prop("class");
+            const classArr = allClass ? allClass.split(/\s+/) : [];
+            $.each(classArr, (i, className) => {
+                switch (className) {
+                    //企業沿革 - 時間
+                    case "ch1":
+                        inputYYYMMDDHandler(event);  //包含年月日
+                        break;
+                    case "ch2":
+                    case "ch3":
+                    case "ch4":
+                    case "ch5":
+                    case "ch_chg_date":
+                        inputYYYMMHandler(event);
+                        break;
+                }
+            });
+        }
+    );
