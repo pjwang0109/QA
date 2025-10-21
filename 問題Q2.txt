@@ -1,28 +1,15 @@
-可以在 
-"columnDefs": [////<img class="mw-10" src="jpg/details_open.png">
-                    { "targets": 0, "width": "0%", "visible": false, "orderable": false },//data
-                    { "targets": 1, "width": "0%", "visible": false, "orderable": false },
-                    { "targets": 2, "width": "12%", "orderable": false, "className": "text-center align-middle checkPlus" },//+號
-                    { "targets": 3, "width": "16%", "className": "text-center align-middle" },//日期
-                    { "targets": 4, "width": "20%", "className": "text-center align-middle" },//業務別
-                    { "targets": 5, "width": "20%", "className": "text-center align-middle" },//類型
-                    { "targets": 6, "width": "11%", "className": "text-center align-middle" },//分行別
-                    { "targets": 7, "width": "38%", "className": "text-center align-middle" },//ID
-                    { "targets": 8, "width": "40%", "className": "text-center align-middle" },//戶名
-                    { "targets": 9, "width": "40%", "className": "text-center align-middle" },//核准金額
-                    { "targets": 10, "width": "24%", "className": "text-center align-middle" },//初簽員編
-                    { "targets": 11, "width": "25%", "className": "text-center align-middle" },//受理編號
-                    { "targets": 12, "width": "23%", "className": "text-center align-middle" },//授信帳號
-                    { "targets": 13, "width": "29%", "className": "text-center align-middle" },//案件狀態
-                    { "targets": 14, "width": "15%", "className": "text-center align-middle" },//首撥日
-                    // { "targets": 15, "width": "29.1%", "className": "text-center align-middle" },//功能操作
-                ],
-
-tr上增加 onclick="addAlert(this)"嗎?
-該如何修改程式?
-
-
-
-A:
-$(row).attr("onclick", "addAlert(this)");
-
+這可以簡寫嗎
+if (readopen == "0") {
+                       $('td:eq(0)', row).removeClass('checkPlus');
+                        $('td:eq(0)', row).attr("onclick", "addAlert()");
+                        $('td:eq(1)', row).attr("onclick", "addAlert()");
+                        $('td:eq(2)', row).attr("onclick", "addAlert()");
+                        $('td:eq(3)', row).attr("onclick", "addAlert()");
+                        $('td:eq(4)', row).attr("onclick", "addAlert()");
+                        $('td:eq(5)', row).attr("onclick", "addAlert()");
+                        $('td:eq(6)', row).attr("onclick", "addAlert()");
+                        $('td:eq(7)', row).attr("onclick", "addAlert()");
+                        $('td:eq(8)', row).attr("onclick", "addAlert()");
+                        $('td:eq(9)', row).attr("onclick", "addAlert()");
+                        $('td:eq(10)', row).attr("onclick", "addAlert()");
+                    }
