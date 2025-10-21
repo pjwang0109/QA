@@ -1,15 +1,96 @@
-當obj.readopen = "0"時， `<img class="mw-10" src="jpg/details_open.png"></a>`會被禁止點選
-'<a href="javascript: void(0)" onclick="openACSearchWeb(this)">' + obj.appNumber + '</a>'也會被禁止點選
+有辦法在 { "targets": 2, "width": "12%", "orderable": false, "className": "text-center align-middle checkPlus" }  判定list[Index項].readopen === "0" 改為 { "targets": 2, "width": "12%", "orderable": false, "className": "text-center align-middle" }  嗎?
 該如何修改程式?
 
 
-console.log("####:", obj);
-dataTable.row.add([
+function searchTableInitHandler(list) {
+            let opt = {
+                "bAutoWidth": false, //自動適應寬度
+                "bRetrieve": true,
+                "bStateSave": false,
+                "scrollCollapse": true,
+                "autowidth": false,
+                "language": {
+                    search: "搜尋表格:",
+                    info: "顯示第 _START_ 至 _END_ 筆結果，共 _TOTAL_ 筆",
+                    infoFiltered: "",
+                    infoEmpty: "無相關資料",
+                    zeroRecords: "沒有符合的資料",
+                    lengthMenu: "顯示 _MENU_ 筆",
+                    paginate: {
+                        "first": "第一頁",
+                        "previous": "上一頁",
+                        "next": "下一頁",
+                        "last": "最後一頁"
+                    },
+                },
+                "columnDefs": [////<img class="mw-10" src="jpg/details_open.png">
+                    { "targets": 0, "width": "0%", "visible": false, "orderable": false },//data
+                    { "targets": 1, "width": "0%", "visible": false, "orderable": false },
+                    { "targets": 2, "width": "12%", "orderable": false, "className": "text-center align-middle checkPlus" },//+號
+                    { "targets": 3, "width": "16%", "className": "text-center align-middle" },//日期
+                    { "targets": 4, "width": "20%", "className": "text-center align-middle" },//業務別
+                    { "targets": 5, "width": "20%", "className": "text-center align-middle" },//類型
+                    { "targets": 6, "width": "11%", "className": "text-center align-middle" },//分行別
+                    { "targets": 7, "width": "38%", "className": "text-center align-middle" },//ID
+                    { "targets": 8, "width": "40%", "className": "text-center align-middle" },//戶名
+                    { "targets": 9, "width": "40%", "className": "text-center align-middle" },//核准金額
+                    { "targets": 10, "width": "24%", "className": "text-center align-middle" },//初簽員編
+                    { "targets": 11, "width": "25%", "className": "text-center align-middle" },//受理編號
+                    { "targets": 12, "width": "23%", "className": "text-center align-middle" },//授信帳號
+                    { "targets": 13, "width": "29%", "className": "text-center align-middle" },//案件狀態
+                    { "targets": 14, "width": "15%", "className": "text-center align-middle" },//首撥日
+                    // { "targets": 15, "width": "29.1%", "className": "text-center align-middle" },//功能操作
+                ],
+                "createdRow": function (row, data, index) {
+                    //為更正案件時，底色不一樣
+                    if (data[0].retype == "2" || data[0].retype == "3") {
+                        // console.log(data);
+                        $(row).css("background-color", "#baf2e6");
+                    }
+                },
+                "order": [1, 'desc']
+            };
+
+            let dataTable = $('#resualtTable').DataTable(opt);
+
+            $.each(list, function (item, obj) {
+                let casetype6 = "";
+                //額度(舊案)、變更(舊案)新增『刪除紙本案件』之功能，以刪除因單位操作不熟稔而衍伸之系統垃圾。
+                if (obj.casetype == "6" || obj.casetype == "7") {
+                    casetype6 =
+                        // '<label class="btn btn-info btn-sm my-1">' +
+                        // '<input type="button" class="hide" onclick="viewProgress(this)">' +
+                        // '<i class="far fa-list-alt"></i>' +
+                        // '<span class="ml-1">歷程</span></label>'+
+
+                        '<br><label class="btn btn-danger btn-sm my-1">' +
+                        '<input type="button" class="hide" onclick="acpDelBtnHandler(this)">' +
+                        '<i class="far fa-trash-alt"></i>' +
+                        '<span class="ml-1">刪除</span></label>'
+                    // '<button type="button" class="btn btn-danger showdel my-1 " onclick="acpDelBtnHandler(this)">刪除</button>'
+                }
+                // else{
+                //     casetype6 = '<label class="btn btn-info btn-sm my-0">' +
+                //     '<input type="button" class="hide" onclick="viewProgress(this)">' +
+                //     '<i class="far fa-list-alt"></i>' +
+                //     '<span class="ml-1">歷程</span></label>'
+                // }
+                console.log("####:", obj);
+                const prohibit = obj.readopen === "0";
+                console.log("#AASS:", prohibit);
+                //禁止點選:+號
+                const addImg = prohibit ? `<img class="mw-10" style="pointer-events:none;opacity:0.5;" src="jpg/details_open.png">` : `<img class="mw-10" src="jpg/details_open.png"></a>`;
+
+                //禁止點選:案件編號
+                const caseNumber = prohibit ? `<span href="javascript: void(0)">${obj.appNumber}</span>` : `<a href="javascript: void(0)" onclick="openACSearchWeb(this)">${obj.appNumber}</a>`;
+
+                dataTable.row.add([
                     obj,
                     '',
                     //`<a href="javascript: void(0)" onclick="initImgOpHandler4()">`
                     //`<a href="#modalPT2" data-toggle="modal">
-                    `<img class="mw-10" src="jpg/details_open.png"></a>`,
+                    // `<img class="mw-10" src="jpg/details_open.png"></a>`, 
+                    addImg,
                     obj.date,
                     obj.businessText,
                     obj.assign,
@@ -18,9 +99,32 @@ dataTable.row.add([
                     obj.accName,
                     obj.applyAmount,
                     obj.creUid,
-                    '<a href="javascript: void(0)" onclick="openACSearchWeb(this)">' + obj.appNumber + '</a>',
+                    // '<a href="javascript: void(0)" onclick="openACSearchWeb(this)">' + obj.appNumber + '</a>',
+                    caseNumber,
                     obj.accMf,
                     '<a href="javascript: void(0)" onclick="viewProgress(this)">' + obj.businessStatus + '</a>' + casetype6,
                     obj.first13Date,
                     // casetype6,
-])
+                ])
+            });
+
+            dataTable.draw();
+
+            //table初始化
+            changWindowWdthHandler();
+            changTdSortSymbolHandler();
+            //下次變更視窗時更改的動作
+            $(document).ready(function () {
+                $(window).resize(function () {
+                    changWindowWdthHandler();
+                    changTdSortSymbolHandler();
+                });
+            });
+
+            $('#resualtTable').css('border', '1px solid #dee2e6').css('width', '');
+            $('#resualtTable').find('thead th').addClass('align-middle');
+            $('#resualtTable thead th').addClass('tableSort-top');
+            $(".col-sm-12").addClass('my-1');
+            $(".dataTables_info").addClass('pt-2');
+            return dataTable;
+        }
