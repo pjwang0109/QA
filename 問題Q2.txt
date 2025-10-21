@@ -1,15 +1,1 @@
-這可以簡寫嗎
-if (readopen == "0") {
-                       $('td:eq(0)', row).removeClass('checkPlus');
-                        $('td:eq(0)', row).attr("onclick", "addAlert()");
-                        $('td:eq(1)', row).attr("onclick", "addAlert()");
-                        $('td:eq(2)', row).attr("onclick", "addAlert()");
-                        $('td:eq(3)', row).attr("onclick", "addAlert()");
-                        $('td:eq(4)', row).attr("onclick", "addAlert()");
-                        $('td:eq(5)', row).attr("onclick", "addAlert()");
-                        $('td:eq(6)', row).attr("onclick", "addAlert()");
-                        $('td:eq(7)', row).attr("onclick", "addAlert()");
-                        $('td:eq(8)', row).attr("onclick", "addAlert()");
-                        $('td:eq(9)', row).attr("onclick", "addAlert()");
-                        $('td:eq(10)', row).attr("onclick", "addAlert()");
-                    }
+
