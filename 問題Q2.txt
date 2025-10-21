@@ -21,3 +21,8 @@
 tr上增加 onclick="addAlert(this)"嗎?
 該如何修改程式?
 
+
+
+A:
+$(row).attr("onclick", "addAlert(this)");
+
