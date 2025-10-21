@@ -1,42 +1,26 @@
-這是在寫什麼
-function inputYYYMMHandler(event) {
-    const $input = $(event.target);
-    let oriValue = $input.data("oriStr") || "";
-    const oriEvent = event.originalEvent || "";
-    const inputType = oriEvent.inputType || "";
-    //insertText
-    //insertFromPaste
-    //deleteContentBackward
-    //deleteContentForward
-    const isDel = inputType.substr(0, 6) == "delete";
-    const inputWord = oriEvent.data || "";
-    const format = /^\d{3}\/\d{2}$/;
-    oriValue = oriValue.substr(0, 6);
+當obj.readopen = "0"時， `<img class="mw-10" src="jpg/details_open.png"></a>`會被禁止點選
+'<a href="javascript: void(0)" onclick="openACSearchWeb(this)">' + obj.appNumber + '</a>'也會被禁止點選
+該如何修改程式?
 
-    if (inputType == "insertText") {
-        if (/[^\d\/]/.test(inputWord)) {
-            $input.val(oriValue);
-        }
-    } else {
-        $input.val($input.val().replace(/[^\d\/]/g, ''));
-    }
-    const inputValue = $input.val();
-    if (inputValue.length >= 6) {
-        if (!format.test(inputValue)) {
-            $input.val(oriValue);
-        }
-    } else if (inputValue.length < 4) {
-        const formatF3 = /^\d{0,3}$/;
-        if (!formatF3.test(inputValue)) {
-            $input.val(oriValue);
-        } else if (inputValue.length == 3 && !isDel) {
-            $input.val(inputValue + "/");
-        }
-    } else if (inputValue < 6) {
-        const formatL3 = /^\d{3}\/\d{0,2}/;
-        if (!formatL3.test(inputValue)) {
-            $input.val(oriValue);
-        }
-    }
-    $input.data("oriStr", $input.val());
-}
+
+console.log("####:", obj);
+dataTable.row.add([
+                    obj,
+                    '',
+                    //`<a href="javascript: void(0)" onclick="initImgOpHandler4()">`
+                    //`<a href="#modalPT2" data-toggle="modal">
+                    `<img class="mw-10" src="jpg/details_open.png"></a>`,
+                    obj.date,
+                    obj.businessText,
+                    obj.assign,
+                    obj.branch_num,
+                    obj.accountLine,
+                    obj.accName,
+                    obj.applyAmount,
+                    obj.creUid,
+                    '<a href="javascript: void(0)" onclick="openACSearchWeb(this)">' + obj.appNumber + '</a>',
+                    obj.accMf,
+                    '<a href="javascript: void(0)" onclick="viewProgress(this)">' + obj.businessStatus + '</a>' + casetype6,
+                    obj.first13Date,
+                    // casetype6,
+])
