@@ -1,1 +1,3 @@
-
+<input type="file" class="hide" accept=".xls,.xlsm,.xlsx,.jpg,.pdf,.txt,.doc,.docx,.tif" 
+            multiple onchange="chgFileStatus(this)"/>
+我要如何選到這個 input? 使用 $('#createReportAll').find("input") 幫我改寫
