@@ -1,1 +1,195 @@
+async function uploadfile_other_CRA(obj, caseClassName) {
+    console.log("2222222222222其他");
+    let $modal = $("#loadingView");
+    $modal.find('button').prop('disabled', true);
+    let userObj = getUidToken();
+    let uid = userObj.uid;
+    let token = userObj.token;
+    let caseno = $("#creditRatingTittle").attr("appnumber");
+    // let ftype = $(obj).closest('.card-body').find('.ftype').val();
+    let uploadfileStatus = true;
+    if (caseno == undefined || caseno == "") { 
+        alert("未有案件編號，請先存檔後進行上傳。");
+        uploadfileStatus = false;
+        return;
+    }
+    let $fileDiv = $(obj).closest('.form-inline.mt-2');
+    let filetype = $fileDiv.find('select').val();
+    let $file = $fileDiv.find('input');
+    let filetlength = $file[0].files.length;
+    let files = $file[0].files;
+    
+    let result = false;
+    try {
+        result = await saveCRA(obj, false);
+    } catch (e) {
+        console.error(e);
+    }
+    if(result) {
+        setTimeout(function () { 
+            let cid = $("#creditRatingTittle").attr("cid");
+            $.each(files, function (item, file) {  //阻擋20MB以上的檔案上傳 
+                //抓取上傳檔案副檔名
+                let fileNameNo = file.name.split(".")[file.name.split(".").length - 1];
+        
+                if (file.name.split(".").length > 0) {  //判斷有沒有符合副檔名
+                    let acceptArr = $file.attr('accept').split(",");
+        
+                    //沒有符合檔案類型
+                    if (acceptArr.indexOf("." + fileNameNo) < 0) {
+                        alert(file.name + "，副檔名不符合規定。");
+                        uploadfileStatus = false;
+                        return;
+                    }
+                }
+                if (file.size >= (20 * 1024 * 1024)) {
+                    alert(file.name + "，檔案大小超過20MB。");
+                    uploadfileStatus = false;
+                    return;
+                }
+            });
+            if (filetlength == 0) { 
+                alert("未選擇檔案");
+                uploadfileStatus = false;
+                return;
+            }
+        
+            if (!uploadfileStatus) {  //不是true，就結束
+                return;
+            }
+            //畫面清除    
+            const tr = '<tr>' +
+                '<td class="px-4">' +
+                '<p class="mt-1 mb-1 name">fileName</p>' +
+                '<strong class="mt-2 msg"></strong>' +
+                '</td>' +
+                '<td class="px-4">' +
+                '<p class="mt-1 mb-1 size">fileSize</p>' +
+                '<div class="mt-2 progress">' +
+                '<div class="progress-bar progress-bar-info progress-bar-striped" role="progressbar"' +
+                'aria-valuenow="0" aria-valuemin="70" aria-valuemax="100" style="width: 0%;">' +
+                '<span class="font-weight-bold percentVal">0%</span>' +
+                '</div>' +
+                '</div>' +
+                '</td>' +
+                '</tr>';
+            $modal.find('tbody').empty();
+        
+            //畫面加載
+            for (let i = 0; i < filetlength; i++) {
+                $modal.find('tbody').append(tr.replace('fileName', files[i].name).replace('fileSize', files[i].size >= 1024 * 1024 ? parseFloat(files[i].size / (1024 * 1024)) + ' MB' : parseFloat(files[i].size / 1024) + ' KB'));
+            }
+            //顯示畫面
+            $("#loadingView").modal('show');
+            //資料包裝並上傳
+            let chan = new $.Deferred().resolve();
+            for (let i = 0; i < filetlength; i++) {
+                let fileData = new FormData();
+                fileData.append("token", token);
+                fileData.append("uid", uid);
+                fileData.append("caseno", caseno);
+                fileData.append("filetype", filetype);
+                fileData.append('uploadfile', files[i]);
+                fileData.append('cid', cid);
+        
+                let s130020010 = apiCRA_Controller.getS130020010(fileData, i);
+        
+                chan = chan.pipe(function () {
+                    return $.ajax(s130020010).pipe(
+                        //doneFilter, 形同ajax success事件，但要傳回Promise物件
+                        function (filejson) {
+                            filejson = JSON.parse(filejson);
+                            $('#msg_token').text(filejson.token);
+                            // 傳回reject的Deferred物件可中斷pipe()執行
+                            if (filejson.rc != "M0401") {
+                                let $modal = $("#loadingView").find('tbody tr:nth(' + i + ')');
+                                let $bar = $modal.find('.progress-bar');
+                                let $percent = $modal.find('.percentVal');
+                                let $msg = $modal.find('.msg');
+                                let percentVal = '0%';
+                                $bar.width(percentVal);
+                                $percent.html(percentVal);
+                                $msg.addClass('text-danger').html('錯誤訊息：' + filejson.msg);
+                                return $.Deferred().resolve();
+                            }
+                            let $modal = $("#loadingView").find('tbody tr:nth(' + i + ')');
+                            let $msg = $modal.find('.msg');
+                            $msg.addClass('text-success').html('夾檔成功');
+                            // //傳回resolve的Deferred物件繼續pipe()
+                            return $.Deferred().resolve();
+                        }
+                        //server error, 形同ajax error事件，但要傳回Promise物件
+                        , function (jqXHR, textStatus, errorThrown) {
+                            let $modal = $("#loadingView").find('tbody tr:nth(' + i + ')');
+                            let $bar = $modal.find('.progress-bar');
+                            let $percent = $modal.find('.percentVal');
+                            let $msg = $modal.find('.msg');
+                            let percentVal = '0%';
+                            $bar.width(percentVal);
+                            $percent.html(percentVal);
+                            $msg.addClass('text-danger').html('伺服器發生錯誤，夾檔失敗' + errorThrown);
+                            return $.Deferred().resolve();
+                        });
+                });
+            }
+            chan.pipe(function () {
+                //清單更新
+                $file.val('').change();//清空input欄位資料
+                apiCRRS000040010(uid, token, caseno, isre="1", cid).done(function (jsondata) {
+        
+                    $('#msg_token').text(jsondata.token);
+                    if (jsondata.rc == "M0000") {
+                        const $tableDiv = $('.uploadfileDiv_CRR');
+                        let selList = ["評等EXCEL檔","其他"]
+        
+                        let endResult = jsondata.result.filter(function (item, index, array) {
+                            return selList.indexOf(item.file_type.trim()) > -1;
+                        });
+                        
+                        const table = '<table class="uploadfileTable table table-bordered table-hover text-center" style="table-layout:fixed;"></table>';
+                        const thead = '<thead>' +
+                            '<th>筆數</th>' +
+                            '<th>選項</th>' +
+                            '<th>檔案</th>' +
+                            '<th>夾檔人員</th>' +
+                            '<th>夾檔時間</th>' +
+                            '<th>案件操作</th></thead>';
+                        const tbody = '<tbody></tbody>';
+                        $tableDiv.empty().append(table);
+                        $tableDiv.find('table').append(thead).append(tbody);
+                        $.each(endResult, function (item, result) {
+                            let tr = '<tr>' +
+                                '<td>uf_no</td>'.replace('uf_no', result.uf_no) +
+                                '<td title="tDemo">file_type</td>'.replace('file_type', result.file_type).replace('tDemo', result.uf_no) +
+                                '<td>filename_ori</td>'.replace('filename_ori', result.filename_ori) +
+                                '<td>uf_uid</td>'.replace('uf_uid', result.uf_uid) +
+                                '<td>uf_date</td>'.replace('uf_date', result.uf_date) +
+                                '<td>' +
+                                '<label class="cursor"><input type="button" class="hide" onclick="viewFile(this)"><i class="fas fa-file px-2"></i></label>' +
+                                '<label class="cursor"><input type="button" class="hide" onclick="delFile_AC(this)"><i class="fas fa-trash-alt px-2"></i></label>' +
+                                '<label class="uploadLabel"><input type="hidden" class="uploadText" value="file_type" isflag="fileCheckFlag"></label>'.replace('file_type', result.file_type).replace('fileCheckFlag', result.fileCheckFlag) +
+                                '</td></tr>';
+                            $tableDiv.find('tbody').append(tr);
+                        });
+                        uploadinitTable();  //註冊DataTable
+                        let dataTable = $tableDiv.find('table').DataTable();
+                        let i = 0;
+                        $.each(endResult, function (item, result) {    
+                            dataTable.row(i).data()[0] = result;
+                            i++;
+                        });
+                        uploadTextCRRHandler();
+                    } else {
+                        apiErrorHandler(jsondata);
+                    }
+                });
+                $modal.find('button').prop('disabled', false);
+            });
+        }, 600);}
+}
 
+
+我可以在打完apiCRRS000040010之後 再多打一個apiS000040010嗎? 該怎麼寫
+我帶的值是不一樣的
+apiCRRS000040010是帶(uid, token, caseno, isre="1", cid)
+apiS000040010(uid, token, pkpk)
