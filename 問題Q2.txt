@@ -1,77 +1,172 @@
-我依樣要打兩次apiS000040010 帶入的值不同，我該怎麼改呢
 
-function delFileAR(obj) {
-    if (!confirm("是否要刪除檔案？")) { return; }
-    let userObj = getUidToken();
-    let uid = userObj.uid;
-    let token = userObj.token;
-    let dataTable = $(obj).closest('table').DataTable();
-    let tr = $(obj).closest('tr');
-    let result = dataTable.row(tr).data()[0];
-    console.log('@@@:', result);
-    
-    let caseno = result.caseno;
-    let ufno = result.uf_no;
-    $(obj).prop('disabled', true);
-    apiS000040002(uid, token, ufno).done(function (delJson) {
-        $('#msg_token').text(delJson.token);
-        $(obj).prop('disabled', false);
-        if (delJson.rc == "M0411") {
-            alert(delJson.msg);
-            apiS000040010(uid, token, caseno).done(function (jsondata) {
-                $('#msg_token').text(jsondata.token);
-                if (jsondata.rc == "M0000") {
-                    let $tableDiv = $(obj).closest('.uploadfileDiv_CRR');
-                    let $options = $(obj).closest('.uploadfileDiv_CRR').prev().find('select option');
-                    // let selList = new Array;
-                    let selList = ["評等EXCEL檔", "其他", "聯徵原始檔"]
-                    $options.map(function (item, option) {
-                        selList.push($(option).text());
-                    });
-                    let table = '<table class="uploadfileTable table table-bordered table-hover text-center" style="table-layout:fixed;"></table>';
-                    let thead = '<thead>' +
-                        '<th>筆數</th>' +
-                        '<th>選項</th>' +
-                        '<th>檔案</th>' +
-                        '<th>夾檔人員</th>' +
-                        '<th>夾檔時間</th>' +
-                        '<th>案件操作</th></thead>';
-                    let tbody = '<tbody></tbody>';
-                    $tableDiv.empty().append(table);
-                    $tableDiv.find('table').append(thead).append(tbody);
-                    $.each(jsondata.result, function (item, result) {
-                        if (selList.indexOf(result.file_type) < 0) { return; }
-                        let tr = '<tr>' +
-                            '<td>uf_no</td>'.replace('uf_no', result.uf_no) +
-                            '<td title="tDemo">file_type</td>'.replace('file_type', result.file_type).replace('tDemo', result.uf_no) +
-                            '<td>filename_ori</td>'.replace('filename_ori', result.filename_ori) +
-                            '<td>uf_uid</td>'.replace('uf_uid', result.uf_uid) +
-                            '<td>uf_date</td>'.replace('uf_date', result.uf_date) +
-                            '<td>' +
-                            '<label class="cursor"><input type="button" class="hide" onclick="viewFile(this)"><i class="fas fa-file px-2"></i></label>' +
-                            '<label class="cursor delTrBtn"><input type="button" class="hide" onclick="delFileAR(this)"><i class="fas fa-trash-alt px-2"></i></label>' +
-                            '</td></tr>';
-                        $tableDiv.find('tbody').append(tr);
-                    });
-                    let fieldset_Disabled = $(obj).closest(".uploadfileSelect").closest(".card-body").find("fieldset").prop("disabled");
+這個function有辦法看出 當[上傳時間]相同時，他是根據什麼去排列datatable的嗎
+function sendJCTableInitHandler(addresseeName, list, searchCaseType, isBranch) {
+    let columnDefsArr = [
+        { "targets": 0, "width": "0%", "visible": false, "orderable": false },//data JSON
+        { "targets": 1, "width": "5%", "orderable": false, "className": "text-center align-middle" },//checkbox
+        { "targets": 2, "width": "5%", "className": "text-center align-middle" },//上傳時間
+        { "targets": 3, "width": "5%", "className": "text-center align-middle" },//授信帳號
+        { "targets": 4, "width": "5%", "className": "text-center align-middle" },//核准號碼
+        { "targets": 5, "width": "5%", "className": "text-center align-middle" },//戶名
+        { "targets": 6, "width": "5%", "className": "text-center align-middle" },//ID
+        { "targets": 7, "width": "5%", "className": "text-center align-middle" },//金額
+        { "targets": 8, "width": "5%", "className": "text-center align-middle" },//案件類型
+        { "targets": 9, "width": "5%", "className": "text-center align-middle" },//業務別
+        { "targets": 10, "width": "10%", "className": "text-center align-middle selectTd" },//收件人
+        { "targets": 11, "width": "10%", "className": "text-center align-middle" },//分行區域
+        { "targets": 12, "width": "10%", "className": "text-center align-middle" },//目前作業人員
+        { "targets": 13, "width": "10%", "className": "text-center align-middle" },//案件狀態
+        { "targets": 14, "width": "10%", "className": "text-center align-middle" },//案件編號
+    ];
+    //如果是撥貸columnDefsArr要長這樣
+    if (searchCaseType == "13" || searchCaseType == "default") {
+        columnDefsArr = [
+            { "targets": 0, "width": "0%", "visible": false, "orderable": false },//data JSON
+            { "targets": 1, "width": "5%", "orderable": false, "className": "text-center align-middle" },//checkbox
+            { "targets": 2, "width": "4%", "className": "text-center align-middle" },//上傳時間
+            { "targets": 3, "width": "5%", "className": "text-center align-middle" },//預計撥貸日期
+            { "targets": 4, "width": "5%", "className": "text-center align-middle" },//授信帳號
+            { "targets": 5, "width": "5%", "className": "text-center align-middle" },//核准號碼
+            { "targets": 6, "width": "5%", "className": "text-center align-middle" },//戶名
+            { "targets": 7, "width": "5%", "className": "text-center align-middle" },//ID
+            { "targets": 8, "width": "5%", "className": "text-center align-middle" },//金額
+            { "targets": 9, "width": "5%", "className": "text-center align-middle" },//案件類型
+            { "targets": 10, "width": "5%", "className": "text-center align-middle" },//業務別
+            { "targets": 11, "width": "10%", "className": "text-center align-middle " },//收件人
+            { "targets": 12, "width": "5%", "className": "text-center align-middle" },//分行區域
+            { "targets": 13, "width": "10%", "className": "text-center align-middle " },//目前作業人員
+            { "targets": 14, "width": "10%", "className": "text-center align-middle" },//案件狀態
+            { "targets": 15, "width": "10%", "className": "text-center align-middle" },//案件編號
+        ];
 
-                    // //若是為disabled狀態下，檔案刪除消失
-                    // if (fieldset_Disabled) {
-                    //     $tableDiv.find(".delTrBtn").remove();
-                    // }
-                    uploadinitTable();//註冊DataTable
-                    let dataTable = $('.uploadfileTable').DataTable();
-                    $.each(jsondata.result, function (item, result) {
-                        if (selList.indexOf(result.file_type) < 0) { return; }
-                        dataTable.row(item).data()[0] = result;
-                    });
+    }
+    let opt = {
+        "bAutoWidth": false, //自動適應寬度
+        "bRetrieve": true,
+        "bStateSave": false,
+        "scrollCollapse": true,
+        "autowidth": false,
+        "language": {
+            search: "搜尋表格:",
+            info: "顯示第 _START_ 至 _END_ 筆結果，共 _TOTAL_ 筆",
+            infoFiltered: "",
+            infoEmpty: "無相關資料",
+            zeroRecords: "沒有符合的資料",
+            lengthMenu: "顯示 _MENU_ 筆",
+            paginate: {
+                "first": "第一頁",
+                "previous": "上一頁",
+                "next": "下一頁",
+                "last": "最後一頁"
+            },
+        },
+        "columnDefs": columnDefsArr,
+        "order": [2, 'asc']
+    }
 
-                } else {
-                    apiErrorHandler(jsondata);
-                }
-            });
-        } else {
-            apiErrorHandler(delJson);
+    let dataTable = $('#resualtTable').DataTable(opt);
+
+    $.each(list, function (item, obj) {
+        //案件編號
+        let caseNoATag = `<a href="javascript: void(0)" onclick="getOpACWeb(this)">${obj.caseNo} </a>`;
+        // if (obj.assign == "15") {
+        //     //其他
+        //     caseNoATag = `<a href="javascript: void(0)">其他案件</a>`;
+        // }
+        //案件類型
+        let tmpAssignName = obj.cfTypeCht;
+        //續撥(row>1)
+        if (obj.assign == "13" && obj.row > 1) {
+            tmpAssignName = "續撥";
         }
+        console.log("是否為分行:", isBranch);
+        const addressNameHtml = getAddresseeJCNameHtml(addresseeName, obj, isBranch)
+        //金額轉千分位
+        let tmpAmount = "";
+        try {
+            tmpAmount = money_Thousands(obj.amount) || "";
+        } catch (e) { console.error(e) };
+        let tmpArr = [
+            obj,
+            '<input type="checkbox" class="align-middle"  style="width: 18px;height: 18px;"  onclick="tickTHIScheckbox(this)">',
+            obj.cDate,//上傳時間
+            //obj.caseNo,//案件編號
+            //caseNoATag,
+            obj.acc,//授信帳號
+            obj.modalAllowCode,//核准號碼
+            obj.name,//戶名
+            obj.id,//ID
+            tmpAmount,//金額
+            // tmpAssignName,//案件類型
+            // obj.businessText,//業務別
+            '<select class="form-control form-control-sm mr-2" onchange="changeAddresseeNameHandler(this)"><option value="default">請選擇...</option>' + addressNameHtml + '</select>',
+            obj.cBranchCh,//區域
+            obj.r002,//目前作業人員
+            tmpAssignName,//案件類型
+            obj.businessText,//業務別
+            `<a href="javascript: void(0)" onclick="viewProgress(this)" >${obj.caseStatus}</a>`,//案件狀態
+            caseNoATag//案件編號
+        ];
+        //如果是撥貸tmpArr要長這樣
+        if (searchCaseType == "13" || searchCaseType == "default") {
+            //1:建檔加撥貸   0:撥貸
+            if (obj.isMerge == "1") {
+                obj.assign = "13"
+                tmpAssignName = assignMap(obj.assign);
+            }
+            //續撥(row>1)
+            if (obj.assign == "13" && obj.row > 1) {
+                tmpAssignName = "續撥";
+            }
+            tmpArr = [
+                obj,
+                '<input type="checkbox" class="align-middle"  style="width: 18px;height: 18px;"  onclick="tickTHIScheckbox(this)">',
+                obj.cDate,//上傳時間
+                obj.allocationDate,//預計撥貸日期
+                //obj.caseNo,//案件編號
+                //caseNoATag,
+                obj.acc,//授信帳號
+                obj.modalAllowCode,//核准號碼
+                obj.name,//戶名
+                obj.id,//ID
+                tmpAmount,//金額
+                // tmpAssignName,//案件類型
+                // obj.businessText,//業務別
+                //obj.caseStatus,//案件狀態
+                '<select class="form-control form-control-sm mr-2" onchange="changeAddresseeNameHandler(this)"><option value="default">請選擇...</option>' + addressNameHtml + '</select>',
+                obj.cBranchCh,//區域
+                obj.r002,//目前作業人員
+                tmpAssignName,//案件類型
+                obj.businessText,//業務別
+                `<a href="javascript: void(0)" onclick="viewProgress(this)" >${obj.caseStatus}</a>`,//案件狀態
+                caseNoATag,//案件編號
+            ]
+        }
+        dataTable.row.add(tmpArr)
     });
+
+    dataTable.draw();
+
+    //  //table初始化
+    //  changWindowWdthHandler();
+    //  changTdSortSymbolHandler();
+
+    //  //下次變更視窗時更改的動作
+    //  $(document).ready(function () {
+    //      $(window).resize(function () {
+    //          changWindowWdthHandler();
+    //          changTdSortSymbolHandler();
+    //      });
+    //  });
+
+    $('#resualtTable').css('border', '1px solid #dee2e6').css('width', '');
+    $('#resualtTable').find('thead th').addClass('align-middle');
+    $(".col-sm-12").addClass('my-1');
+    $(".dataTables_info").addClass('pt-2');
+    $(".dataTables_length").parent('div').after('<div class="col-sm-12 col-md-4 my-1"><div class="dataTables_length" id="middle"><label>收件人：' +
+        '<select id="addresseeName" onchange="addresseeNameSelect(this)" class="w-100 form-control form-control-sm mr-2"><option value="default">請選擇...</option>' + getAddresseeNameHtml(addresseeName) + '</select>' +
+        '</label></div></div>');
+    $('.dataTables_length,#resualtTable_filter').parent('div:first-child()').removeClass('col-md-6').addClass('col-md-3');
+    $('.dataTables_length,#resualtTable_filter').parent('div:last-child()').removeClass('col-md-6').addClass('col-md-5');
+    return dataTable;
 }
