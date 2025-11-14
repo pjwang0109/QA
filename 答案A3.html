@@ -1,1 +1,15 @@
 
+const $tab = $(`#relInfoTabItem_${hash}`);
+
+// 強制加上 selectpicker class
+$tab.find("select").addClass("selectpicker");
+
+// 初始化
+$tab.find("select.selectpicker").selectpicker({
+    liveSearch: true
+});
+
+// 強制重新渲染
+$tab.find("select.selectpicker")
+    .selectpicker("refresh")
+    .selectpicker("render");
