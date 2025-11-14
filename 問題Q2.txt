@@ -1,6 +1,6 @@
 我發現await getPersonPageCR(navCount, hash, dataObj); 好像會影響(".address-block select,select.cJob,select.cNationO").selectpicker({liveSearch: true}); 的效果
 
-但當我把"/NEW_creditReport/person_Report.html", 改成"/acceptcase/creditCheckReport/page/creditCheckPersonUnit.html",時 (".address-block select,select.cJob,select.cNationO").selectpicker({liveSearch: true}); 效果就會出來
+但當我把getPersonPageCR方法中的 "/NEW_creditReport/person_Report.html", 改成"/acceptcase/creditCheckReport/page/creditCheckPersonUnit.html",時 (".address-block select,select.cJob,select.cNationO").selectpicker({liveSearch: true}); 效果就會出來
 這是什麼原因導致的呢
 
 
