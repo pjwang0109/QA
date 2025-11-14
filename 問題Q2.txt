@@ -1,7 +1,7 @@
-為什麼這個方法中的$(".address-block select,select.cJob,select.cNationO").selectpicker({
-            liveSearch: true,
-        });
-沒有作用
+我發現await getPersonPageCR(navCount, hash, dataObj); 好像會影響(".address-block select,select.cJob,select.cNationO").selectpicker({liveSearch: true}); 的效果
+
+但當我把"/NEW_creditReport/person_Report.html", 改成"/acceptcase/creditCheckReport/page/creditCheckPersonUnit.html",時 (".address-block select,select.cJob,select.cNationO").selectpicker({liveSearch: true}); 效果就會出來
+這是什麼原因導致的呢
 
 
 async function addCreditUnitCR() {
@@ -125,7 +125,7 @@ async function addCreditUnitCR() {
         $(".address-block select,select.cJob,select.cNationO").selectpicker({
             liveSearch: true,
         });
-        // clickBTN(navCount, id, { ...json, ...dataObj });
+
         $(".address-block select,select.cJob,select.cNationO").selectpicker(
             "refresh"
         );
@@ -141,4 +141,65 @@ async function addCreditUnitCR() {
     }
     $("#addNewPersonModal").modal("hide");
     $("#model_id").val("");
+}
+
+
+async function getPersonPageCR(count, hash, dataObj) {
+    const personalPage = {
+        url:
+            location.protocol +
+            "//" +
+            location.host +
+            "/" +
+            DOMPurify.sanitize(location.pathname.split("/")[1]) +
+            "/NEW_creditReport/person_Report.html",
+            // "/acceptcase/creditCheckReport/page/creditCheckPersonUnit.html",
+        type: "get",
+        contentType: "text/html",
+    };
+    let $result = "";
+    let html = "";
+    try {
+        html = await $.ajax(personalPage);
+    } catch (e) {
+        console.error(e);
+    }
+    if (html) {
+        html = html.replace(/\$\{num\}/g, hash);
+        $result = $(html);
+        //個人戶不動產現狀:企金、票金要隱藏【詳如授信評估】
+        let businessPersonCR = $('#createReportAll').find('.businessCR').val();
+        if (businessPersonCR == "40" || businessPersonCR == "41") {
+            $result.find('.estateDiv .details').addClass('hide');
+        } else {
+            $result.find('.estateDiv .details').removeClass('hide');
+        }
+        $result.find(".crpt_seq").val(count);
+        $result.find(".hash").val(hash);
+
+        /////紅框檢驗START/////
+        //戶籍地址
+        if (dataObj.basedata_person.cHomeOwnerType == "") {
+            $result.find('.cHome-red').css('border', '3px solid red');
+        }
+        //通訊地址
+        if (dataObj.basedata_person.cMailOwnerType == "") {
+            $result.find('.cMail-red').css('border', '3px solid red');
+        }
+        //居住地址
+        if (dataObj.basedata_person.cLiveOwnerType == "") {
+            $result.find('.cLive-red').css('border', '3px solid red');
+        }
+        /////紅框檢驗END/////
+
+        setDefaultSelectCR($result);
+        setLinkageCR($result);
+        $result = await setDataCR(dataObj, $result);
+
+        
+        // setCreditDefaultSelect($result);
+        // setCreditCheckReportLinkage($result);
+        // $result = await setCreditCheckReportData(dataObj, $result);
+    }
+    return $result;
 }
