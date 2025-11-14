@@ -1,7 +1,2 @@
-可是在原先尚未加上selectpicker的select.cHomeCity, select.cMailCity, select.cLiveCity 我的selectpicker({
-            liveSearch: true,
-            size: 5
-        });會有反應ㄟ
-但是select.cHomeArea, select.cHomeStreet, select.cMailArea, select.cMailStreet, select.cLiveArea, select.cLiveStreet,其他都沒反應
-
-就算你叫我加上selectpicker也是依樣 這樣是什麼問題呢
+為什麼我加了data-live-search="true"就好了
+例如:<select class="form-control form-digit-7 cLiveCity address-city" data-live-search="true"></select>
