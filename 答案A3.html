@@ -1,15 +1,76 @@
+        //Step 1：抽出「共用取地址資料 function」
+        function getAddressData($addressDiv) {
+            return {
+                "address-flag": $addressDiv.find(".address-flag:checked").val() || "",
+                "address-zip": $addressDiv.find(".address-zip").val() || "",
+                "address-city": $addressDiv.find("select.address-city").val() || "",
+                "address-area": $addressDiv.find("select.address-area").val() || "",
+                "address-street": $addressDiv.find("select.address-street").val() || "",
+                "address-lane": $addressDiv.find(".address-lane").val() || "",
+                "address-aly": $addressDiv.find(".address-aly").val() || "",
+                "address-num": $addressDiv.find(".address-num").val() || "",
+                "address-of": $addressDiv.find(".address-of").val() || "",
+                "address-flr": $addressDiv.find(".address-flr").val() || "",
+                "address-etc": $addressDiv.find(".address-etc").val() || "",
+                "address-add": $addressDiv.find(".address-add").val() || "",
+            };
+        }
 
-const $tab = $(`#relInfoTabItem_${hash}`);
+        //Step 2：定義「地址來源對應表」
+        const ADDRESS_DIV_MAP = {
+            census: '.census-div',
+            newsletter: '.newsletter-div',
+            live: '.live-div'
+        };
 
-// 強制加上 selectpicker class
-$tab.find("select").addClass("selectpicker");
+        //Step 3：定義「複製規則 → 實際來源」
+        const COPY_MAP = {
+            LIVE_COPY: {
+                "0": "live",
+                "1": "census",
+                "2": "newsletter"
+            },
+            MAIL_COPY_HOME: {
+                "0": "newsletter",
+                "1": "census"
+            }
+        };
 
-// 初始化
-$tab.find("select.selectpicker").selectpicker({
-    liveSearch: true
-});
+        //Step 4：主流程（這才是你原本那 200 行）
+        if (!data) {
+            let $chooseBody = $(obj).closest('.modal-content').find('.addressChoose');
+            //UI統一處理
+            $html.find(".tw-address-div").removeClass('hide');
+            $html.find(".etc-address-div").addClass('hide');
 
-// 強制重新渲染
-$tab.find("select.selectpicker")
-    .selectpicker("refresh")
-    .selectpicker("render");
+            let sourceKey = null;
+            // 1戶籍地址
+            if ($chooseBody.find(`#census_${hash}`).is(":checked")) {
+                sourceKey = 'census';
+            }
+            // 2️通訊地址
+            else if ($chooseBody.find(`#newsletter_${hash}`).is(":checked")) {
+                let val = $(`input[name="MAIL_COPY_HOME_${hash}"]:checked`).val();
+                sourceKey = COPY_MAP.MAIL_COPY_HOME[val];
+            }
+            // 3️居住地址
+            else if ($chooseBody.find(`#live_${hash}`).is(":checked")) {
+                let val = $(`input[name="LIVE_COPY_${hash}"]:checked`).val();
+                sourceKey = COPY_MAP.LIVE_COPY[val];
+            }
+            // 4️其他
+            else if ($chooseBody.find(`#other_${hash}`).is(":checked")) {
+                $html.find(".address-flag[value=2]").prop("checked", true);
+                $html.find(".tw-address-div").addClass('hide');
+                $html.find(".etc-address-div").removeClass('hide');
+                // $chooseBody.find('input').prop('checked', false);
+                // return;
+            }
+
+            if (!sourceKey) return;
+            const $addressDiv = $relDiv.find(ADDRESS_DIV_MAP[sourceKey]);
+            const pickedData = getAddressData($addressDiv);
+            setPageDataByJsonClassNameMappingCR(pickedData, $html);
+
+            $chooseBody.find('input').prop('checked', false);
+        }
