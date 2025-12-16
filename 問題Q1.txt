@@ -1,4 +1,7 @@
 <input type="radio" name="MAIL_COPY_HOME_${num}" value="1" class="MAIL_COPY_HOME"/>同戶籍地址
 <input type="radio" name="MAIL_COPY_HOME_${num}" value="0" class="MAIL_COPY_HOME"/>另列如下
 
-我要如何透過 name="MAIL_COPY_HOME_${num}"去找到這2個input?
+1我要如何透過 name="MAIL_COPY_HOME_${num}" 去找到這2個input ?
+
+2當我找到name="MAIL_COPY_HOME_${num}"後 我要得知她是value="1"或是value="0" 怎麼取得?
+
