@@ -1,1 +1,37 @@
+① 建立 value → div 的對應表
+const addressDivMap = {
+    "0": ".live-div",        // 另列如下-居住地址
+    "1": ".census-div",      // 同戶籍地址
+    "2": ".newsletter-div"   // 同通訊地址
+};
 
+② 抽出「共用取地址資料 function」
+function getAddressData($addressDiv) {
+    return {
+        "address-flag": $addressDiv.find(".address-flag:checked").val() || "",
+        "address-zip": $addressDiv.find(".address-zip").val() || "",
+        "address-city": $addressDiv.find("select.address-city").val() || "",
+        "address-area": $addressDiv.find("select.address-area").val() || "",
+        "address-street": $addressDiv.find("select.address-street").val() || "",
+        "address-lane": $addressDiv.find(".address-lane").val() || "",
+        "address-aly": $addressDiv.find(".address-aly").val() || "",
+        "address-num": $addressDiv.find(".address-num").val() || "",
+        "address-of": $addressDiv.find(".address-of").val() || "",
+        "address-flr": $addressDiv.find(".address-flr").val() || "",
+        "address-etc": $addressDiv.find(".address-etc").val() || "",
+        "address-add": $addressDiv.find(".address-add").val() || "",
+    };
+}
+
+
+③ 主流程（乾淨又清楚）
+let selectedValue = $(`input[name="LIVE_COPY_${hash}"]:checked`).val();
+console.log(selectedValue);
+
+const selector = addressDivMap[selectedValue];
+if (!selector) return; // 防呆
+
+const $addressDiv = $relDiv.find(selector);
+const pickedData = getAddressData($addressDiv);
+
+setPageDataByJsonClassNameMappingCR(pickedData, $html);
