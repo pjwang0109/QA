@@ -1,7 +1,58 @@
-<input type="radio" name="MAIL_COPY_HOME_${num}" value="1" class="MAIL_COPY_HOME"/>同戶籍地址
-<input type="radio" name="MAIL_COPY_HOME_${num}" value="0" class="MAIL_COPY_HOME"/>另列如下
+這有辦法整合嗎?
 
-1我要如何透過 name="MAIL_COPY_HOME_${num}" 去找到這2個input ?
-
-2當我找到name="MAIL_COPY_HOME_${num}"後 我要得知她是value="1"或是value="0" 怎麼取得?
-
+let selectedValue = $(`input[name="LIVE_COPY_${hash}"]:checked`).val();
+                if(selectedValue == "0"){ //另列如下-居住地址
+                    console.log(selectedValue);
+                    let $addressDiv = $relDiv.find('.live-div');
+                    const pickedData = {
+                        "address-flag": $addressDiv.find(".address-flag:checked").val() || "",
+                        "address-zip": $addressDiv.find(".address-zip").val() || "",
+                        "address-city": $addressDiv.find("select.address-city").val() || "",
+                        "address-area": $addressDiv.find("select.address-area").val() || "",
+                        "address-street": $addressDiv.find("select.address-street").val() || "",
+                        "address-lane": $addressDiv.find(".address-lane").val() || "",
+                        "address-aly": $addressDiv.find(".address-aly").val() || "",
+                        "address-num": $addressDiv.find(".address-num").val() || "",
+                        "address-of": $addressDiv.find(".address-of").val() || "",
+                        "address-flr": $addressDiv.find(".address-flr").val() || "",
+                        "address-etc": $addressDiv.find(".address-etc").val() || "",
+                        "address-add": $addressDiv.find(".address-add").val() || "",
+                    }
+                    setPageDataByJsonClassNameMappingCR(pickedData, $html);
+                }else if(selectedValue == "1"){ //同戶籍地址
+                    console.log(selectedValue);
+                    let $addressDiv = $relDiv.find('.census-div');
+                    const pickedData = {
+                        "address-flag": $addressDiv.find(".address-flag:checked").val() || "",
+                        "address-zip": $addressDiv.find(".address-zip").val() || "",
+                        "address-city": $addressDiv.find("select.address-city").val() || "",
+                        "address-area": $addressDiv.find("select.address-area").val() || "",
+                        "address-street": $addressDiv.find("select.address-street").val() || "",
+                        "address-lane": $addressDiv.find(".address-lane").val() || "",
+                        "address-aly": $addressDiv.find(".address-aly").val() || "",
+                        "address-num": $addressDiv.find(".address-num").val() || "",
+                        "address-of": $addressDiv.find(".address-of").val() || "",
+                        "address-flr": $addressDiv.find(".address-flr").val() || "",
+                        "address-etc": $addressDiv.find(".address-etc").val() || "",
+                        "address-add": $addressDiv.find(".address-add").val() || "",
+                    }
+                    setPageDataByJsonClassNameMappingCR(pickedData, $html);
+                }else if(selectedValue == "2"){ //同通訊地址
+                    console.log(selectedValue);
+                    let $addressDiv = $relDiv.find('.newsletter-div');
+                    const pickedData = {
+                        "address-flag": $addressDiv.find(".address-flag:checked").val() || "",
+                        "address-zip": $addressDiv.find(".address-zip").val() || "",
+                        "address-city": $addressDiv.find("select.address-city").val() || "",
+                        "address-area": $addressDiv.find("select.address-area").val() || "",
+                        "address-street": $addressDiv.find("select.address-street").val() || "",
+                        "address-lane": $addressDiv.find(".address-lane").val() || "",
+                        "address-aly": $addressDiv.find(".address-aly").val() || "",
+                        "address-num": $addressDiv.find(".address-num").val() || "",
+                        "address-of": $addressDiv.find(".address-of").val() || "",
+                        "address-flr": $addressDiv.find(".address-flr").val() || "",
+                        "address-etc": $addressDiv.find(".address-etc").val() || "",
+                        "address-add": $addressDiv.find(".address-add").val() || "",
+                    }
+                    setPageDataByJsonClassNameMappingCR(pickedData, $html);
+                }
