@@ -1,205 +1,134 @@
-我發現await getPersonPageCR(navCount, hash, dataObj); 好像會影響(".address-block select,select.cJob,select.cNationO").selectpicker({liveSearch: true}); 的效果
+其實我全部是想整合以下
+        if (!data) {
+            let $chooseBody = $(obj).closest('.modal-content').find('.addressChoose'); //選擇地址的視窗
+            if ($chooseBody.find(`#census_${hash}`).is(":checked")) {  //戶籍地址
+                $html.find(".tw-address-div").removeClass('hide');
+                $html.find(".etc-address-div").addClass('hide');
 
-但當我把getPersonPageCR方法中的 "/NEW_creditReport/person_Report.html", 改成"/acceptcase/creditCheckReport/page/creditCheckPersonUnit.html",時 (".address-block select,select.cJob,select.cNationO").selectpicker({liveSearch: true}); 效果就會出來
-這是什麼原因導致的呢
+                let $addressDiv = $relDiv.find('.census-div');
+                const pickedData = {
+                    "address-flag": $addressDiv.find(".address-flag:checked").val() || "",
+                    "address-zip": $addressDiv.find(".address-zip").val() || "",
+                    "address-city": $addressDiv.find("select.address-city").val() || "",
+                    "address-area": $addressDiv.find("select.address-area").val() || "",
+                    "address-street": $addressDiv.find("select.address-street").val() || "",
+                    "address-lane": $addressDiv.find(".address-lane").val() || "",
+                    "address-aly": $addressDiv.find(".address-aly").val() || "",
+                    "address-num": $addressDiv.find(".address-num").val() || "",
+                    "address-of": $addressDiv.find(".address-of").val() || "",
+                    "address-flr": $addressDiv.find(".address-flr").val() || "",
+                    "address-etc": $addressDiv.find(".address-etc").val() || "",
+                    "address-add": $addressDiv.find(".address-add").val() || "",
+                }
+                setPageDataByJsonClassNameMappingCR(pickedData, $html);
+            }else if($chooseBody.find(`#newsletter_${hash}`).is(":checked")){  //通訊地址
+                $html.find(".tw-address-div").removeClass('hide');
+                $html.find(".etc-address-div").addClass('hide');
 
+                let selectedValue = $(`input[name="MAIL_COPY_HOME_${hash}"]:checked`).val();
+                if(selectedValue == "0"){ //另列如下-通訊地址
+                    console.log(selectedValue);
+                    let $addressDiv = $relDiv.find('.newsletter-div');
+                    const pickedData = {
+                        "address-flag": $addressDiv.find(".address-flag:checked").val() || "",
+                        "address-zip": $addressDiv.find(".address-zip").val() || "",
+                        "address-city": $addressDiv.find("select.address-city").val() || "",
+                        "address-area": $addressDiv.find("select.address-area").val() || "",
+                        "address-street": $addressDiv.find("select.address-street").val() || "",
+                        "address-lane": $addressDiv.find(".address-lane").val() || "",
+                        "address-aly": $addressDiv.find(".address-aly").val() || "",
+                        "address-num": $addressDiv.find(".address-num").val() || "",
+                        "address-of": $addressDiv.find(".address-of").val() || "",
+                        "address-flr": $addressDiv.find(".address-flr").val() || "",
+                        "address-etc": $addressDiv.find(".address-etc").val() || "",
+                        "address-add": $addressDiv.find(".address-add").val() || "",
+                    }
+                    setPageDataByJsonClassNameMappingCR(pickedData, $html);
+                }else if(selectedValue == "1"){ //同戶籍地址
+                    console.log(selectedValue);
+                    let $addressDiv = $relDiv.find('.census-div');
+                    const pickedData = {
+                        "address-flag": $addressDiv.find(".address-flag:checked").val() || "",
+                        "address-zip": $addressDiv.find(".address-zip").val() || "",
+                        "address-city": $addressDiv.find("select.address-city").val() || "",
+                        "address-area": $addressDiv.find("select.address-area").val() || "",
+                        "address-street": $addressDiv.find("select.address-street").val() || "",
+                        "address-lane": $addressDiv.find(".address-lane").val() || "",
+                        "address-aly": $addressDiv.find(".address-aly").val() || "",
+                        "address-num": $addressDiv.find(".address-num").val() || "",
+                        "address-of": $addressDiv.find(".address-of").val() || "",
+                        "address-flr": $addressDiv.find(".address-flr").val() || "",
+                        "address-etc": $addressDiv.find(".address-etc").val() || "",
+                        "address-add": $addressDiv.find(".address-add").val() || "",
+                    }
+                    setPageDataByJsonClassNameMappingCR(pickedData, $html);
+                }
+                
+            }else if($chooseBody.find(`#live_${hash}`).is(":checked")){  //居住地址
+                $html.find(".tw-address-div").removeClass('hide');
+                $html.find(".etc-address-div").addClass('hide');
 
-async function addCreditUnitCR() {
-    let id = $("#model_id").val() || "";
-    const identity = $("#model_identity>option:selected").text() + "：";
-    const identityType = $("#model_identity").val();
-    const idTailCode = $("#addNewPersonModal").find(".idTailCode").val();
-    // const nonkycdata = $("#nonkycdata").prop("checked") == true ? "1" : "0";
-    const usekycdata = $("#usekycdata").prop("checked") == true ? "1" : "0";
-    const useoldcase = $("#useoldcase").prop("checked") == true ? "1" : "0";
-    const crpt_no = $("#addNewPersonModal").find(".crpt_no").val() || "";
-    const userObj = getUidToken();
-    const uid = userObj.uid;
-    const token = userObj.token;
-    const crpt_pk = $("#demo_creditCheck").find(".crpt_pk").val().trim() || "";
-    const caseData = $("#demo_creditCheck").find(".caseData").data("caseData") || {};
-    const jobSelectObj = $("#demo_creditCheck").find(".jobSelect:eq(0)").data("select") || {};
-
-    //ID自動轉大寫
-    id = id.toUpperCase();
-    let res = {};
-    let json = "";
-    let navCount = "";
-    // console.log($("#myTab .nav-item").length)
-    if (identity == "借款人：") {
-        navCount = "1";
-        let nav = "";
-        nav = $("#myTab .nav-item");
-        //將其他借保戶的crpt_seq + 1(順序才會沒問題)
-        $.each(nav, function (i, item) {
-            // console.log($(item).find("a").attr('href'));
-            let href = $(item).find("a").attr('href');
-            // console.log($(href).find(".crpt_seq").val())
-            $(href).find(".crpt_seq").val(parseInt($(href).find(".crpt_seq").val()) + 1);
-        })
-    } else {
-        navCount = $("#myTab .nav-item").length + 1;
-    }
-
-    // let navCount = $("#myTab .nav-item").length + 1;
-    let hash = getHash(String(id + navCount + new Date().getTime()));
-    let result = "";
-    if (id.length == 8 || id.length == 10) {
-        try {
-            res = await apiS120010003(uid, token, crpt_pk, crpt_no, usekycdata,
-                useoldcase, id, idTailCode, identityType);
-        } catch (e) {
-            return;
-        }
-    } else {
-        alert("請輸入正確ID長度");
-        return;
-    }
-    if (!res || (!res.rc && (res.rc != "M0000" || res.rc != "M2182"))) {
-        if (res && res.msg) {
-            alert(res.msg);
-            return;
-        }
-        return;
-    } else {
-        alert(res.msg);
-    }
-    if (
-        res.rc &&
-        (res.rc == "M0000" || res.rc == "M2182") &&
-        res.result &&
-        res.result.crptlist &&
-        res.result.crptlist.length > 0
-    ) {
-        const dataObj = res.result.crptlist[0];
-        dataObj.caseData = caseData;
-        dataObj.jobSelect = jobSelectObj;
-        if (dataObj && dataObj.crpt_datatype == "2") {
-            json = dataObj.basedata_company;
-            result = await getCompanyPageCR(navCount, hash, dataObj);
-        } else if (dataObj && dataObj.crpt_datatype == "1") {
-            json = dataObj.basedata_person;
-            result = await getPersonPageCR(navCount, hash, dataObj);
-        } else {
-            if (id.length == 8) {
-                json = dataObj.basedata_company;
-                result = await getCompanyPageCR(navCount, hash, dataObj);
-            } else if (id.length == 10) {
-                json = dataObj.basedata_person;
-                result = await getPersonPageCR(navCount, hash, dataObj);
+                let selectedValue = $(`input[name="LIVE_COPY_${hash}"]:checked`).val();
+                if(selectedValue == "0"){ //另列如下-居住地址
+                    console.log(selectedValue);
+                    let $addressDiv = $relDiv.find('.live-div');
+                    const pickedData = {
+                        "address-flag": $addressDiv.find(".address-flag:checked").val() || "",
+                        "address-zip": $addressDiv.find(".address-zip").val() || "",
+                        "address-city": $addressDiv.find("select.address-city").val() || "",
+                        "address-area": $addressDiv.find("select.address-area").val() || "",
+                        "address-street": $addressDiv.find("select.address-street").val() || "",
+                        "address-lane": $addressDiv.find(".address-lane").val() || "",
+                        "address-aly": $addressDiv.find(".address-aly").val() || "",
+                        "address-num": $addressDiv.find(".address-num").val() || "",
+                        "address-of": $addressDiv.find(".address-of").val() || "",
+                        "address-flr": $addressDiv.find(".address-flr").val() || "",
+                        "address-etc": $addressDiv.find(".address-etc").val() || "",
+                        "address-add": $addressDiv.find(".address-add").val() || "",
+                    }
+                    setPageDataByJsonClassNameMappingCR(pickedData, $html);
+                }else if(selectedValue == "1"){ //同戶籍地址
+                    console.log(selectedValue);
+                    let $addressDiv = $relDiv.find('.census-div');
+                    const pickedData = {
+                        "address-flag": $addressDiv.find(".address-flag:checked").val() || "",
+                        "address-zip": $addressDiv.find(".address-zip").val() || "",
+                        "address-city": $addressDiv.find("select.address-city").val() || "",
+                        "address-area": $addressDiv.find("select.address-area").val() || "",
+                        "address-street": $addressDiv.find("select.address-street").val() || "",
+                        "address-lane": $addressDiv.find(".address-lane").val() || "",
+                        "address-aly": $addressDiv.find(".address-aly").val() || "",
+                        "address-num": $addressDiv.find(".address-num").val() || "",
+                        "address-of": $addressDiv.find(".address-of").val() || "",
+                        "address-flr": $addressDiv.find(".address-flr").val() || "",
+                        "address-etc": $addressDiv.find(".address-etc").val() || "",
+                        "address-add": $addressDiv.find(".address-add").val() || "",
+                    }
+                    setPageDataByJsonClassNameMappingCR(pickedData, $html);
+                }else if(selectedValue == "2"){ //同通訊地址
+                    console.log(selectedValue);
+                    let $addressDiv = $relDiv.find('.newsletter-div');
+                    const pickedData = {
+                        "address-flag": $addressDiv.find(".address-flag:checked").val() || "",
+                        "address-zip": $addressDiv.find(".address-zip").val() || "",
+                        "address-city": $addressDiv.find("select.address-city").val() || "",
+                        "address-area": $addressDiv.find("select.address-area").val() || "",
+                        "address-street": $addressDiv.find("select.address-street").val() || "",
+                        "address-lane": $addressDiv.find(".address-lane").val() || "",
+                        "address-aly": $addressDiv.find(".address-aly").val() || "",
+                        "address-num": $addressDiv.find(".address-num").val() || "",
+                        "address-of": $addressDiv.find(".address-of").val() || "",
+                        "address-flr": $addressDiv.find(".address-flr").val() || "",
+                        "address-etc": $addressDiv.find(".address-etc").val() || "",
+                        "address-add": $addressDiv.find(".address-add").val() || "",
+                    }
+                    setPageDataByJsonClassNameMappingCR(pickedData, $html);
+                }
+                
+            }else if($chooseBody.find(`#other_${hash}`).is(":checked")){  //其他
+                $html.find(".address-flag[value=2]").prop("checked", true);
+                $html.find(".tw-address-div").addClass('hide');
+                $html.find(".etc-address-div").removeClass('hide');
             }
+            $chooseBody.find('input').prop('checked', false);
         }
-        let showName = id;
-        if (json.cName) showName = json.cName;
-
-        const num = $('.pageNav').length + 1;
-        const $tabItem = $(`
-        <li class="nav-item pageNav" id="nav_${num}">
-            <a class="nav-link" data-toggle="tab" href="#relInfoTabItem_${hash}">
-                ${identity}${showName}
-                <button class="btn-sm btn del-btn btn-link"
-                    data-seq="${navCount}"
-                    onclick="delUnitCR(this)">
-                    <i class="fa fa-times"></i>
-                </button>
-            </a>
-        </li>
-        `);
-        const $div = $(`<div id="relInfoTabItem_${hash}">`);
-        $div.addClass("tab-pane");
-        // // 塞入預取選項
-        // result = setDefaultSelectCR(result);
-        $div.append(result);
-        //借款人固定插在第一個位置
-        if (identity == "借款人：") {
-            $("#myTab").prepend($tabItem);
-            $("#myTabContent").prepend($div);
-        } else {
-            $("#myTab").append($tabItem);
-            $("#myTabContent").append($div);
-        }
-        // $("#myTab").append($tabItem);
-        // $("#myTabContent").append($div);
-        $(`#myTab a[href="#relInfoTabItem_${hash}"]`).tab("show");
-        // console.log('@@@1:', $('.address-block select'));
-        $(".address-block select,select.cJob,select.cNationO").selectpicker({
-            liveSearch: true,
-        });
-
-        $(".address-block select,select.cJob,select.cNationO").selectpicker(
-            "refresh"
-        );
-        $(".address-block select,select.cJob,select.cNationO").selectpicker(
-            "render"
-        );
-        // 公司戶基本資料 實收資本額未顯示千分位處理
-        $(".cCAmount").blur();
-
-        //增加連動:借保戶一般信評及往來情形表
-        const dataRes = res.result.crptlist[0];
-        addBorrowerTable(dataRes);
-    }
-    $("#addNewPersonModal").modal("hide");
-    $("#model_id").val("");
-}
-
-
-async function getPersonPageCR(count, hash, dataObj) {
-    const personalPage = {
-        url:
-            location.protocol +
-            "//" +
-            location.host +
-            "/" +
-            DOMPurify.sanitize(location.pathname.split("/")[1]) +
-            "/NEW_creditReport/person_Report.html",
-            // "/acceptcase/creditCheckReport/page/creditCheckPersonUnit.html",
-        type: "get",
-        contentType: "text/html",
-    };
-    let $result = "";
-    let html = "";
-    try {
-        html = await $.ajax(personalPage);
-    } catch (e) {
-        console.error(e);
-    }
-    if (html) {
-        html = html.replace(/\$\{num\}/g, hash);
-        $result = $(html);
-        //個人戶不動產現狀:企金、票金要隱藏【詳如授信評估】
-        let businessPersonCR = $('#createReportAll').find('.businessCR').val();
-        if (businessPersonCR == "40" || businessPersonCR == "41") {
-            $result.find('.estateDiv .details').addClass('hide');
-        } else {
-            $result.find('.estateDiv .details').removeClass('hide');
-        }
-        $result.find(".crpt_seq").val(count);
-        $result.find(".hash").val(hash);
-
-        /////紅框檢驗START/////
-        //戶籍地址
-        if (dataObj.basedata_person.cHomeOwnerType == "") {
-            $result.find('.cHome-red').css('border', '3px solid red');
-        }
-        //通訊地址
-        if (dataObj.basedata_person.cMailOwnerType == "") {
-            $result.find('.cMail-red').css('border', '3px solid red');
-        }
-        //居住地址
-        if (dataObj.basedata_person.cLiveOwnerType == "") {
-            $result.find('.cLive-red').css('border', '3px solid red');
-        }
-        /////紅框檢驗END/////
-
-        setDefaultSelectCR($result);
-        setLinkageCR($result);
-        $result = await setDataCR(dataObj, $result);
-
-        
-        // setCreditDefaultSelect($result);
-        // setCreditCheckReportLinkage($result);
-        // $result = await setCreditCheckReportData(dataObj, $result);
-    }
-    return $result;
-}
