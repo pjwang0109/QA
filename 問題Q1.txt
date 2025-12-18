@@ -1,58 +1,33 @@
-這有辦法整合嗎?
+本來是這樣 但我想加
+const dataACJSON = saveACJSON(target);
+const s020010011 = getS020010011(uid, token, data);//儲存批覆書。
+去多打一個api 該如何改寫?
 
-let selectedValue = $(`input[name="LIVE_COPY_${hash}"]:checked`).val();
-                if(selectedValue == "0"){ //另列如下-居住地址
-                    console.log(selectedValue);
-                    let $addressDiv = $relDiv.find('.live-div');
-                    const pickedData = {
-                        "address-flag": $addressDiv.find(".address-flag:checked").val() || "",
-                        "address-zip": $addressDiv.find(".address-zip").val() || "",
-                        "address-city": $addressDiv.find("select.address-city").val() || "",
-                        "address-area": $addressDiv.find("select.address-area").val() || "",
-                        "address-street": $addressDiv.find("select.address-street").val() || "",
-                        "address-lane": $addressDiv.find(".address-lane").val() || "",
-                        "address-aly": $addressDiv.find(".address-aly").val() || "",
-                        "address-num": $addressDiv.find(".address-num").val() || "",
-                        "address-of": $addressDiv.find(".address-of").val() || "",
-                        "address-flr": $addressDiv.find(".address-flr").val() || "",
-                        "address-etc": $addressDiv.find(".address-etc").val() || "",
-                        "address-add": $addressDiv.find(".address-add").val() || "",
-                    }
-                    setPageDataByJsonClassNameMappingCR(pickedData, $html);
-                }else if(selectedValue == "1"){ //同戶籍地址
-                    console.log(selectedValue);
-                    let $addressDiv = $relDiv.find('.census-div');
-                    const pickedData = {
-                        "address-flag": $addressDiv.find(".address-flag:checked").val() || "",
-                        "address-zip": $addressDiv.find(".address-zip").val() || "",
-                        "address-city": $addressDiv.find("select.address-city").val() || "",
-                        "address-area": $addressDiv.find("select.address-area").val() || "",
-                        "address-street": $addressDiv.find("select.address-street").val() || "",
-                        "address-lane": $addressDiv.find(".address-lane").val() || "",
-                        "address-aly": $addressDiv.find(".address-aly").val() || "",
-                        "address-num": $addressDiv.find(".address-num").val() || "",
-                        "address-of": $addressDiv.find(".address-of").val() || "",
-                        "address-flr": $addressDiv.find(".address-flr").val() || "",
-                        "address-etc": $addressDiv.find(".address-etc").val() || "",
-                        "address-add": $addressDiv.find(".address-add").val() || "",
-                    }
-                    setPageDataByJsonClassNameMappingCR(pickedData, $html);
-                }else if(selectedValue == "2"){ //同通訊地址
-                    console.log(selectedValue);
-                    let $addressDiv = $relDiv.find('.newsletter-div');
-                    const pickedData = {
-                        "address-flag": $addressDiv.find(".address-flag:checked").val() || "",
-                        "address-zip": $addressDiv.find(".address-zip").val() || "",
-                        "address-city": $addressDiv.find("select.address-city").val() || "",
-                        "address-area": $addressDiv.find("select.address-area").val() || "",
-                        "address-street": $addressDiv.find("select.address-street").val() || "",
-                        "address-lane": $addressDiv.find(".address-lane").val() || "",
-                        "address-aly": $addressDiv.find(".address-aly").val() || "",
-                        "address-num": $addressDiv.find(".address-num").val() || "",
-                        "address-of": $addressDiv.find(".address-of").val() || "",
-                        "address-flr": $addressDiv.find(".address-flr").val() || "",
-                        "address-etc": $addressDiv.find(".address-etc").val() || "",
-                        "address-add": $addressDiv.find(".address-add").val() || "",
-                    }
-                    setPageDataByJsonClassNameMappingCR(pickedData, $html);
-                }
+
+//產製評等按鈕 (企金/票金)
+async function btnSS130050001(obj, objthis, showMsg = false) {
+    loadingShow("資料處理中...");
+    let data = {};
+    let userObj = getUidToken();
+    let uid = userObj.uid;
+    let token = userObj.token;
+
+    //const dataACJSON = saveACJSON(target);
+    //const s020010011 = getS020010011(uid, token, data);//儲存批覆書。
+
+    $(objthis).prop('disabled', true);//一開始先鎖住
+
+    let result = false;
+    try {
+        result = await saveCR(obj, showMsg);
+    } catch (e) {
+        console.error(e);
+    }
+
+    // console.log("saveCRresult",result)
+
+    if (showMsg == true) {
+        loadingHide();
+    }
+........
+}
