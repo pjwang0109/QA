@@ -1,1 +1,6 @@
-當bizNumber = ptypeList的code時
+// 2️⃣ 依 bizNumber（code）找 name
+const bizItem = ptypeList.find(item => item.code === bizNumber);
+
+if (bizItem) {
+    $('.JobQueryDiv').find('.BizNumO').val(bizItem.name);
+}
