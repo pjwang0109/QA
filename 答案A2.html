@@ -1,65 +1,14 @@
-✅ modeling = "1" 清單
+// 找出 code 相同的那一筆
+const target = ptypeList.find(item => item.code === selectedVal);
 
-金融與貨幣相關
-
-016411 中央銀行
-
-016412 銀行業
-
-016413 信用合作社
-
-016414 農會及漁會信用部
-
-016415 郵政儲金匯兌業
-
-016419 其他貨幣中介業
-
-金融控股 / 投資
-
-016421 金融控股業
-
-016430 信託、基金及類似金融實體
-
-016492 票券金融業
-
-保險相關
-
-016510 人身保險業
-
-016520 財產保險業
-
-016530 再保險業
-
-016540 退休基金
-
-016551 保險代理及經紀業
-
-016559 其他保險輔助業
-
-證券 / 期貨 / 投資顧問
-
-016611 證券商
-
-016612 證券輔助業
-
-016621 期貨商
-
-016622 期貨輔助業
-
-016640 基金管理業
-
-016691 投資顧問業
-
-
-
-
-📌 結論很明確
-
-modeling = "1" 是從這筆開始：
-👉 021000 (公營企業)菸草製造業
-
-一直連續到你最後貼出的：
-👉 024842 (公營企業)汽車零售業
-
-在你提供的這段資料中：
-021000 ～ 024842 全部都是 "modeling": "1"
+if (target) {
+    if (target.modeling === "0") {
+        // 0：建模
+        $('#creditRatingBlock').find('#modelingRadio0').prop("checked", true);
+        $('#creditRatingBlock').find('#modelingRadio1').prop("checked", false);
+    } else if (target.modeling === "1") {
+        // 1：非建模
+        $('#creditRatingBlock').find('#modelingRadio1').prop("checked", true);
+        $('#creditRatingBlock').find('#modelingRadio0').prop("checked", false);
+    }
+}
