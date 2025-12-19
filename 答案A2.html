@@ -1,92 +1,65 @@
-Step 1：抽出「共用取地址資料 function」
-function getAddressData($addressDiv) {
-    return {
-        "address-flag": $addressDiv.find(".address-flag:checked").val() || "",
-        "address-zip": $addressDiv.find(".address-zip").val() || "",
-        "address-city": $addressDiv.find("select.address-city").val() || "",
-        "address-area": $addressDiv.find("select.address-area").val() || "",
-        "address-street": $addressDiv.find("select.address-street").val() || "",
-        "address-lane": $addressDiv.find(".address-lane").val() || "",
-        "address-aly": $addressDiv.find(".address-aly").val() || "",
-        "address-num": $addressDiv.find(".address-num").val() || "",
-        "address-of": $addressDiv.find(".address-of").val() || "",
-        "address-flr": $addressDiv.find(".address-flr").val() || "",
-        "address-etc": $addressDiv.find(".address-etc").val() || "",
-        "address-add": $addressDiv.find(".address-add").val() || "",
-    };
-}
+✅ modeling = "1" 清單
+
+金融與貨幣相關
+
+016411 中央銀行
+
+016412 銀行業
+
+016413 信用合作社
+
+016414 農會及漁會信用部
+
+016415 郵政儲金匯兌業
+
+016419 其他貨幣中介業
+
+金融控股 / 投資
+
+016421 金融控股業
+
+016430 信託、基金及類似金融實體
+
+016492 票券金融業
+
+保險相關
+
+016510 人身保險業
+
+016520 財產保險業
+
+016530 再保險業
+
+016540 退休基金
+
+016551 保險代理及經紀業
+
+016559 其他保險輔助業
+
+證券 / 期貨 / 投資顧問
+
+016611 證券商
+
+016612 證券輔助業
+
+016621 期貨商
+
+016622 期貨輔助業
+
+016640 基金管理業
+
+016691 投資顧問業
 
 
-Step 2：定義「地址來源對應表」
-const ADDRESS_DIV_MAP = {
-    census: '.census-div',
-    newsletter: '.newsletter-div',
-    live: '.live-div'
-};
 
 
+📌 結論很明確
 
-Step 3：定義「複製規則 → 實際來源」
-const COPY_MAP = {
-    LIVE_COPY: {
-        "0": "live",
-        "1": "census",
-        "2": "newsletter"
-    },
-    MAIL_COPY_HOME: {
-        "0": "newsletter",
-        "1": "census"
-    }
-};
+modeling = "1" 是從這筆開始：
+👉 021000 (公營企業)菸草製造業
 
+一直連續到你最後貼出的：
+👉 024842 (公營企業)汽車零售業
 
-
-Step 4：主流程（這才是你原本那 200 行）
-if (!data) {
-
-    const $chooseBody = $(obj).closest('.modal-content').find('.addressChoose');
-
-    // UI 顯示統一處理
-    $html.find(".tw-address-div").removeClass('hide');
-    $html.find(".etc-address-div").addClass('hide');
-
-    let sourceKey = null;
-
-    // 1️⃣ 戶籍地址
-    if ($chooseBody.find(`#census_${hash}`).is(":checked")) {
-        sourceKey = 'census';
-    }
-
-    // 2️⃣ 通訊地址
-    else if ($chooseBody.find(`#newsletter_${hash}`).is(":checked")) {
-        const val = $(`input[name="MAIL_COPY_HOME_${hash}"]:checked`).val();
-        sourceKey = COPY_MAP.MAIL_COPY_HOME[val];
-    }
-
-    // 3️⃣ 居住地址
-    else if ($chooseBody.find(`#live_${hash}`).is(":checked")) {
-        const val = $(`input[name="LIVE_COPY_${hash}"]:checked`).val();
-        sourceKey = COPY_MAP.LIVE_COPY[val];
-    }
-
-    // 4️⃣ 其他
-    else if ($chooseBody.find(`#other_${hash}`).is(":checked")) {
-        $html.find(".address-flag[value=2]").prop("checked", true);
-        $html.find(".tw-address-div").addClass('hide');
-        $html.find(".etc-address-div").removeClass('hide');
-        $chooseBody.find('input').prop('checked', false);
-        return;
-    }
-
-    // 防呆
-    if (!sourceKey) return;
-
-    const $addressDiv = $relDiv.find(ADDRESS_DIV_MAP[sourceKey]);
-    const pickedData = getAddressData($addressDiv);
-
-    setPageDataByJsonClassNameMappingCR(pickedData, $html);
-
-    // 清空選擇
-    $chooseBody.find('input').prop('checked', false);
-}
-
+在你提供的這段資料中：
+021000 ～ 024842 全部都是 "modeling": "1"
