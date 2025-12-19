@@ -1,13 +1,9 @@
-selectedVal去比對res[0].result.ptype
+
 
 當selectedVal = ptype裡的code 時 去查他的modeling值是1還是0
-0時要做:
-$('#creditRatingBlock').find('#modelingRadio0').prop("checked", true) //0:建模
-$('#creditRatingBlock').find('#modelingRadio1').prop("checked", false)
-
-1時要做:
-$('#creditRatingBlock').find('#modelingRadio1').prop("checked", true) //1:非建模
-$('#creditRatingBlock').find('#modelingRadio0').prop("checked", false)
+當bizNumber = ptypeList的code時 去找他的name是多少
+並帶入$('.JobQueryDiv').find('.BizNumO').val(name);
+怎麼寫
 
 
 下列為res[0].result.ptype的資料:
