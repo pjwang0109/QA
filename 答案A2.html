@@ -1,14 +1,1 @@
-// 找出 code 相同的那一筆
-const target = ptypeList.find(item => item.code === selectedVal);
-
-if (target) {
-    if (target.modeling === "0") {
-        // 0：建模
-        $('#creditRatingBlock').find('#modelingRadio0').prop("checked", true);
-        $('#creditRatingBlock').find('#modelingRadio1').prop("checked", false);
-    } else if (target.modeling === "1") {
-        // 1：非建模
-        $('#creditRatingBlock').find('#modelingRadio1').prop("checked", true);
-        $('#creditRatingBlock').find('#modelingRadio0').prop("checked", false);
-    }
-}
+當bizNumber = ptypeList的code時
