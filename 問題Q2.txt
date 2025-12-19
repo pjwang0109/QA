@@ -13,6 +13,6 @@ let existBizNum =["030100", "030200", "040000", "050000", "070200",
 <select class="form-control">
               <option value="030100">A</option>
               <option value="120000">B</option>
-.....
-<option value="000000">ZZ</option>
+                .....
+                <option value="000000">ZZ</option>
 </select>
