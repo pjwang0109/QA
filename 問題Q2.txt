@@ -1,134 +1,18 @@
-其實我全部是想整合以下
-        if (!data) {
-            let $chooseBody = $(obj).closest('.modal-content').find('.addressChoose'); //選擇地址的視窗
-            if ($chooseBody.find(`#census_${hash}`).is(":checked")) {  //戶籍地址
-                $html.find(".tw-address-div").removeClass('hide');
-                $html.find(".etc-address-div").addClass('hide');
+let biz2_2 = $('.biz2_2_hide').val();
+let biz2_4 = $('.biz2_4_hide').val();
 
-                let $addressDiv = $relDiv.find('.census-div');
-                const pickedData = {
-                    "address-flag": $addressDiv.find(".address-flag:checked").val() || "",
-                    "address-zip": $addressDiv.find(".address-zip").val() || "",
-                    "address-city": $addressDiv.find("select.address-city").val() || "",
-                    "address-area": $addressDiv.find("select.address-area").val() || "",
-                    "address-street": $addressDiv.find("select.address-street").val() || "",
-                    "address-lane": $addressDiv.find(".address-lane").val() || "",
-                    "address-aly": $addressDiv.find(".address-aly").val() || "",
-                    "address-num": $addressDiv.find(".address-num").val() || "",
-                    "address-of": $addressDiv.find(".address-of").val() || "",
-                    "address-flr": $addressDiv.find(".address-flr").val() || "",
-                    "address-etc": $addressDiv.find(".address-etc").val() || "",
-                    "address-add": $addressDiv.find(".address-add").val() || "",
-                }
-                setPageDataByJsonClassNameMappingCR(pickedData, $html);
-            }else if($chooseBody.find(`#newsletter_${hash}`).is(":checked")){  //通訊地址
-                $html.find(".tw-address-div").removeClass('hide');
-                $html.find(".etc-address-div").addClass('hide');
+let bizNumber = `${biz2_2}${biz2_4}`
 
-                let selectedValue = $(`input[name="MAIL_COPY_HOME_${hash}"]:checked`).val();
-                if(selectedValue == "0"){ //另列如下-通訊地址
-                    console.log(selectedValue);
-                    let $addressDiv = $relDiv.find('.newsletter-div');
-                    const pickedData = {
-                        "address-flag": $addressDiv.find(".address-flag:checked").val() || "",
-                        "address-zip": $addressDiv.find(".address-zip").val() || "",
-                        "address-city": $addressDiv.find("select.address-city").val() || "",
-                        "address-area": $addressDiv.find("select.address-area").val() || "",
-                        "address-street": $addressDiv.find("select.address-street").val() || "",
-                        "address-lane": $addressDiv.find(".address-lane").val() || "",
-                        "address-aly": $addressDiv.find(".address-aly").val() || "",
-                        "address-num": $addressDiv.find(".address-num").val() || "",
-                        "address-of": $addressDiv.find(".address-of").val() || "",
-                        "address-flr": $addressDiv.find(".address-flr").val() || "",
-                        "address-etc": $addressDiv.find(".address-etc").val() || "",
-                        "address-add": $addressDiv.find(".address-add").val() || "",
-                    }
-                    setPageDataByJsonClassNameMappingCR(pickedData, $html);
-                }else if(selectedValue == "1"){ //同戶籍地址
-                    console.log(selectedValue);
-                    let $addressDiv = $relDiv.find('.census-div');
-                    const pickedData = {
-                        "address-flag": $addressDiv.find(".address-flag:checked").val() || "",
-                        "address-zip": $addressDiv.find(".address-zip").val() || "",
-                        "address-city": $addressDiv.find("select.address-city").val() || "",
-                        "address-area": $addressDiv.find("select.address-area").val() || "",
-                        "address-street": $addressDiv.find("select.address-street").val() || "",
-                        "address-lane": $addressDiv.find(".address-lane").val() || "",
-                        "address-aly": $addressDiv.find(".address-aly").val() || "",
-                        "address-num": $addressDiv.find(".address-num").val() || "",
-                        "address-of": $addressDiv.find(".address-of").val() || "",
-                        "address-flr": $addressDiv.find(".address-flr").val() || "",
-                        "address-etc": $addressDiv.find(".address-etc").val() || "",
-                        "address-add": $addressDiv.find(".address-add").val() || "",
-                    }
-                    setPageDataByJsonClassNameMappingCR(pickedData, $html);
-                }
-                
-            }else if($chooseBody.find(`#live_${hash}`).is(":checked")){  //居住地址
-                $html.find(".tw-address-div").removeClass('hide');
-                $html.find(".etc-address-div").addClass('hide');
 
-                let selectedValue = $(`input[name="LIVE_COPY_${hash}"]:checked`).val();
-                if(selectedValue == "0"){ //另列如下-居住地址
-                    console.log(selectedValue);
-                    let $addressDiv = $relDiv.find('.live-div');
-                    const pickedData = {
-                        "address-flag": $addressDiv.find(".address-flag:checked").val() || "",
-                        "address-zip": $addressDiv.find(".address-zip").val() || "",
-                        "address-city": $addressDiv.find("select.address-city").val() || "",
-                        "address-area": $addressDiv.find("select.address-area").val() || "",
-                        "address-street": $addressDiv.find("select.address-street").val() || "",
-                        "address-lane": $addressDiv.find(".address-lane").val() || "",
-                        "address-aly": $addressDiv.find(".address-aly").val() || "",
-                        "address-num": $addressDiv.find(".address-num").val() || "",
-                        "address-of": $addressDiv.find(".address-of").val() || "",
-                        "address-flr": $addressDiv.find(".address-flr").val() || "",
-                        "address-etc": $addressDiv.find(".address-etc").val() || "",
-                        "address-add": $addressDiv.find(".address-add").val() || "",
-                    }
-                    setPageDataByJsonClassNameMappingCR(pickedData, $html);
-                }else if(selectedValue == "1"){ //同戶籍地址
-                    console.log(selectedValue);
-                    let $addressDiv = $relDiv.find('.census-div');
-                    const pickedData = {
-                        "address-flag": $addressDiv.find(".address-flag:checked").val() || "",
-                        "address-zip": $addressDiv.find(".address-zip").val() || "",
-                        "address-city": $addressDiv.find("select.address-city").val() || "",
-                        "address-area": $addressDiv.find("select.address-area").val() || "",
-                        "address-street": $addressDiv.find("select.address-street").val() || "",
-                        "address-lane": $addressDiv.find(".address-lane").val() || "",
-                        "address-aly": $addressDiv.find(".address-aly").val() || "",
-                        "address-num": $addressDiv.find(".address-num").val() || "",
-                        "address-of": $addressDiv.find(".address-of").val() || "",
-                        "address-flr": $addressDiv.find(".address-flr").val() || "",
-                        "address-etc": $addressDiv.find(".address-etc").val() || "",
-                        "address-add": $addressDiv.find(".address-add").val() || "",
-                    }
-                    setPageDataByJsonClassNameMappingCR(pickedData, $html);
-                }else if(selectedValue == "2"){ //同通訊地址
-                    console.log(selectedValue);
-                    let $addressDiv = $relDiv.find('.newsletter-div');
-                    const pickedData = {
-                        "address-flag": $addressDiv.find(".address-flag:checked").val() || "",
-                        "address-zip": $addressDiv.find(".address-zip").val() || "",
-                        "address-city": $addressDiv.find("select.address-city").val() || "",
-                        "address-area": $addressDiv.find("select.address-area").val() || "",
-                        "address-street": $addressDiv.find("select.address-street").val() || "",
-                        "address-lane": $addressDiv.find(".address-lane").val() || "",
-                        "address-aly": $addressDiv.find(".address-aly").val() || "",
-                        "address-num": $addressDiv.find(".address-num").val() || "",
-                        "address-of": $addressDiv.find(".address-of").val() || "",
-                        "address-flr": $addressDiv.find(".address-flr").val() || "",
-                        "address-etc": $addressDiv.find(".address-etc").val() || "",
-                        "address-add": $addressDiv.find(".address-add").val() || "",
-                    }
-                    setPageDataByJsonClassNameMappingCR(pickedData, $html);
-                }
-                
-            }else if($chooseBody.find(`#other_${hash}`).is(":checked")){  //其他
-                $html.find(".address-flag[value=2]").prop("checked", true);
-                $html.find(".tw-address-div").addClass('hide');
-                $html.find(".etc-address-div").removeClass('hide');
-            }
-            $chooseBody.find('input').prop('checked', false);
-        }
+let existBizNum =["030100", "030200", "040000", "050000", "070200", 
+        "070700", "070900", "120000", "130100", "130300", "130400"];
+
+
+
+我想要當bizNumber符合existBizNum時 他要能選到select裡的同個value，若不符合則選到value為000000的，該怎麼做呢?
+<select class="form-control">
+              <option value="030100">A</option>
+              <option value="120000">B</option>
+.....
+<option value="000000">ZZ</option>
+</select>
