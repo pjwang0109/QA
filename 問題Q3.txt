@@ -1,4 +1,7 @@
-這兩個差在哪?
-
-data[dataName] = $this.find(className).eq(a).val() || "";
-data[dataName] = $this.find(className).val() || "";
+        //個人戶不動產現狀:企金、票金要隱藏【詳如授信評估】
+        let businessPersonCR = $('#createReportAll').find('.businessCR').val();
+        if (businessPersonCR == "40" || businessPersonCR == "41") {
+            $result.find('.estateDiv .details').addClass('hide');
+        } else {
+            $result.find('.estateDiv .details').removeClass('hide');
+        }
