@@ -1,20 +1,95 @@
+async function btnCRRS130050001(obj, objthis, showMsg = false) {
+    loadingShow("資料處理中...");
+    let data = {};
+    let userObj = getUidToken();
+    let uid = userObj.uid;
+    let token = userObj.token;
 
+    $(objthis).prop('disabled', true);//一開始先鎖住
 
-當selectedVal = ptype裡的code 時 去查他的modeling值是1還是0
-當bizNumber = ptypeList的code時 去找他的name是多少
-並帶入$('.JobQueryDiv').find('.BizNumO').val(name);
-怎麼寫
+    let result = false;
+    try {
+        result = await saveCRR(obj, showMsg);
+    } catch (e) {
+        console.error(e);
+    }
 
+    // console.log("saveCRRresult",result)
 
-下列為res[0].result.ptype的資料:
-[{
-  "code": "130300",
-  "modeling": "1",
-  "name": "國際證券業務分公司"
-},
-{
-  "code": "130400",
-  "modeling": "1",
-  "name": "國際保險業務分公司"
-}.......
-]
+    if (showMsg == true) {
+        loadingHide();
+    }
+
+    //暫存成功了才去取評等
+    if (result && checkSelectCRRValue(objthis)) {
+        let appNumber = $("#creditRatingTittle").attr("appnumber");
+        let cid = $("#creditRatingTittle").attr("cid");
+        data.appNumber = appNumber || "";
+        data.cid = cid || "";
+        await apiSS130050001(uid, token, data).done(function (jsondata) {
+            $('#msg_token').text(jsondata.token);
+            if (jsondata.rc === "M0000") {
+                // console.log(jsondata.result);
+                let fileCheck_Val = jsondata.result.fileCheckFlag
+                let fileCheck_Info = jsondata.result.fileCheckInfo
+                let caseStatus_Val = jsondata.result.caseStatus
+                $("#creditRatingTittle").attr("caseStatus", caseStatus_Val);
+
+                switch (fileCheck_Val) {
+                    case "0"://評等送出失敗
+                        let errorText = "";
+
+                        $.each(fileCheck_Info, function (item) {
+                            errorText += `${fileCheck_Info[item]}\n`;
+                        });
+                        $(".uploadResultDiv").find("#uploadResult_Failed").attr("fileCheckInfo", fileCheck_Info);
+                        $(".uploadResultDiv").find("#uploadResult_Failed").attr("filecheckflag", fileCheck_Val);
+                        $(".uploadResultDiv").find(`.uploadResultFalse,.promptText`).removeClass("hide");
+                        $(".uploadResultDiv").find(".uploadResultTrue").addClass("hide");
+                        alert(errorText);
+                        break;
+                    case "1"://評等送出成功
+                        // console.log("fileCheck_Info",fileCheck_Info[0]);
+                        alert(fileCheck_Info[0]);
+
+                        if (caseStatus_Val == "1" && fileCheck_Info.includes("送出成功!")) {
+                            const isSpan = $('#creditRatingCard').find('.card-header:has(span)');
+                            if (isSpan.length == "0") {
+                                let sendTime = jsondata.result.sendTime.slice(0, -4)
+                                $('#creditRatingCard').find(".ratingSpan").append(`<span class="text-danger ml-5 font-weight-bold">待評等</span><span class="text-danger ml-5">(送出時間：${sendTime})</span>`);
+                            }
+                            $('#accSign').find('.accRelation').map(function () {
+                                let inputVal = this.value.trim()
+                                if ((inputVal === "借款人" && inputVal !== "共同借款人") || inputVal === "負責人" || inputVal === "實際經營者") {
+                                    $(this).prev().prev().prev().val("1");
+                                }
+                            });
+                            $("#creditRatingCard").find(`input,button,select`).not(`.filetype,.hide`).prop("disabled", true);
+                            $('.accSignTag').map(function () {
+                                let haveSendVal = $(this).find('.haveSend').val();
+
+                                if (haveSendVal === "1") {
+                                    $(this).find(`.relation,.jcic-del-btn`).prop("disabled", true);
+                                }
+                            });
+                        }
+
+                        $(".uploadResultDiv").find(".uploadResultTrue").removeClass("hide");
+                        $(".uploadResultDiv").find(`.uploadResultFalse,.promptText`).addClass("hide");
+                        break;
+                    case "":
+                        alert(fileCheck_Info[0]);
+                        break;
+                    default:
+                        $(".uploadResultDiv").find(`.uploadResultTrue,.uploadResultFalse,.promptText`).addClass("hide");
+                        break;
+                }
+            } else {
+                apiErrorHandler(jsondata);
+            }
+        })
+    }
+
+    $(objthis).prop('disabled', false);
+    loadingHide();
+}
