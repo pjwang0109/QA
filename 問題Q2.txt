@@ -1,3 +1,9 @@
+要讓暫存成功了，程式完全跑完，才去取評等，也就是這段（result = await saveCRR(obj, showMsg);）
+而評等的api在這段（await apiSS130050001(uid, token, data)）
+
+因為目前看後端log，result = await saveCRR(obj, showMsg)還沒完全結束就跑評等了
+這要如何解決？
+
 async function btnCRRS130050001(obj, objthis, showMsg = false) {
     loadingShow("資料處理中...");
     let data = {};
