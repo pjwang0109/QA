@@ -1,7 +1,43 @@
-        //個人戶不動產現狀:企金、票金要隱藏【詳如授信評估】
-        let businessPersonCR = $('#createReportAll').find('.businessCR').val();
-        if (businessPersonCR == "40" || businessPersonCR == "41") {
-            $result.find('.estateDiv .details').addClass('hide');
-        } else {
-            $result.find('.estateDiv .details').removeClass('hide');
-        }
+我想要當我觸發這個 addSourceProductData 方法時，因為使用者在
+<select type="text" class="form-control nation address-country">
+                <option value="">請選擇...</option>
+            </select>
+已經選擇某個選項，希望在addSourceProductData時，不要清空這個欄位，要怎麼改寫?
+
+function addSourceProductData(obj, data) {
+    const $tableDiv = $(obj).prevAll(".table:first");
+    const $eleLast = $tableDiv.find("button[data-row]:last");
+    const num = ($eleLast.length > 0) ? $eleLast.data("row") + 1 : 1;
+    const $html = $(`
+    <tr>
+        <td>
+        <button data-num="1" data-row="${num}" class="btn btn-danger btn-sm del-btn">
+            <i class="fa fa-times"></i>
+        </button>
+        </td>
+        <td><input type="text" class="form-control vname" /></td>
+        <td><input type="text" class="form-control vid input-id-check" oninput="digitalboxHandlerB(this)"/></td>
+        <td><input type="text" class="form-control item" /></td>
+        <td>
+        <div class="input-group">
+            <input type="text" class="form-control rratio" />
+            <span class="input-group-addon">%</span>
+        </div>
+        </td>
+        <td><input type="text" class="form-control pterms" /></td>
+        <td>             
+            <select type="text" class="form-control nation address-country">
+                <option value="">請選擇...</option>
+            </select>
+        </td>  
+    </tr>
+    `);
+    if (data) {
+        setPageDataByJsonClassNameMapping(data, $html);
+    }
+    $tableDiv.append($html);
+    setCreditDefaultSelect($tableDiv);
+    $tableDiv.find("select.address-country").selectpicker({ liveSearch: true });
+    $tableDiv.find("select.address-country").selectpicker('refresh');
+    $tableDiv.find("select.address-country").selectpicker('render');
+}
