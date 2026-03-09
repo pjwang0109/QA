@@ -1,43 +1,76 @@
-我想要當我觸發這個 addSourceProductData 方法時，因為使用者在
-<select type="text" class="form-control nation address-country">
-                <option value="">請選擇...</option>
-            </select>
-已經選擇某個選項，希望在addSourceProductData時，不要清空這個欄位，要怎麼改寫?
-
-function addSourceProductData(obj, data) {
-    const $tableDiv = $(obj).prevAll(".table:first");
-    const $eleLast = $tableDiv.find("button[data-row]:last");
-    const num = ($eleLast.length > 0) ? $eleLast.data("row") + 1 : 1;
-    const $html = $(`
-    <tr>
-        <td>
-        <button data-num="1" data-row="${num}" class="btn btn-danger btn-sm del-btn">
-            <i class="fa fa-times"></i>
-        </button>
-        </td>
-        <td><input type="text" class="form-control vname" /></td>
-        <td><input type="text" class="form-control vid input-id-check" oninput="digitalboxHandlerB(this)"/></td>
-        <td><input type="text" class="form-control item" /></td>
-        <td>
-        <div class="input-group">
-            <input type="text" class="form-control rratio" />
-            <span class="input-group-addon">%</span>
-        </div>
-        </td>
-        <td><input type="text" class="form-control pterms" /></td>
-        <td>             
-            <select type="text" class="form-control nation address-country">
-                <option value="">請選擇...</option>
-            </select>
-        </td>  
-    </tr>
-    `);
-    if (data) {
-        setPageDataByJsonClassNameMapping(data, $html);
+//批覆書-產製評等
+function apiSS130050001(uid, token, data) {
+    //uid:使用者ID
+    //token:連線資訊
+    //data:{appNumber、cid}
+    let opt = getSS130050001(uid, token, data);
+    return $.ajax(opt);
+}
+function getSS130050001(uid, token, data) {
+    return {
+        url: ajaxhttpIPHost("/res/S130050001"),
+        type: "POST",
+        contentType: "application/json",
+        data: JSON.stringify({
+            "uid": uid,
+            "token": token,
+            "data": data
+        })
     }
-    $tableDiv.append($html);
-    setCreditDefaultSelect($tableDiv);
-    $tableDiv.find("select.address-country").selectpicker({ liveSearch: true });
-    $tableDiv.find("select.address-country").selectpicker('refresh');
-    $tableDiv.find("select.address-country").selectpicker('render');
+}
+
+
+//徵信改編及重評-暫存Api
+async function saveCRR(target, showMsg) {
+    let userObj = getUidToken();
+    let uid = userObj.uid;
+    let token = userObj.token;
+    let apiResult = false;
+    let data = saveCRRJSON(target);//企金評等
+    let crpt_pk = $('.crpt_pk').val() || "";
+    let is_recrcid = $('.cid_CRA').val() || "";
+
+    const s130020004 = apiCRRController.getS130020004(uid, token, data);
+
+    let res = [];
+    try {
+        if (crpt_pk) {
+            //設定 save_CRA = "1" 表示【徵信改編及重評】的暫存:S120010006
+            const s120010006 = btnStoreCR(target, false, save_CRA="1", is_recrcid);
+            
+            res = await Promise.all([
+                $.ajax(s130020004),
+                $.ajax(s120010006),
+            ]);
+        } else {
+            $.ajax(s130020004)
+        }
+    } catch (e) {
+        console.error(e);
+    }
+
+    if (res.length > 0) {
+        let jsondata = res[0];
+
+        if (jsondata.rc == "M0000") {
+            let cid = jsondata.result.cid
+            $("#creditRatingTittle").attr("cid", cid)
+            // console.log(jsondata.result.cid)
+
+            apiResult = true;
+            console.log(showMsg)
+            if (showMsg) {
+                alert(jsondata.msg);
+            }
+
+            apiResult = true;
+        } else {
+            apiErrorHandler(jsondata);
+            apiResult = false;
+            loadingHide();
+        }
+    }
+
+    // console.log(apiResult)
+    return apiResult;
 }
