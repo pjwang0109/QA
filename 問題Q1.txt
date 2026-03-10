@@ -1,11 +1,108 @@
-let $page = $('#createReportAll').find('.myTabContent'); //這會有三個符合的
-我想要在 crpt_custtype == "1" && custid.length === 8 時
-去找出 console.log("page$$:", $page); // 只會有三個符合的
-該怎麼寫?
+以同樣都是要---預取畫面的方法，哪個方法比較好? 為什麼
+(有些不重要的程式我沒貼上來)
 
-                let $page = $('#createReportAll').find('.myTabContent'); 
-                let crpt_custtype = $page.find('.crpt_custtype').val();
-                let custid = $page.find('.custid').val();
-                if (crpt_custtype == "1" && custid.length === 8) {
-                    console.log("page$$:", $page);
+
+//TABLE-編輯功能-預取畫面
+async function openOpCaseWeb(obj, isOpCenter) {
+
+...
+let caseTypeValue = data.assign;
+
+...
+
+if (caseTypeValue != "11") {
+            //各個資料帶入
+            let classArray = [".acc", ".modalallowcode", ".subjectAmount", ".name", ".uid", ".id", ".allocationDate", ".amount", ".businessType", ".otherCaseType",
+                ".jcic", ".host", ".memo", ".rationale"];
+            $.each(classArray, (i, className) => {
+                let dataName = className.replace('.', '');
+                $(className).val(jsondata.result[dataName]);
+                switch (dataName) {
+                    case "otherCaseType":
+                            $(".opOtherSelectGroup").find("option[value='3']").removeClass("hide");
+                            $("#otherDiv").find(".idCode").val("A");
+                        break;
+                    case "name":
+                        $("#openOpSendDiv").find(".idName").val(jsondata.result.name);
+                        break;
+                    case "subjectAmount":
+                        try {
+                            let tmpSubjectAmount = money_Thousands(jsondata.result[dataName]) || "";
+                            $(className).val(tmpSubjectAmount);
+                        } catch (e) { console.error(e) };
+                        break;
+                    case "businessType":
+                          $(v).attr("disabled", true);
+                        break;
+                    case "allocationDate":
+                        let date = jsondata.result[dataName].replace(/[/]/g, "-") || "";
+                        $(".allocationDate").val(date);
+                        $(".allocationDate").attr("min", getTodayDate());
+                        break;
+                    .....
+        } 
+
+
+
+//待辦Table-預取畫面
+async function openCaseWebCR(obj, isDisabled, page, isLink = false, linkData) {
+  ....
+
+try {
+        res = await Promise.all([
+            apiS120010007(uid, token, crpt_pk, isEditPage, is_recrcid = ""),
+            apiS120010001(uid, token, crpt_pk),
+            apiS120010002(uid, token, crpt_pk),
+            apiS000040010(uid, token, crpt_pk),
+        ])
+    } catch (e) {
+        console.error(e);
+    }
+
+    const baseData = res[0]; //S120010007
+    const allSelect = res[1]; //S120010001
+    const jobSelect = res[2]; //S120010002
+    const fileData = res[3]; //S000040010
+
+.....
+
+if (baseData.result.flag_other == "2") { //有配偶
+                $('#otherStatus_Y').attr('checked', true);
+                $('.creditDiv-mate').removeClass('hide'); //聯徵區塊
+                $('.letterDiv-mate').removeClass('hide'); //票信區塊
+                //聯徵
+                if (baseData.result.flag_jcic == "0") {
+                    $('#jointCredit_Y').attr('checked', true);
+                    $('.captionRe .desc_jcic').val('');
+                    $('.captionRe').addClass('hide');
+                } else if (baseData.result.flag_jcic == "1") {
+                    $('#jointCredit_N').attr('checked', true);
+                    $('.captionRe .desc_jcic').val(baseData.result.desc_jcic);
+                    $('.captionRe').removeClass('hide');
+                } else if (baseData.result.flag_jcic == "2") {
+                    $('#jointCredit_YO').attr('checked', true);
+                    $('.captionRe .desc_jcic').val(baseData.result.desc_jcic);
+                    $('.captionRe').removeClass('hide');
                 }
+                //票信
+                if (baseData.result.flag_tch == "0") {
+                    $('#ticketC_Y').attr('checked', true);
+                    $('.captionT .desc_tch').val(baseData.result.desc_tch);
+                    $('.captionT').addClass('hide');
+                } else if (baseData.result.flag_tch == "1") {
+                    $('#ticketC_N').attr('checked', true);
+                    $('.captionT .desc_tch').val(baseData.result.desc_tch);
+                    $('.captionT').removeClass('hide');
+                } else if (baseData.result.flag_tch == "2") {
+                    $('#ticketC_NS').attr('checked', true);
+                } else if (baseData.result.flag_tch == "3") {
+                    $('#ticketC_NOP').attr('checked', true);
+                    $('.captionT .desc_tch').val(baseData.result.desc_tch);
+                    $('.captionT').addClass('hide');
+                }
+            } 
+
+}
+
+
+}
