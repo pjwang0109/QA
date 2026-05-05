@@ -1,7 +1,7 @@
-我有一個HTML onblur="gearingController.guarantAddField(this)"
-<input type="text" class="form-control id" placeholder="統一編號/ID" oninput="gearingController.opcheckIDIsValid(this)" onblur="gearingController.guarantAddField(this)" style="border-color="red";"/>
+先針對suretyGuaGearing來修改
+guarantAddField方法 這是在輸入完統一編號後 新增suretyGuaGearing(); // 連帶保證人擔保金額
 
-會導致我的資料不見
+我想要做的是在.identities新增身分別為連帶保證人，後續觸發guarantAddField方法時，原先舊的連帶保證人的guaCurrency跟gccMoney的資料不變，而新的連帶保證人的guaCurrency跟gccMoney的資料為空
 請問怎麼修改
 
 function guarantAddField(obj){
@@ -16,11 +16,6 @@ const $text = $(target);
         }
 
 }
-
-主要是下面兩個影響了 先給你suretyGuaGearing 這個方法會導致我的guaCurrency跟gccMoney全部清空 請問怎麼修改?
-suretyGuaGearing(); // 連帶保證人擔保金額
-suretyIDGearing(); // 負責人
-
 
 function suretyGuaGearing() {
     let gccArr = []
