@@ -1,6 +1,80 @@
-// 2️⃣ 依 bizNumber（code）找 name
-const bizItem = ptypeList.find(item => item.code === bizNumber);
+function suretyIDGearing() {
+    let count = {};
+    let idtArr = [];
+    
+    // 1. 【核心】先暫存目前畫面上已有的負責人資料
+    let existingIDData = {};
+    $(".responsible").each(function() {
+        let id = $(this).find(".code").val();
+        if (id) {
+            existingIDData[id] = {
+                responsibleName: $(this).find(".responsibleName").val(),
+                isExpanded: !$(this).find(".principalDiv").hasClass("hide") // 紀錄是否已展開
+            };
+        }
+    });
 
-if (bizItem) {
-    $('.JobQueryDiv').find('.BizNumO').val(bizItem.name);
+    // 2. 清空舊畫面
+    $(".responsible").remove();
+
+    // 3. 蒐集身份資料
+    $(".identities").each(function () {
+        let $item = $(this);
+        let typeVal = $item.find(".type").val();
+        let typeText = $item.find(".type option:selected").text();
+        let name = $item.find(".name").val();
+        let id = $item.find(".id").val();
+
+        if (typeVal) {
+            idtArr.push({ "typeVal": typeVal, "name": name, "id": id, "typeText": typeText });
+        }
+    });
+
+    idtArr.sort((a, b) => { return a.typeVal - b.typeVal });
+
+    // 4. 重新渲染畫面
+    Object.entries(idtArr).forEach(([index, item]) => {
+        let num = Number(index) + 1;
+        let type = item.typeVal;
+        let name = item.name;
+        let id = item.id;
+        let typeText = item.typeText;
+
+        count[typeText] = (count[typeText] || 0) + 1;
+
+        if (type) {
+            // 只針對統編長度為 8 的法人顯示
+            if (id.length === 8) {
+                if (type === '0') {
+                    typeText = "立約人(即借款人)";
+                    count[typeText] = "";
+                }
+
+                // 取得舊有資料
+                let oldResName = existingIDData[id] ? existingIDData[id].responsibleName : "";
+                let isExpanded = existingIDData[id] ? existingIDData[id].isExpanded : false;
+                
+                // 決定是否加上 hide class，以及按鈕的狀態
+                let divClass = isExpanded ? "principalDiv" : "principalDiv hide";
+                let btnClass = isExpanded ? "btn btn-secondary principalbtn ml-5" : "btn btn-info principalbtn ml-5";
+
+                let $responsibleDiv = `
+                    <div id="responsible${num}" class="form-group form-inline responsible">
+                        <span class="ml-5 mr-1">${typeText}${count[typeText]}：</span>
+                        <input type="text" class="form-control principal" style="margin-left: 47px;" value="${name}" disabled>
+                        <input type="hidden" class="code" name="code" value="${id}">
+                        
+                        <div class="${divClass}">
+                            <span class="ml-5">負責人：</span>
+                            <input type="text" class="form-control responsibleName" placeholder="" value="${oldResName}">
+                            <span>(自行輸入)</span>
+                        </div>
+                        
+                        <button type="button" class="${btnClass}" onclick="principalBtn(this)">負責人</button>
+                    </div>`;
+                
+                $(".responsibleDiv").append($responsibleDiv);
+            }
+        }
+    });
 }
