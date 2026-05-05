@@ -1,37 +1,82 @@
-① 建立 value → div 的對應表
-const addressDivMap = {
-    "0": ".live-div",        // 另列如下-居住地址
-    "1": ".census-div",      // 同戶籍地址
-    "2": ".newsletter-div"   // 同通訊地址
-};
+function suretyGuaGearing() {
+    let gccArr = [];
+    let $gcc = $('#GCC');
 
-② 抽出「共用取地址資料 function」
-function getAddressData($addressDiv) {
-    return {
-        "address-flag": $addressDiv.find(".address-flag:checked").val() || "",
-        "address-zip": $addressDiv.find(".address-zip").val() || "",
-        "address-city": $addressDiv.find("select.address-city").val() || "",
-        "address-area": $addressDiv.find("select.address-area").val() || "",
-        "address-street": $addressDiv.find("select.address-street").val() || "",
-        "address-lane": $addressDiv.find(".address-lane").val() || "",
-        "address-aly": $addressDiv.find(".address-aly").val() || "",
-        "address-num": $addressDiv.find(".address-num").val() || "",
-        "address-of": $addressDiv.find(".address-of").val() || "",
-        "address-flr": $addressDiv.find(".address-flr").val() || "",
-        "address-etc": $addressDiv.find(".address-etc").val() || "",
-        "address-add": $addressDiv.find(".address-add").val() || "",
-    };
+    // --- 新增：先暫存目前畫面上已有的資料 ---
+    let existingData = {};
+    $(".guarantor").each(function() {
+        let id = $(this).find(".code").val();
+        if (id) {
+            existingData[id] = {
+                currency: $(this).find(".guaCurrency").val(),
+                money: $(this).find(".gccMoney").val()
+            };
+        }
+    });
+
+    // 移除舊畫面
+    $(".guarantor").remove();
+
+    // 重新抓取 .identities 資料
+    $(".identities").each(function () {
+        let $item = $(this);
+        let id = $item.find(".id").val();
+        let type = $item.find(".type").val();
+        let name = $item.find(".name").val();
+        let typeText = $item.find(".type option:selected").text();
+
+        if (type === "6") { // 身份別為連帶保證人
+            gccArr.push({ "id": id, "type": type, "name": name, "typeText": typeText });
+        }
+    });
+
+    gccArr.sort((a, b) => { return a.type - b.type });
+    
+    let checkNum = {};
+    
+    gccArr.forEach((item, index) => {
+        let num = index + 1;
+        let id = item.id;
+        let name = item.name;
+        let typeText = item.typeText;
+        checkNum[typeText] = (checkNum[typeText] || 0) + 1;
+
+        // --- 新增：取得舊資料 (若無舊資料則為空) ---
+        let oldCurrency = existingData[id] ? existingData[id].currency : "";
+        let oldMoney = existingData[id] ? existingData[id].money : "";
+
+        // 建立幣別的 Option HTML (並處理 selected)
+        const currencies = [
+            {v:"1", n:"美元"}, {v:"2", n:"日圓"}, {v:"3", n:"英磅"}, {v:"4", n:"瑞郎"},
+            {v:"5", n:"加幣"}, {v:"6", n:"星幣"}, {v:"7", n:"港幣"}, {v:"8", n:"澳幣"},
+            {v:"9", n:"紐幣"}, {v:"10", n:"歐元"}, {v:"11", n:"南非幣"}, {v:"12", n:"人民幣"}, {v:"13", n:"新臺幣"}
+        ];
+        
+        let currencyOptions = `<option value="">請選擇</option>`;
+        currencies.forEach(c => {
+            let selected = (c.v === oldCurrency) ? "selected" : "";
+            currencyOptions += `<option value="${c.v}" ${selected}>${c.n}</option>`;
+        });
+
+        // 判斷樣式 (第一個跟後續的樣式稍微不同)
+        let paddingStyle = (index === 0) ? "" : 'style="padding-left: 135px;"';
+        let labelText = (index === 0) ? `保證人擔保額度：</span><span class="mr-2">${typeText}${checkNum[typeText]}：` : `${typeText}${checkNum[typeText]}：`;
+
+        let $gccDiv = `
+            <div id="guarantor${num}" class="form-group form-inline my-2 guarantor" ${paddingStyle}>
+                <span class="mr-2">${labelText}</span>
+                <input type="text" class="form-control principal" style="margin:0 20px;" value="${name}" disabled>
+                <select class="form-control guaCurrency" required="required">
+                    ${currencyOptions}
+                </select>
+                <input type="text" class="form-control mx-2 gccMoney" placeholder=""
+                       value="${oldMoney}"
+                       onblur="set_money_Thousands(this)" onfocus="cancel_money_Thousands(this)"
+                       oninput="digitalboxHandler(this)">
+                <input type="hidden" class="code" name="code" value="${id}">
+                <span class="ml-1">元</span>
+            </div>`;
+
+        $gcc.append($gccDiv);
+    });
 }
-
-
-③ 主流程（乾淨又清楚）
-let selectedValue = $(`input[name="LIVE_COPY_${hash}"]:checked`).val();
-console.log(selectedValue);
-
-const selector = addressDivMap[selectedValue];
-if (!selector) return; // 防呆
-
-const $addressDiv = $relDiv.find(selector);
-const pickedData = getAddressData($addressDiv);
-
-setPageDataByJsonClassNameMappingCR(pickedData, $html);
