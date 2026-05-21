@@ -1,74 +1,127 @@
-現在suretyIDGearing也要修改
-guarantAddField方法 這是在輸入完統一編號後 新增suretyIDGearing(); // 負責人
+在完成編輯(SmartMemoTextOC)之後，點選網頁上別的智慧文字btn，然後再回來點openCenterSmartOC智慧文字，之後的menuopCenterOC就無法看到選單切換的資料，為什麼?
 
-我想要做的是在.identities新增身分別，後續觸發guarantAddField方法時，原先舊的負責人的responsibleName的資料不變，且將principalBtn(this)按鈕展開，而新的負責人的responsibleName的資料為空
-請問怎麼修改
+//約據-其他條件-智慧文字
+    openCenterSmartOC: async function (target) {
+        $('#opCenterModalO').remove();
+        let userObj = getUidToken();
+        let uid = userObj.uid;
+        let token = userObj.token;
+        let data = new Object;
+        // let business_type = $('.business').val();
+        // data["business_type"] = business_type;
+        let url = ajaxhttpIPHostHtml("/opCenter/opCenter_modalO.html");
+        const s060100003 = getS060100003(uid, token, data);
 
-function guarantAddField(obj){
-const $text = $(target);
-        const value = $text.val() || "";
-        if (value != "" && (value.length === 8 || value.length === 10)) {
-            // 綜合契約書連動
-            suretyGuaGearing(); // 連帶保證人擔保金額
-            suretyIDGearing(); // 負責人
-        } else if (value.length !== 8 || value.length !== 10) {
-            $text.css("border-color", "red")
+        let res = [];
+
+        $(target).prop("disabled", true);
+
+        try {
+            res = await Promise.all([
+                $.ajax(url),
+                $.ajax(s060100003)
+            ]);
+        } catch (e) {
+            console.error(e);
         }
 
-}
+        let html = res[0];
+        let checkbox = res[1];
+        let $html = $(html);
+        if (res.length > 0) {
+            if (checkbox.rc == "M0000") {
+                let result = checkbox.result;
+                //其他條件-智慧文字
+                $.each(result, function (className, obj) {
+                    let itemCode = obj.code
 
-function suretyIDGearing() {
-    let count = {}
-    let idtArr = []
-    $(".responsible").remove();
-    $(".identities").map(function (index) {//身分別
-        let $item = $(this)
-        let typeVal = $item.find(".type").val()
-        let typeText = $item.find(".type option:selected").text()
-        let name = $item.find(".name").val()
-        let id = $item.find(".id").val()
+                    //選單標題
+                    let liTitle = `<li class="nav-item">
+                                        <a class="nav-link" href="#${className}CB" onclick="opCenterController.menuopCenterOC(this)">${obj.title}</a>
+                                    </li>`;
+                    $html.find(".nav.nav-tabs").append(liTitle);
 
-        if (typeVal) {
-            idtArr.push({ "typeVal": typeVal, "name": name, "id": id, "typeText": typeText })
-        }
-    })
-    idtArr.sort((a, b) => { return a.typeVal - b.typeVal })
-    // console.log("@idtArr:", idtArr);
+                    let divId = `<div id="${className}CB" class="menuopCenterOC mt-4 hide"> <ul class="nav flex-column ${className}UL"></ul></div>`;
+                    $html.find("fieldset").append(divId);
 
-    Object.entries(idtArr).forEach(([index, item]) => {
-        let num = Number(index) + 1
-        let type = item.typeVal
-        let name = item.name
-        let id = item.id
-        // let legalPerson = id.match(/[A-Z]/g)
-        let typeText = item.typeText
+                    //選單內容
+                    $.each(obj.body, function (item, body) {
+                        if (itemCode === "0510") {
+                            let liItem = `<li class="nav-item">
+                            <div class="nav-link">
+                                <input class="form-check-input" style="margin-top: 6px" type="radio" id="${className}CB${body.code}" name="${itemCode}">
+                                <label class="form-check-label" for="${className}CB${body.code}">${body.name}</label>
+                            </div>
+                            </li>`
+                            $html.find(`.${className}UL`).append(liItem);
+                        } else if (itemCode === "0511") {
+                            let liItem = `<li class="nav-item">
+                                    <div class="nav-link">
+                                        <input class="form-check-input" style="margin-top: 6px" type="checkbox" id="${className}CB${body.code}">
+                                        <label class="form-check-label" for="${className}CB${body.code}">${body.name}</label>
+                                    </div>
+                                </li>`
+                            $html.find(`.${className}UL`).append(liItem);
+                        }
+                    });
+                });
 
-        count[typeText] = (count[typeText] || 0) + 1
-        // if (type !== "4" && type !== "5") {
-        if (type) {
-            // if ((legalPerson == null) && id.length === 8) {//顯示符合法人身分
-            if (id.length === 8) {//顯示符合法人身分
-                if (type === '0') {
-                    typeText = "立約人(即借款人)"
-                    count[typeText] = ""
-                }
-                let $responsibleDiv = `<div id="responsible${num}" class="form-group form-inline responsible">
-                    <span class="ml-5 mr-1">${typeText}${count[typeText]}：</span>
-                    <input type="text" class="form-control principal" style="margin-left: 47px;" value="${name}" disabled>
-                    <input type="hidden" class="code" name="code" value="${id}">
-                    <div class="principalDiv hide">
-                        <span class="ml-5">負責人：</span>
-                        <input type="text" class="form-control  responsibleName" placeholder="" value="">
-                        <span>(自行輸入)</span>
-                    </div>
-                        <button type="button" class="btn btn-info principalbtn ml-5" onclick="principalBtn(this)">負責人</button>
-                    </div>`
-                $(".responsibleDiv").append($responsibleDiv);
+                // $html.find(".nav.nav-tabs").find("a").eq(0).addClass("active");
+
+                $('#modalAll').append($html.html());
+                //預設第一頁打開
+                $('#opCenterModalO').find("#0CB").removeClass("hide");
+                $('#opCenterModalO').find("a[href='#0CB']").addClass("active");
+
+                $('#opCenterModalO').modal('show');
+            } else {
+                apiErrorHandler(checkbox);
             }
+            $(target).prop("disabled", false);
+
+            //其他條件的區域，抓畫面上.otherConditionsDiv的id(centerOtherCondition)
+            let centerOC_ID = $(target).closest(".otherConditionsDiv").attr("id"); //centerOtherCondition
+            //放到智慧文字畫面的#centerOC_ID，之後按完成編輯就不會抓錯
+            $('#opCenterModalO').find("#centerOC_ID").val(centerOC_ID);
         }
 
-    })
+    },
+    //約據-其他條件-智慧文字MODAL-完成
+    SmartMemoTextOC: function (target) {
+        let id = "#" + $('#opCenterModalO').find('#centerOC_ID').val(); //#centerOtherCondition
+        let menuItem = $('#opCenterModalO').find('input[type="checkbox"]:checked,input[type="radio"]:checked');
+        let memoVal = $(id).find('.collateralOther').val();
+        let i = memoVal.split(". ") == "" ? 1 : memoVal.split(". ").length;
 
+        menuItem.each(function () {
+            if (memoVal == "") {
+                memoVal += i + ". " + $(this).next().text();
+            } else {
+                memoVal += "\n" + i + ". " + $(this).next().text();
+            }
+            i++;
+        });
 
-}
+        $(id).find('.collateralOther').val(memoVal);
+        $('#opCenterModalO').modal('hide');
+    },
+    //約據-其他條件-智慧文字MODAL-選單
+    menuopCenterOC: function (target) {
+        $(target).closest("ul").find("a").removeClass("active");
+        $(target).addClass("active");
 
+        let id = $(target).attr("href");
+        console.log("1其他條件id:", id);
+
+        $(id).removeClass("hide");
+        $(target).closest("fieldset").find(".menuopCenterOC").each(function () {
+            let thisId = $(this).attr("id");
+            console.log("1其他條件thisId:", thisId);
+            switch (thisId) {
+                case id.replace("#", ''):
+                    return;
+                default:
+                    $(`#${thisId}`).addClass("hide");
+            }
+        });
+    },
