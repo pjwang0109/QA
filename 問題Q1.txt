@@ -1,19 +1,21 @@
-在$('.responsibleDiv .responsible').find(".code").val();有很多個的值
-我想要在這裏面找等於id的值
-然後在去做下一步
-該怎麼改
+我主要是要$identitiesDiv.find('select, input').prop('disabled', false);
+但是有時候他又會變成('disabled', true);
+為什麼呢
+怎麼改
 
 
-suretyCenterName: function (target) {
-        let centerName = $(target).val();
-        let id = $(target).closest('.form-group.form-inline.my-2').find('.id').val();
-        let $id = $(target).closest('.form-group.form-inline.my-2').find('.id')
-        console.log("$id", $id);
-        // $(`#responsible${code}`).find(".principal").val(centerName);//企業名/姓名
-        let responsibleID = $('.responsibleDiv .responsible').find(".code").val();
-        console.log("id:", id);
-        console.log("responsibleID2:", responsibleID);
-        if (id === responsibleID) {
-            console.log("ASDFG");
-        }
-    }
+if (getUidToken().branch == "500") {
+            await apiS060001033(uid, token, caseno).done(function (btnJson) {
+                let $opCaseDiv = $('#opCaseDiv'); //身分別區塊
+                console.log("ffffffff");
+                let $identitiesDiv = $opCaseDiv.find('#genderDiv .identities').find('.form-group.form-inline.my-2');
+                // console.log($identitiesDiv);
+                
+                $identitiesDiv.find('select, input').prop('disabled', false);
+                $identitiesDiv.find('select').attr('onchange', 'gearingController.suretyGearing(this)');
+                $identitiesDiv.find('input.name').attr('onblur', 'gearingController.suretyCenterName(this)');
+                $identitiesDiv.find('input.id').attr('oninput', 'gearingController.opcheckIDIsValid(this)');
+                $identitiesDiv.find('input.id').attr('onblur', 'gearingController.guarantCenterChangeID(this)');
+                
+
+....
