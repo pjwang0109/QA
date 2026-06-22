@@ -1,7 +1,7 @@
 在$('.responsibleDiv .responsible').find(".code").val();有很多個的值
 我想要在這裏面找等於id的值
 然後在去做下一步
-改怎麼改
+該怎麼改
 
 
 suretyCenterName: function (target) {
