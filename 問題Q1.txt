@@ -1,3 +1,19 @@
-若原本的select長這樣<select id="genderList" class="form-control type">
-要用jquery加上onchange="gearingController.suretyGearing(this)"怎麼寫
-<select id="genderList" class="form-control type" onchange="gearingController.suretyGearing(this)">
+在$('.responsibleDiv .responsible').find(".code").val();有很多個的值
+我想要在這裏面找等於id的值
+然後在去做下一步
+改怎麼改
+
+
+suretyCenterName: function (target) {
+        let centerName = $(target).val();
+        let id = $(target).closest('.form-group.form-inline.my-2').find('.id').val();
+        let $id = $(target).closest('.form-group.form-inline.my-2').find('.id')
+        console.log("$id", $id);
+        // $(`#responsible${code}`).find(".principal").val(centerName);//企業名/姓名
+        let responsibleID = $('.responsibleDiv .responsible').find(".code").val();
+        console.log("id:", id);
+        console.log("responsibleID2:", responsibleID);
+        if (id === responsibleID) {
+            console.log("ASDFG");
+        }
+    }
