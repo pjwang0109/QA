@@ -1,5 +1,7 @@
 我想讓suretyGearing, suretyNameGearing, guarantAddField, centerIdentityCG, suretyCenterName, guarantCenterChangeID, suretyGuaGearing, suretyIDGearing, onblurGuaGearing, onblurIDGearing同時並存
-但是目前有些function有問題
+但是目前有些function有問題 無法正常執行
+可以怎麼更改呢
+
 
 分為
 新增保人時:
@@ -8,15 +10,15 @@ suretyNameGearing 連動綜合契約書下的負責人部分(企業名/姓名的
 guarantAddField 連動綜合契約書-新增金額與負責人欄位
 
 更改資料時:
-centerIdentityCG 連動綜合契約書下的負責人部分(身分別的選項對應"："前的文字)
-suretyCenterName 連動綜合契約書下的負責人部分(企業名/姓名的選項對應輸入框)
-guarantCenterChangeID 連動綜合契約書-新增金額與負責人欄位
+centerIdentityCG 更改身分別時，連動綜合契約書下身分的排序，且金額與負責人欄位data保留
+suretyCenterName 更改企業名/姓名時，找到綜合契約書下同個統編id，並更改為其企業名/姓名
+guarantCenterChangeID 更改統編id時，找到綜合契約書下同個企業名/姓名，並更改為其統編id
 
-綜合契約書連動:
+綜合契約書連動:新增新的【負責人】與【連帶保證人擔保金額】，並保留舊有data
 suretyGuaGearing 連帶保證人擔保金額
 suretyIDGearing 負責人
 
-綜合契約書連動:
+綜合契約書連動:讓【負責人】與【連帶保證人擔保金額】已經填寫的data保留
 onblurGuaGearing 連帶保證人擔保金額
 onblurIDGearing 負責人
 
