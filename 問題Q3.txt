@@ -1,5 +1,22 @@
-我只要更動
-onblurGuaGearing(); // 連帶保證人擔保金額重新整理
-onblurIDGearing();  // 負責人區塊依新順序重新編號與產出
-的順序就好了
-原本的身分別不須更動(.identities區塊)
+我想讓suretyGearing, suretyNameGearing, guarantAddField, centerIdentityCG, suretyCenterName, guarantCenterChangeID, suretyGuaGearing, suretyIDGearing, onblurGuaGearing, onblurIDGearing同時並存
+但是目前有些function有問題
+
+分為
+新增保人時:
+suretyGearing 連動綜合契約書下的負責人部分(身分別的選項對應"："前的文字)
+suretyNameGearing 連動綜合契約書下的負責人部分(企業名/姓名的選項對應輸入框)
+guarantAddField 連動綜合契約書-新增金額與負責人欄位
+
+更改資料時:
+centerIdentityCG 連動綜合契約書下的負責人部分(身分別的選項對應"："前的文字)
+suretyCenterName 連動綜合契約書下的負責人部分(企業名/姓名的選項對應輸入框)
+guarantCenterChangeID 連動綜合契約書-新增金額與負責人欄位
+
+綜合契約書連動:
+suretyGuaGearing 連帶保證人擔保金額
+suretyIDGearing 負責人
+
+綜合契約書連動:
+onblurGuaGearing 連帶保證人擔保金額
+onblurIDGearing 負責人
+
