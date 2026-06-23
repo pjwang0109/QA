@@ -1,101 +1,127 @@
-要讓暫存成功了，程式完全跑完，才去取評等，也就是這段（result = await saveCRR(obj, showMsg);）
-而評等的api在這段（await apiSS130050001(uid, token, data)）
+這是在新增保人時增加的html
 
-因為目前看後端log，result = await saveCRR(obj, showMsg)還沒完全結束就跑評等了
-這要如何解決？
+function addSurety(){
+...
+<div class="form-group form-inline my-2">
+    <select id="genderList" class="form-control type" onchange="gearingController.suretyGearing(this)">
+        <option value="">請選擇</option>
+        <option value="1">保證人</option>
+        <option value="2">擔保物提供人</option>
+        <option value="3">共同借款人</option>
+        <option value="4">共同發票人</option>
+        <option value="5">票據債務人</option>
+        <option value="6">連帶保證人</option>
+    </select>
+    <input type="text" class="form-control name" placeholder="企業名/姓名"onblur="gearingController.suretyNameGearing(this)"/>
+    <input type="text" class="form-control id" placeholder="統一編號/ID" onblur="gearingController.guarantAddField(this)"/>
+</div>
+...
+}
 
-async function btnCRRS130050001(obj, objthis, showMsg = false) {
-    loadingShow("資料處理中...");
-    let data = {};
-    let userObj = getUidToken();
-    let uid = userObj.uid;
-    let token = userObj.token;
 
-    $(objthis).prop('disabled', true);//一開始先鎖住
-
-    let result = false;
-    try {
-        result = await saveCRR(obj, showMsg);
-    } catch (e) {
-        console.error(e);
+這是他們的JS:
+//身分別連動綜合契約書下的負責人部分(身分別的選項對應"："前的文字)
+    suretyGearing: function (target) {
+        let id = $(target).closest(".identities").attr("id");
+        let code = id.substring(10, id.length);
+        let typeCht = $(target).find("option:selected").text();
+        $(target).closest(".identities").find('.typeCht').val(typeCht)
+        console.log("@@身分別更改:", typeCht);
     }
 
-    // console.log("saveCRRresult",result)
 
-    if (showMsg == true) {
-        loadingHide();
+
+//身分別連動綜合契約書下的負責人部分(企業名/姓名的選項對應輸入框)
+    suretyNameGearing: function (target) {
+        let id = $(target).closest(".identities").attr("id");
+        let code = id.substring(10, id.length);
+        let typeChtNa = $(target).val();
+        $(`#responsible${code}`).find(".principal").val(typeChtNa);//企業名/姓名
     }
 
-    //暫存成功了才去取評等
-    if (result && checkSelectCRRValue(objthis)) {
-        let appNumber = $("#creditRatingTittle").attr("appnumber");
-        let cid = $("#creditRatingTittle").attr("cid");
-        data.appNumber = appNumber || "";
-        data.cid = cid || "";
-        await apiSS130050001(uid, token, data).done(function (jsondata) {
-            $('#msg_token').text(jsondata.token);
-            if (jsondata.rc === "M0000") {
-                // console.log(jsondata.result);
-                let fileCheck_Val = jsondata.result.fileCheckFlag
-                let fileCheck_Info = jsondata.result.fileCheckInfo
-                let caseStatus_Val = jsondata.result.caseStatus
-                $("#creditRatingTittle").attr("caseStatus", caseStatus_Val);
 
-                switch (fileCheck_Val) {
-                    case "0"://評等送出失敗
-                        let errorText = "";
 
-                        $.each(fileCheck_Info, function (item) {
-                            errorText += `${fileCheck_Info[item]}\n`;
-                        });
-                        $(".uploadResultDiv").find("#uploadResult_Failed").attr("fileCheckInfo", fileCheck_Info);
-                        $(".uploadResultDiv").find("#uploadResult_Failed").attr("filecheckflag", fileCheck_Val);
-                        $(".uploadResultDiv").find(`.uploadResultFalse,.promptText`).removeClass("hide");
-                        $(".uploadResultDiv").find(".uploadResultTrue").addClass("hide");
-                        alert(errorText);
-                        break;
-                    case "1"://評等送出成功
-                        // console.log("fileCheck_Info",fileCheck_Info[0]);
-                        alert(fileCheck_Info[0]);
+//身分別連動綜合契約書-新增金額與負責人欄位
+    guarantAddField: function (target) {
+        const $text = $(target);
+        const value = $text.val() || "";
+        console.log("@@ID統編blur更改:", value);
+        if (value != "" && (value.length === 8 || value.length === 10)) {
+            // 綜合契約書連動
+            suretyGuaGearing(); // 連帶保證人擔保金額
+            suretyIDGearing(); // 負責人
+        } else if (value.length !== 8 || value.length !== 10) {
+            $text.css("border-color", "red")
+        }
+    }
 
-                        if (caseStatus_Val == "1" && fileCheck_Info.includes("送出成功!")) {
-                            const isSpan = $('#creditRatingCard').find('.card-header:has(span)');
-                            if (isSpan.length == "0") {
-                                let sendTime = jsondata.result.sendTime.slice(0, -4)
-                                $('#creditRatingCard').find(".ratingSpan").append(`<span class="text-danger ml-5 font-weight-bold">待評等</span><span class="text-danger ml-5">(送出時間：${sendTime})</span>`);
-                            }
-                            $('#accSign').find('.accRelation').map(function () {
-                                let inputVal = this.value.trim()
-                                if ((inputVal === "借款人" && inputVal !== "共同借款人") || inputVal === "負責人" || inputVal === "實際經營者") {
-                                    $(this).prev().prev().prev().val("1");
-                                }
-                            });
-                            $("#creditRatingCard").find(`input,button,select`).not(`.filetype,.hide`).prop("disabled", true);
-                            $('.accSignTag').map(function () {
-                                let haveSendVal = $(this).find('.haveSend').val();
 
-                                if (haveSendVal === "1") {
-                                    $(this).find(`.relation,.jcic-del-btn`).prop("disabled", true);
-                                }
-                            });
-                        }
+而這是在重新點選頁面後的身分html:
+<div class="form-group form-inline my-2">
+    <select id="genderList" class="form-control type" onchange="gearingController.centerIdentityCG(this)">
+        <option value="">請選擇</option>
+        <option value="1">保證人</option>
+        <option value="2">擔保物提供人</option>
+        <option value="3">共同借款人</option>
+        <option value="4">共同發票人</option>
+        <option value="5">票據債務人</option>
+        <option value="6">連帶保證人</option>
+    </select>
+    <input type="text" class="form-control name" placeholder="企業名/姓名"onblur="gearingController.suretyCenterName(this)"/>
+    <input type="text" class="form-control id" placeholder="統一編號/ID" onblur="gearingController.guarantCenterChangeID(this)"/>
+</div>
 
-                        $(".uploadResultDiv").find(".uploadResultTrue").removeClass("hide");
-                        $(".uploadResultDiv").find(`.uploadResultFalse,.promptText`).addClass("hide");
-                        break;
-                    case "":
-                        alert(fileCheck_Info[0]);
-                        break;
-                    default:
-                        $(".uploadResultDiv").find(`.uploadResultTrue,.uploadResultFalse,.promptText`).addClass("hide");
-                        break;
-                }
-            } else {
-                apiErrorHandler(jsondata);
+重新點選頁面後的身分JS:
+//作業中心-更改身分別連動綜合契約書下的負責人部分(身分別的選項對應"："前的文字) suretyGearing
+    centerIdentityCG: function (target) {
+        let id = $(target).closest(".identities").attr("id");
+        let code = id.substring(10, id.length);
+        let typeCht = $(target).find("option:selected").text();
+        $(target).closest(".identities").find('.typeCht').val(typeCht)
+        console.log("@@身分別更改:", typeCht);
+    },
+    //作業中心-更改身分別連動綜合契約書下的負責人部分(企業名/姓名的選項對應輸入框) suretyNameGearing
+    suretyCenterName: function (target) {
+        let centerName = $(target).val();
+        let id = $(target).closest('.form-group.form-inline.my-2').find('.id').val();
+        $('.responsibleDiv .responsible').each(function () { 
+            let codeVal = $(this).find(".code").val();
+            if (id === codeVal) {
+                $(this).find('.principal').val(centerName);
             }
         })
+    },
+    //作業中心-更改ID欄位-身分別連動綜合契約書-金額與負責人欄位 guarantAddField
+    guarantCenterChangeID: function (target) {
+        const $text = $(target);
+        const value = $text.val() || "";
+        let centerName = $(target).closest('.form-group.form-inline.my-2').find('.name').val();
+        if (value != "" && (value.length === 8 || value.length === 10)) {
+            // 綜合契約書連動
+            onblurGuaGearing(); //連帶保證人擔保金額
+            onblurIDGearing(); //負責人
+            // suretyGuaGearing(); // 連帶保證人擔保金額
+            // suretyIDGearing(); // 負責人
+            $('.responsibleDiv .responsible').each(function () { 
+                let principalVal = $(this).find(".principal").val();
+                if (centerName === principalVal) {
+                    $(this).find('.code').val(value);
+                }
+            })
+        } else if (value.length !== 8 || value.length !== 10) {
+            $text.css("border-color", "red")
+        }
     }
 
-    $(objthis).prop('disabled', false);
-    loadingHide();
-}
+
+主要是讓使用者可以更改centerIdentityCG, suretyCenterName, guarantCenterChangeID
+
+suretyCenterName, guarantCenterChangeID都沒問題
+是在於更改centerIdentityCG時
+我的身分別需要重新排序 我該怎麼改呢
+
+
+
+
+
+
