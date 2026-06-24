@@ -1,21 +1,25 @@
-我主要是要$identitiesDiv.find('select, input').prop('disabled', false);
-但是有時候他又會變成('disabled', true);
-為什麼呢
-怎麼改
+//作業中心-更改身分別連動綜合契約書下的負責人部分(企業名/姓名的選項對應輸入框)
+    suretyCenterName: function (target) {
+        let centerName = $(target).val();
+        let currentId = $(target).closest('.form-group.form-inline.my-2').find('.id').val();
+        $('.responsibleDiv .responsible').each(function () { 
+            let codeVal = $(this).find(".code").val();
+            if (currentId === codeVal && currentId != "") {
+                $(this).find('.principal').val(centerName);
+                console.log("@@1this:", $(this));
+
+                $('#GCC .guarantor').each(function () {
+                    console.log("@@2this:", $(this));
+                    // let jsGuarantor = $(guGcc).find('.jsGuarantor').text();
+                })
+            }
+            
+            
+        })
+    },
 
 
-if (getUidToken().branch == "500") {
-            await apiS060001033(uid, token, caseno).done(function (btnJson) {
-                let $opCaseDiv = $('#opCaseDiv'); //身分別區塊
-                console.log("ffffffff");
-                let $identitiesDiv = $opCaseDiv.find('#genderDiv .identities').find('.form-group.form-inline.my-2');
-                // console.log($identitiesDiv);
-                
-                $identitiesDiv.find('select, input').prop('disabled', false);
-                $identitiesDiv.find('select').attr('onchange', 'gearingController.suretyGearing(this)');
-                $identitiesDiv.find('input.name').attr('onblur', 'gearingController.suretyCenterName(this)');
-                $identitiesDiv.find('input.id').attr('oninput', 'gearingController.opcheckIDIsValid(this)');
-                $identitiesDiv.find('input.id').attr('onblur', 'gearingController.guarantCenterChangeID(this)');
-                
 
-....
+我想在$('.responsibleDiv .responsible')找到rePeople的text()跟$('#GCC .guarantor')找到jsGuarantor的text()相符合
+而且$('#GCC .guarantor')的principal為空時，我要將centerName帶入$('#GCC .guarantor')的principal
+這要怎麼改
