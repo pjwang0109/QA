@@ -45,6 +45,7 @@
 
 
 這段程式要怎麼讓她一定可以跑成功?
+因為他有時會失敗
 $identitiesDiv.find('select, input').prop('disabled', false);
             $identitiesDiv.find('select').attr('onchange', 'gearingController.centerIdentityCG(this)');
             $identitiesDiv.find('input.name').attr('onblur', 'gearingController.suretyCenterName(this)');
