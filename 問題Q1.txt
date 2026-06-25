@@ -1,25 +1,57 @@
-//作業中心-更改身分別連動綜合契約書下的負責人部分(企業名/姓名的選項對應輸入框)
-    suretyCenterName: function (target) {
-        let centerName = $(target).val();
-        let currentId = $(target).closest('.form-group.form-inline.my-2').find('.id').val();
-        $('.responsibleDiv .responsible').each(function () { 
-            let codeVal = $(this).find(".code").val();
-            if (currentId === codeVal && currentId != "") {
-                $(this).find('.principal').val(centerName);
-                console.log("@@1this:", $(this));
+我想讓
+<div class="numC ml-4">C1
+              <label class="form-check-label ml-2">是
+                <input type="radio" class="form-check-input collateral" name="collateral"/>
+              </label>
+              <label class="form-check-label ml-2">否
+                <input type="radio" class="form-check-input collateral" name="collateral"/>
+              </label>
+              <label class="form-check-label ml-2">免
+                <input type="radio" class="form-check-input collateral" name="collateral"/>
+              </label>
+              <span>(擔保品非不動產)</span>
+              </div>
+是單獨一列
 
-                $('#GCC .guarantor').each(function () {
-                    console.log("@@2this:", $(this));
-                    // let jsGuarantor = $(guGcc).find('.jsGuarantor').text();
-                })
-            }
-            
-            
-        })
-    },
+<div class="numC ml-4">C2也是單獨一列
+怎麼修改
 
 
 
-我想在$('.responsibleDiv .responsible')找到rePeople的text()跟$('#GCC .guarantor')找到jsGuarantor的text()相符合
-而且$('#GCC .guarantor')的principal為空時，我要將centerName帶入$('#GCC .guarantor')的principal
-這要怎麼改
+
+<div class="messageCG">
+        <div class="form-group form-inline my-3">
+          <div class="form-group form-inline">
+            <!-- <div class="questionStyleA"> -->
+              <div class="numC ml-4">C1
+              <label class="form-check-label ml-2">是
+                <input type="radio" class="form-check-input collateral" name="collateral"/>
+              </label>
+              <label class="form-check-label ml-2">否
+                <input type="radio" class="form-check-input collateral" name="collateral"/>
+              </label>
+              <label class="form-check-label ml-2">免
+                <input type="radio" class="form-check-input collateral" name="collateral"/>
+              </label>
+              <span>(擔保品非不動產)</span>
+              </div>
+            </div>
+
+            <div class="form-group form-inline">
+              <div class="numC ml-4">C2
+              <label class="form-check-label ml-2">是
+                <input type="radio" class="form-check-input collateral" name="collateral"/>
+              </label>
+              <label class="form-check-label ml-2">否
+                <input type="radio" class="form-check-input collateral" name="collateral"/>
+              </label>
+              <label class="form-check-label ml-2">免
+                <input type="radio" class="form-check-input collateral" name="collateral"/>
+              </label>
+              <span>(擔保品非不動產)</span>
+              </div>
+              
+            <!-- </div> -->
+          </div>
+        </div>
+      </div
