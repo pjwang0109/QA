@@ -1,10 +1,38 @@
-我現在在這個JS修改
-async function openSend(){
-......
-if (caseTypeValue == "13") { 
-                if (json.result && json.result.collateral) {
-                    我的程式寫在這要怎麼改
-                }
+
+這是我暫存的JS 請幫我修改
+let classArr = [".acc", ".modalallowcode", ".collateral"]
+主要是collateral
+我想要儲存的格式為:
+
+        $.each(classArr, function (i, className) {
+            let dataName = className.replace(".", "");
+            data[dataName] = $this.find(className).val() || "";
+            switch (dataName) {
+                case "acc":
+                    //建檔
+                    if (caseTypeValue == "12") {
+                        data[dataName] = $this.find("#createFileDiv").find(className).val() || "";
+                        //撥貸
+                    } else if (caseTypeValue == "13") {
+                        data[dataName] = $this.find("#appropriationLoanDiv").find(className).val() || "";
+                        //條件變更及報請總行
+                    }
+                    break;
+                case "modalallowcode":
+                    //建檔
+                    if (caseTypeValue == "12") {
+                        data[dataName] = $this.find("#createFileDiv").find(className).val() || "";
+                        //撥貸
+                    } else if (caseTypeValue == "13") {
+                        data[dataName] = $this.find("#appropriationLoanDiv").find(className).val() || "";
+                        //條件變更及報請總行
+                    }
+                    break;
+                case "collateral":
+                    $.each($this.find('.collateral'), function (a, b) {
+ 
+                        }
+                    });
+                    break;
             }
-......
-}
+        })
