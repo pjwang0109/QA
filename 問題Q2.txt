@@ -1,3 +1,8 @@
+搞錯了
+我要的儲存的格式是長這樣 collateral:{"C1":"0", "C2":"3", "C3":"1"...}
+請幫我修改
+
+
 
 這是我暫存的JS 請幫我修改
 let classArr = [".acc", ".modalallowcode", ".collateral"]
@@ -32,7 +37,7 @@ let classArr = [".acc", ".modalallowcode", ".collateral"]
                         }
                     });
 主要是collateral
-我想要儲存的格式為 collateral:[{code: "C1", name: "0"}, {code: "C2", name: "3"}, {code: "C3", name: "2"}...]
+我想要儲存的格式為 collateral:{"C1":"0", "C2":"3", "C3":"1"...}
 然後根據我的每個
 let $rowHtml = `
                             <div class="form-group form-inline">
@@ -54,3 +59,5 @@ let $rowHtml = `
                     break;
             }
         })
+
+
