@@ -1,45 +1,33 @@
-async function openSend() {
-    // ...... 前面的程式碼 ......
 
-    if (caseTypeValue == "13") { 
-        if (json.result && json.result.collateral) {
-            let $messageCG = $('.messageCG');
-            $messageCG.empty(); // 1. 清空舊畫面
+            
+        case "collateral":
+            // 🌟 1. 先初始化一個空陣列準備存資料
+            let collateralArr = [];
 
-            // 2. 確保是陣列再跑迴圈
-            if (Array.isArray(json.result.collateral)) {
-                json.result.collateral.forEach(function (item) {
-                    let code = item.code;
-                    let nameVal = item.name;
+            // 🌟 2. 透過尋找畫面上所有的大標題（例如 C1：、C2：），來鎖定有幾列題目
+            // 這樣可以避免直接 each 丟失沒勾選（"0"）的列
+            $this.find('.questionStyleA').each(function () {
+                // 取得 code 值（去除冒號與空白，例如從 "C1：" 變成 "C1"）
+                let codeVal = $(this).text().replace("：", "").trim();
+                
+                // 🌟 3. 去找當前這一組 radio (name="collateral_C1") 中，被勾選 (:checked) 的那一個
+                let $checkedRadio = $this.find(`input[name="collateral_${codeVal}"]:checked`);
+                
+                let nameVal = "0"; // 預設值為 "0" (若沒選)
+                
+                if ($checkedRadio.length > 0) {
+                    nameVal = $checkedRadio.val(); // 如果有勾選，取得 value ("1", "2" 或 "3")
+                }
 
-                    let isYesChecked = (nameVal === "1") ? "checked" : "";
-                    let isNoChecked = (nameVal === "2") ? "checked" : "";
-                    let isFreeChecked = (nameVal === "3") ? "checked" : "";
-
-                    let $rowHtml = `
-                        <div class="form-group my-2" style="display: flex; align-items: center;">
-                            <div class="numC ml-4" style="display: flex; align-items: center; flex-wrap: nowrap; white-space: nowrap;">
-                                <span class="questionStyleA font-weight-bold" style="margin-right: 15px;">${code}：</span>
-                                
-                                <label class="ml-2" style="display: inline-flex; align-items: center; margin-right: 15px; cursor: pointer;">
-                                    <input type="radio" class="collateral" value="1" name="collateral_${code}" ${isYesChecked} style="margin: 0 5px 0 0; position: static; vertical-align: middle;"/> 是
-                                </label>
-                                <label class="ml-2" style="display: inline-flex; align-items: center; margin-right: 15px; cursor: pointer;">
-                                    <input type="radio" class="collateral" value="2" name="collateral_${code}" ${isNoChecked} style="margin: 0 5px 0 0; position: static; vertical-align: middle;"/> 否
-                                </label>
-                                <label class="ml-2" style="display: inline-flex; align-items: center; margin-right: 15px; cursor: pointer;">
-                                    <input type="radio" class="collateral" value="3" name="collateral_${code}" ${isFreeChecked} style="margin: 0 5px 0 0; position: static; vertical-align: middle;"/> 免
-                                </label>
-                                
-                                <span style="color: #6c757d; margin-left: 5px;">(擔保品非不動產)</span>
-                            </div>
-                        </div>`;
-
-                    $messageCG.append($rowHtml);
+                // 🌟 4. 組合成物件，push 進入陣列
+                collateralArr.push({
+                    code: codeVal,
+                    name: nameVal
                 });
-            }
-        }
-    }
+            });
 
-    // ...... 後面的程式碼 ......
-}
+            // 🌟 5. 最後把打包好的陣列塞回 data.collateral 中
+            data[dataName] = collateralArr;
+            break;
+    }
+});
