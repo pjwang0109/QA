@@ -1,3 +1,8 @@
 這個除了年月日以外
 可以增加時分秒嗎
 <input type="date" class="form-control searchdate_end" name="searchdate_end" />
+
+
+// 範例：將 datetime-local 的值轉換成傳統的 "YYYY-MM-DD HH:mm:ss" 格式
+let rawDate = $('.searchdate_end').val(); // 拿到 "2026-06-26T13:51:30"
+let formattedDate = rawDate.replace('T', ' '); // 變成 "2026-06-26 13:51:30"
