@@ -1,53 +1,45 @@
+async function openSend() {
+    // ...... 前面的程式碼 ......
 
-//作業中心-更改身分別連動綜合契約書下的負責人部分
-centerIdentityCG: function (target) {
-    let id = $(target).closest(".identities").attr("id");
-    let code = id.substring(10, id.length);
-    let typeCht = $(target).find("option:selected").text();
-    $(target).closest(".identities").find('.typeCht').val(typeCht);
-    console.log("@@身分別更改:", typeCht);
+    if (caseTypeValue == "13") { 
+        if (json.result && json.result.collateral) {
+            let $messageCG = $('.messageCG');
+            $messageCG.empty(); // 1. 清空舊畫面
 
-    // === 新增：身分別重新排序邏輯 ===
-    
-    // 1. 找到當前的父容器（請根據你實際的 HTML 調整，這裡假設是 .identities 內層或某個包裹區塊）
-    // 如果多個保人都在同一個容器內，我們需要選取到那個「裝載所有列」的容器
-    let $container = $(target).closest(".identities"); 
-    
-    // 2. 抓取容器內「所有」的保人列
-    let $rows = $container.find('.form-group.form-inline.my-2');
+            // 2. 確保是陣列再跑迴圈
+            if (Array.isArray(json.result.collateral)) {
+                json.result.collateral.forEach(function (item) {
+                    let code = item.code;
+                    let nameVal = item.name;
 
-    // 3. 使用 JavaScript 的 sort 進行排序
-    $rows.sort(function (a, b) {
-        // 抓取各自列之中的 select 數值 (1~6)，如果沒選就給 99 放最後
-        let valA = $(a).find('select.type').val() || "99";
-        let valB = $(b).find('select.type').val() || "99";
-        
-        // 轉成數字進行升冪排序 (1 -> 2 -> 3 -> 4...)
-        return parseInt(valA) - parseInt(valB);
-    });
+                    let isYesChecked = (nameVal === "1") ? "checked" : "";
+                    let isNoChecked = (nameVal === "2") ? "checked" : "";
+                    let isFreeChecked = (nameVal === "3") ? "checked" : "";
 
-    // 4. 將排序後的 DOM 元素重新塞回容器中（畫面會即時更新順序）
-    $container.append($rows);
-    
-    console.log("@@身分別排序完成");
-    
-    // 5. (選擇性) 如果排序完需要觸發綜合契約書重新整理，可以在此呼叫
-    // onblurGuaGearing(); 
+                    let $rowHtml = `
+                        <div class="form-group my-2" style="display: flex; align-items: center;">
+                            <div class="numC ml-4" style="display: flex; align-items: center; flex-wrap: nowrap; white-space: nowrap;">
+                                <span class="questionStyleA font-weight-bold" style="margin-right: 15px;">${code}：</span>
+                                
+                                <label class="ml-2" style="display: inline-flex; align-items: center; margin-right: 15px; cursor: pointer;">
+                                    <input type="radio" class="collateral" value="1" name="collateral_${code}" ${isYesChecked} style="margin: 0 5px 0 0; position: static; vertical-align: middle;"/> 是
+                                </label>
+                                <label class="ml-2" style="display: inline-flex; align-items: center; margin-right: 15px; cursor: pointer;">
+                                    <input type="radio" class="collateral" value="2" name="collateral_${code}" ${isNoChecked} style="margin: 0 5px 0 0; position: static; vertical-align: middle;"/> 否
+                                </label>
+                                <label class="ml-2" style="display: inline-flex; align-items: center; margin-right: 15px; cursor: pointer;">
+                                    <input type="radio" class="collateral" value="3" name="collateral_${code}" ${isFreeChecked} style="margin: 0 5px 0 0; position: static; vertical-align: middle;"/> 免
+                                </label>
+                                
+                                <span style="color: #6c757d; margin-left: 5px;">(擔保品非不動產)</span>
+                            </div>
+                        </div>`;
+
+                    $messageCG.append($rowHtml);
+                });
+            }
+        }
+    }
+
+    // ...... 後面的程式碼 ......
 }
-
-
-
-////⚠️ 注意事項與微調（關鍵排查）
-$container 的選取範圍：
-如果你的 .identities 是每一列都有一個（例如：每個保人自己就是一個 .identities 包裹），那 $(target).closest(".identities") 就只會抓到自己那一列，排序就不會生效。
-
-解決辦法：你要找出「包住所有保人列」的那個大外層。如果大外層是 #genderDiv，那第 1 點要改成：
-let $container = $(target).closest("#genderDiv");
-let $rows = $container.find('.form-group.form-inline.my-2');
-
-
-Select 選擇器：
-在排序內我有使用 $(a).find('select.type')。請確保你畫面上那個 id="genderList" 的 select 有帶有 class="type"（你給的 HTML 裡面有 class="form-control type"，所以這樣寫沒問題）。
-
-排序規則：
-目前的寫法是依據 value（1: 保證人、2: 擔保物提供人...）由小到大排序。如果有特殊排序需求（例如：連帶保證人 6 要排在最前面），只需調整 sort 內部的 return 權重計算即可。
