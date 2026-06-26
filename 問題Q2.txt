@@ -1,8 +1,6 @@
 
 這是我暫存的JS 請幫我修改
 let classArr = [".acc", ".modalallowcode", ".collateral"]
-主要是collateral
-我想要儲存的格式為:
 
         $.each(classArr, function (i, className) {
             let dataName = className.replace(".", "");
@@ -33,6 +31,26 @@ let classArr = [".acc", ".modalallowcode", ".collateral"]
  
                         }
                     });
+主要是collateral
+我想要儲存的格式為 collateral:[{code: "C1", name: "0"}, {code: "C2", name: "3"}, {code: "C3", name: "2"}...]
+然後根據我的每個
+let $rowHtml = `
+                            <div class="form-group form-inline">
+                                <span class="questionStyleA numC ml-4">${codeVal}：</span>
+                                <label class="form-check-label ml-2">
+                                    <input type="radio" class="form-check-input collateral" value="1" name="collateral_${codeVal}" ${isYesChecked} /> 是
+                                </label>
+                                <label class="form-check-label ml-2">
+                                    <input type="radio" class="form-check-input collateral" value="2" name="collateral_${codeVal}" ${isNoChecked} /> 否
+                                </label>
+                                <label class="form-check-label ml-2">
+                                    <input type="radio" class="form-check-input collateral" value="3" name="collateral_${codeVal}" ${isFreeChecked} /> 免
+                                </label>
+                                <span>(擔保品非不動產)</span>
+                            </div>`;  
+來儲存每個collateral裡面的code跟name值
+這樣我的case "collateral":要怎麼修改
+
                     break;
             }
         })
