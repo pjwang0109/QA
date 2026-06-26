@@ -1,34 +1,63 @@
-改成這樣可以嗎
+我的api會有一個資料為collateral
+例如collateral: 0: {code: "C1", name: "3"}  1: {code: "C2", name: "0"}  2: {code: "C3", name: "1"}...
 
-      <div class="messageCG">
-        <div class="form-group form-inline my-2">
-            <!-- <div class="questionStyleA"> -->
-          <div class="numC ml-4">C1
-            <label class="form-check-label ml-2">是
-              <input type="radio" class="form-check-input collateral" name="collateral"/>
-            </label>
-            <label class="form-check-label ml-2">否
-              <input type="radio" class="form-check-input collateral" name="collateral"/>
-            </label>
-            <label class="form-check-label ml-2">免
-              <input type="radio" class="form-check-input collateral" name="collateral"/>
-            </label>
-            <span>(擔保品非不動產)</span>
-          </div>
+當我有一個的時候 例如collateral: 0: {code: "C1", name: "3"}
+我想要在.messageCG html去增加一個 
+<div class="form-group form-inline">
+          <span class="questionStyleA numC ml-4">C1：</span>
+          <label class="form-check-label ml-2">是
+            <input type="radio" class="form-check-input collateral" value="1" name="collateral"/>
+          </label>
+          <label class="form-check-label ml-2">否
+            <input type="radio" class="form-check-input collateral" value="2" name="collateral"/>
+          </label>
+          <label class="form-check-label ml-2">免
+            <input type="radio" class="form-check-input collateral" value="3" name="collateral"/>
+          </label>
+          <span>(擔保品非不動產)</span>
         </div>
 
-        <div class="form-group form-inline my-2">
-          <div class="numC ml-4">C2
-            <label class="form-check-label ml-2">是
-              <input type="radio" class="form-check-input collateral" name="collateral"/>
-            </label>
-            <label class="form-check-label ml-2">否
-              <input type="radio" class="form-check-input collateral" name="collateral"/>
-            </label>
-            <label class="form-check-label ml-2">免
-              <input type="radio" class="form-check-input collateral" name="collateral"/>
-            </label>
-            <span>(擔保品非不動產)</span>
-          </div>
+當我有兩個的時候 例如collateral: 0: {code: "C1", name: "3"}  1: {code: "C2", name: "0"} 
+我想要在.messageCG html去增加兩個 
+<div class="form-group form-inline">
+          <span class="questionStyleA numC ml-4">C1：</span>
+          <label class="form-check-label ml-2">是
+            <input type="radio" class="form-check-input collateral" value="1" name="collateral"/>
+          </label>
+          <label class="form-check-label ml-2">否
+            <input type="radio" class="form-check-input collateral" value="2" name="collateral"/>
+          </label>
+          <label class="form-check-label ml-2">免
+            <input type="radio" class="form-check-input collateral" value="3" name="collateral"/>
+          </label>
+          <span>(擔保品非不動產)</span>
         </div>
-      </div>
+
+<div class="form-group form-inline">
+          <span class="questionStyleA numC ml-4">C2：</span>
+          <label class="form-check-label ml-2">是
+            <input type="radio" class="form-check-input collateral" value="1" name="collateral"/>
+          </label>
+          <label class="form-check-label ml-2">否
+            <input type="radio" class="form-check-input collateral" value="2" name="collateral"/>
+          </label>
+          <label class="form-check-label ml-2">免
+            <input type="radio" class="form-check-input collateral" value="3" name="collateral"/>
+          </label>
+          <span>(擔保品非不動產)</span>
+        </div>
+
+而我的collateral.code對應questionStyleA numC ml-4的值
+collateral.name的值等於checked我的type="radio"  class="form-check-input collateral
+若collateral.name為0 則不checked
+
+這樣的情況要怎麼更改
+
+
+
+
+
+
+
+
+
