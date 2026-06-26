@@ -1,63 +1,11 @@
-搞錯了
-我要的儲存的格式是長這樣 collateral:{"C1":"0", "C2":"3", "C3":"1"...}
-請幫我修改
+我可以這樣寫嗎
+if (json.result.collateral == []){
+      .....
+}
+或是有什麼寫法
 
+因為當json.result.collateral == []時
+我想做事情
 
-
-這是我暫存的JS 請幫我修改
-let classArr = [".acc", ".modalallowcode", ".collateral"]
-
-        $.each(classArr, function (i, className) {
-            let dataName = className.replace(".", "");
-            data[dataName] = $this.find(className).val() || "";
-            switch (dataName) {
-                case "acc":
-                    //建檔
-                    if (caseTypeValue == "12") {
-                        data[dataName] = $this.find("#createFileDiv").find(className).val() || "";
-                        //撥貸
-                    } else if (caseTypeValue == "13") {
-                        data[dataName] = $this.find("#appropriationLoanDiv").find(className).val() || "";
-                        //條件變更及報請總行
-                    }
-                    break;
-                case "modalallowcode":
-                    //建檔
-                    if (caseTypeValue == "12") {
-                        data[dataName] = $this.find("#createFileDiv").find(className).val() || "";
-                        //撥貸
-                    } else if (caseTypeValue == "13") {
-                        data[dataName] = $this.find("#appropriationLoanDiv").find(className).val() || "";
-                        //條件變更及報請總行
-                    }
-                    break;
-                case "collateral":
-                    $.each($this.find('.collateral'), function (a, b) {
- 
-                        }
-                    });
-主要是collateral
-我想要儲存的格式為 collateral:{"C1":"0", "C2":"3", "C3":"1"...}
-然後根據我的每個
-let $rowHtml = `
-                            <div class="form-group form-inline">
-                                <span class="questionStyleA numC ml-4">${codeVal}：</span>
-                                <label class="form-check-label ml-2">
-                                    <input type="radio" class="form-check-input collateral" value="1" name="collateral_${codeVal}" ${isYesChecked} /> 是
-                                </label>
-                                <label class="form-check-label ml-2">
-                                    <input type="radio" class="form-check-input collateral" value="2" name="collateral_${codeVal}" ${isNoChecked} /> 否
-                                </label>
-                                <label class="form-check-label ml-2">
-                                    <input type="radio" class="form-check-input collateral" value="3" name="collateral_${codeVal}" ${isFreeChecked} /> 免
-                                </label>
-                                <span>(擔保品非不動產)</span>
-                            </div>`;  
-來儲存每個collateral裡面的code跟name值
-這樣我的case "collateral":要怎麼修改
-
-                    break;
-            }
-        })
-
-
+json.result.collateral == [{code: 'C1', name: '3'}, {code: 'C2', name: '3'}...]時
+我也要做事情
