@@ -1,3 +1,8 @@
+這段是什麼意思
+let collateralList = Object.values(json.result.collateral);
+好像會有誤餒
+
+
 我可以這樣寫嗎
 if (json.result.collateral == []){
       .....
