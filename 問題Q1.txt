@@ -1,1 +1,3 @@
-
+這個除了年月日以外
+可以增加時分秒嗎
+<input type="date" class="form-control searchdate_end" name="searchdate_end" />
