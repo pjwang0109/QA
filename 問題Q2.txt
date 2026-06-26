@@ -1,53 +1,10 @@
- //作業中心流程按鈕(預取)
-        if (getUidToken().branch == "500") {
-            await apiS060001033(uid, token, caseno).done(function (btnJson) {
-                // let $opCaseDiv = $('#opCaseDiv'); //身分別區塊
-                // // let $identitiesDiv = $opCaseDiv.find('#genderDiv .identities').find('.form-group.form-inline.my-2');
-                // let $identitiesDiv = $opCaseDiv.find('#genderDiv .identities');
-                // console.log("是否disabled:", $identitiesDiv);
-
-                // setTimeout(function () { 
-                //     $identitiesDiv.find('select, input').prop('disabled', false);
-                // }, 5)
-
-                let $approvalData = $('.ApprovalData'); //貸放條件(核貸通知書)-核准區塊
-                $approvalData.find('input').prop('disabled', false);
-                //其他條件-智慧文字
-                $('.otherConditionsbtn').removeClass('hide');
-                //顯示錯誤訊息
-                if (btnJson.rc != "M0000") {
-                    apiErrorHandler(btnJson);
+我現在在這個JS修改
+async function openSend(){
+......
+if (caseTypeValue == "13") { 
+                if (json.result && json.result.collateral) {
+                    我的程式寫在這要怎麼改
                 }
-
-                if (caseTypeValue == "11") {
-                    $.each(btnJson.result.btnControl, function (item, v) {
-                        if (v.btnName == "資料變更") {
-                            v.btnName = "暫存"
-                        }
-                    });
-                }
-                let btnHtml = buttonJCHandler(btnJson);
-                $(".btnOpDiv").empty().append(btnHtml);
-            });
-
-            let $opCaseDiv = $('#opCaseDiv'); //身分別區塊
-            let $identitiesDiv = $opCaseDiv.find('#genderDiv .identities');
-            $identitiesDiv.find('select, input').prop('disabled', false);
-            $identitiesDiv.find('select').attr('onchange', 'gearingController.centerIdentityCG(this)');
-            $identitiesDiv.find('input.name').attr('onblur', 'gearingController.suretyCenterName(this)');
-            $identitiesDiv.find('input.id').attr('oninput', 'gearingController.opcheckIDIsValid(this)');
-            $identitiesDiv.find('input.id').attr('onblur', 'gearingController.guarantCenterChangeID(this)');
-        } else { //分行畫面，流程按鈕寫死
-            $("#sendBtnOPDiv").removeClass("hide");
-        }
-
-
-
-
-這段程式要怎麼讓她一定可以跑成功?
-因為他有時會失敗
-$identitiesDiv.find('select, input').prop('disabled', false);
-            $identitiesDiv.find('select').attr('onchange', 'gearingController.centerIdentityCG(this)');
-            $identitiesDiv.find('input.name').attr('onblur', 'gearingController.suretyCenterName(this)');
-            $identitiesDiv.find('input.id').attr('oninput', 'gearingController.opcheckIDIsValid(this)');
-            $identitiesDiv.find('input.id').attr('onblur', 'gearingController.guarantCenterChangeID(this)');
+            }
+......
+}
