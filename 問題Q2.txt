@@ -1,5 +1,7 @@
 
-這個可以不要打s060001037讓程式也能成功執行嗎
+我的意思是不想要打s060001037跟saveOpJSON(obj)
+讓程式也能成功執行
+我改成這樣可行嗎
 async function btnS060001051(obj, ftype) {
     loadingShow("資料上傳中...");
     let userObj = getUidToken();
@@ -25,22 +27,28 @@ async function btnS060001051(obj, ftype) {
     //     return
     // }
 
-    let data = await saveOpJSON(obj);
-    const s060001037 = getS060001037(uid, token, branch, data);
 
-    $.when($.ajax(s060001037)).done(function (jsondata) {//傳送後端
-        $('#msg_token').text(jsondata.token);
-        if (jsondata.rc == "M0000") {
-            window.open(getS060001051(uid, token, cfid, ftype).url);
-        } else {
-            apiErrorHandler(jsondata);
-        }
+    window.open(getS060001051(uid, token, cfid, ftype).url);
+    setTimeout(function () {
+        loadingHide();
+    }, 1000);
 
-        //解除按鈕
-        setTimeout(function () {
-            loadingHide();
-        }, 1000);
-    });
+    // let data = await saveOpJSON(obj);
+    // const s060001037 = getS060001037(uid, token, branch, data);
+
+    // $.when($.ajax(s060001037)).done(function (jsondata) {//傳送後端
+    //     $('#msg_token').text(jsondata.token);
+    //     if (jsondata.rc == "M0000") {
+    //         window.open(getS060001051(uid, token, cfid, ftype).url);
+    //     } else {
+    //         apiErrorHandler(jsondata);
+    //     }
+
+    //     //解除按鈕
+    //     setTimeout(function () {
+    //         loadingHide();
+    //     }, 1000);
+    // });
 
     $(obj).prop("disabled", false);
 }
