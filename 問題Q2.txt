@@ -1,4 +1,4 @@
 原本是這樣 <input type="date" name="searchdate_str" class="form-control searchdate_str" /> 
 
-
-<input type="datetime-local" class="form-control searchdate_str" name="searchdate_str" step="1" />
+我想改成可以加上時跟分然後他是24小時制的
+要怎麼改
