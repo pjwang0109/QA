@@ -1,3 +1,12 @@
+假如我要把日期跟時間
+    let today = date.toISOString().substr(0, 10);
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const hm = `${hours}:${minutes}`
+帶入$obj.find('.searchdate_str_time')
+要怎麼做
+
+------------
 原本是這樣 <input type="date" name="searchdate_str" class="form-control searchdate_str" /> 
 
 我想改成可以加上時跟分然後他是24小時制的
