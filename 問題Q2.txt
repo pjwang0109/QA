@@ -1,5 +1,4 @@
-    let opCenterAccountId = $('.opCenterAccountId'); //授信帳號
-    let opCenterAgreeId = $('.opCenterAgreeId'); //核准號碼
+原本是這樣 <input type="date" name="searchdate_str" class="form-control searchdate_str" /> 
 
-我想要當opCenterAccountId和opCenterAgreeId他們是disabled true時，我要做事情
-我要怎麼寫
+
+<input type="datetime-local" class="form-control searchdate_str" name="searchdate_str" step="1" />
