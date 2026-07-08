@@ -1,9 +1,25 @@
-我取出的codeVal改成這樣<span class="codeVal hide" value="${codeVal}"></span>
+$messageCG.empty();這段程式好像會讓我的$messageCG整個不見
 
-let $rowHtml = `
+
+if (collateralList.length !== 0) {
+                    $messageText.removeClass('hide');
+                    $messageCG.removeClass('hide');
+                    $messageCG.empty();
+
+                    collateralList.forEach(function (item) {
+                        if(!item) return
+                        let typeVal = item.type;
+                        let nameVal = item.name;
+                        let codeVal = item.code;
+
+                        let isYesChecked = (nameVal == '1') ? "checked" : "";
+                        let isNoChecked = (nameVal == '2') ? "checked" : "";
+                        let isFreeChecked = (nameVal == '3') ? "checked" : "";
+
+                        let $rowHtml = `
                             <div class="form-group form-inline collateralRE">
                                 <span class="questionStyleA numC ml-4">${typeVal}：</span>
-                                <span class="codeVal hide" value="${codeVal}"></span>
+                                <input type="hidden" class="codeVal" value="${codeVal}"></input>
                                 <label class="form-check-label ml-2">
                                     <input type="radio" class="form-check-input collateral" value="1" name="collateral_${typeVal}" ${isYesChecked} />是
                                 </label>
@@ -15,26 +31,9 @@ let $rowHtml = `
                                 </label>
                                 <span>(擔保品非不動產)</span>
                             </div>`;
-
-然後暫存改成這樣
- case "collateral":
-                    let collateralObj = {};
-                    $this.find('.collateralRE').each(function () {
-                        let $row = $(this);
-                        let typeVal = $row.find('.numC').text().replace("：", "").trim();
-                        let codeVal = $row.find('.codeVal').val();
-                        let $checkedRadio = $this.find(`input[name="collateral_${typeVal}"]:checked`);
-                        
-                        let nameVal = "0"; //預設值為 "0" (若沒選)
-                        if ($checkedRadio.length > 0) {
-                            nameVal = $checkedRadio.val();
-                        }
-                        collateralObj[codeVal] = nameVal;
-
-為何我的codeVal沒有任何值
-像這樣collateral: {"": "0"}
-
-那要怎麼改
+                        $messageCG.append($rowHtml);
+                        $messageCG.find('input').prop('disabled', true); 
                     })
-                    data[dataName] = collateralObj;
-                    break;
+                } else {
+                    $messageCG.addClass('hide');
+                }
