@@ -36,8 +36,20 @@ const methodToolTip = {
 -----------
 $('#opCaseDiv').find('.messageText .fa-exclamation-circle').tooltip('show');
 
-
-
-
+-----------
 let strTitle = "依消金部115.2.13聯消金字第0031號函規定，於辦理不動產相關業務時，應積極向客戶推廣內政部「地籍異動即時通」服務。";
-                    methodToolTip.publicToolTip($('#opCaseDiv').find(`.messageText`), strTitle);
+methodToolTip.publicToolTip($('#opCaseDiv').find(`.messageText`), strTitle);
+-------------
+let $icon = $('#opCaseDiv').find('.messageText .fa-exclamation-circle');
+
+    // 手動將 data-original-title 的內容重新丟給 tooltip 設定
+    $icon.tooltip($.extend(true, {}, methodToolTip.option, {
+        title: $icon.attr('data-original-title')
+    }));
+
+
+
+
+
+
+
