@@ -5,7 +5,14 @@
 
 <i class="fa fa-exclamation-circle ml-2 cursor" data-original-title=""></i>
 
+-------------
+現在畫面上 會有
+<i  class="fa fa-exclamation-circle ml-2 cursor"  title data-original-title="依消金部115.2.13聯消金字第0031號函規定，於辦理不動產相關業務時，應積極向客戶推廣內政部「地籍異動即時通」服務。" ></i>
+但是滑鼠移過去並不會顯示此文字
+是哪裡有問題嗎
 
+
+--------------
 const methodToolTip = {
 
     //預設tooltip設定
