@@ -34,7 +34,7 @@ const methodToolTip = {
 }
 
 -----------
-
+$('#opCaseDiv').find('.messageText .fa-exclamation-circle').tooltip('show');
 
 
 
