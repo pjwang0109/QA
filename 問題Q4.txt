@@ -1,2 +1,87 @@
 async function openOpCaseWeb(obj, isOpCenter) {
+let userObj = getUidToken();
+    let uid = userObj.uid;
+    let token = userObj.token;
+    let table = $(obj).closest("table").DataTable();
+    let tr = $(obj).closest("tr");
+    let data = table.row(tr).data()[0];
+    let caseTypeValue = data.assign;
+    let ttypeList = data.ttype;
+    let caseno = data.cfid[0]["code"];
+    const closed = data.gotoClosed;
+    const branch = userObj.branch;
+    let business = data.business
+    let isMerge = data.isMerge;
+    let ucId = tr.find('td:eq(7)').text().trim();
+......程式太多略過
+ let jsondata = "";
+    if (caseTypeValue != "11") {
+        jsondata = await apiS060001031(uid, token, caseno);
+    } else {
+        jsondata = await apiS060001036(uid, token, caseno);//約據
+    }
+    if (jsondata.rc == "M0000") {
+        
+        tr.addClass('table-warning');
+        //作業中心
+        let url1v1Frame = ajaxhttpIPHostHtml("/opCenter/opCenter_openOpCaseWeb.html");
+        const frame = await $.ajax(url1v1Frame);
+        //1v1Frame
+        let $frame = $(frame);
+......程式太多略過
+if (caseTypeValue == "11") {
+......程式太多略過
+else if (caseTypeValue == "13") {
+            //撥貸
+            $frame.find("#appropriationLoanDiv").removeClass("hide");
 
+            //不動產地籍異動即時通
+            let $messageText = $frame.find("#appropriationLoanDiv").find('.messageText');
+            let $messageCG = $frame.find("#appropriationLoanDiv").find('.messageCG');
+            
+            if (jsondata.result && jsondata.result.collateral) {
+                let collateralList = jsondata.result.collateral;
+                if (collateralList.length !== 0) {
+                    $messageText.removeClass('hide');
+                    $messageCG.removeClass('hide');
+                    $messageCG.empty();
+
+                    collateralList.forEach(function (item) {
+                        if(!item) return
+                        let typeVal = item.type;
+                        let nameVal = item.name;
+                        let codeVal = item.code;
+
+                        let isYesChecked = (nameVal == '1') ? "checked" : "";
+                        let isNoChecked = (nameVal == '2') ? "checked" : "";
+                        let isFreeChecked = (nameVal == '3') ? "checked" : "";
+
+                        let $rowHtml = `
+                            <div class="form-group form-inline collateralRE">
+                                <span class="questionStyleA numC ml-4">${typeVal}：</span>
+                                <input type="hidden" class="codeVal" value="${codeVal}"></input>
+                                <label class="form-check-label ml-2">
+                                    <input type="radio" class="form-check-input collateral" value="1" name="collateral_${typeVal}" ${isYesChecked} />是
+                                </label>
+                                <label class="form-check-label ml-2">
+                                    <input type="radio" class="form-check-input collateral" value="2" name="collateral_${typeVal}" ${isNoChecked} />否
+                                </label>
+                                <label class="form-check-label ml-2">
+                                    <input type="radio" class="form-check-input collateral" value="3" name="collateral_${typeVal}" ${isFreeChecked} />免
+                                </label>
+                                <span>(擔保品非不動產)</span>
+                            </div>`;
+                        $messageCG.append($rowHtml);
+                    })
+
+                    let titleMT = "依消金部115.2.13聯消金字第0031號函規定，於辦理不動產相關業務時，應積極向客戶推廣內政部「地籍異動即時通」服務。";
+                    methodToolTip.publicToolTip($frame.find(`.messageText .questionStyleA span`), titleMT);
+                    
+                } else {
+                    $messageText.addClass('hide');
+                    $messageCG.addClass('hide');
+                    $messageCG.empty();
+                }
+            }
+
+}
