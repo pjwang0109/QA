@@ -4,3 +4,24 @@
 依消金部115.2.13聯消金字第0031號函規定，於辦理不動產相關業務時，應積極向客戶推廣內政部「地籍異動即時通」服務。
 
 <i class="fa fa-exclamation-circle ml-2 cursor" data-original-title=""></i>
+
+
+const methodToolTip = {
+
+    //預設tooltip設定
+    option: {
+        animation: true,
+        placement: "right",
+        delay: { "hide": 100 },
+        template: '<div class="tooltip" role="tooltip"><div class="tooltip-inner fix"></div></div>'
+    },
+
+    publicToolTip: function (event, strTitle, optPersonal) {
+        //驚嘆號標籤
+        let iconPrompt = `<i  class="fa fa-exclamation-circle ml-2 cursor"  title="${strTitle}" ></i>`
+        $(event).after(iconPrompt);
+        //extend option 與 optPersonal 組合
+        //console.log($.extend(true, {}, methodToolTip.option, optPersonal));
+        $(event).next().tooltip($.extend(true, {}, methodToolTip.option, optPersonal));
+    }
+}
