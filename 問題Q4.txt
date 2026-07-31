@@ -4,3 +4,19 @@ if (caseTypeValue == "13") {
             }
 
 我要在每一次點案件的時候 先將原本的這個清掉 讓她不會重複顯示 應該怎麼寫
+
+
+
+if (caseTypeValue == "13") {
+    let strTitle = "依消金部115.2.13聯消金字第0031號函規定，於辦理不動產相關業務時，應積極向客戶推廣內政部「地籍異動即時通」服務。";
+    
+    // 1. 定義目標 span
+    let $targetSpan = $("#openOpSendDiv").find('#appropriationLoanDiv .messageText .questionStyleA span');
+    
+    // 🌟 2. 核心清空邏輯：把 span 後面（或裡面）原本舊的驚嘆號 icon 全數移除！
+    $targetSpan.next('.fa-exclamation-circle').remove(); // 移除緊跟在 span 後面的舊 icon
+    $targetSpan.find('.fa-exclamation-circle').remove(); // 預防萬一：也移除存在於 span 內部的舊 icon
+    
+    // 3. 清空後，才產生新的 Tooltip
+    methodToolTip.publicToolTip($targetSpan, strTitle);
+}
