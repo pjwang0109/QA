@@ -1,22 +1,76 @@
-假如我要把日期跟時間
-    let today = date.toISOString().substr(0, 10);
-    const hours = String(date.getHours()).padStart(2, '0');
-    const minutes = String(date.getMinutes()).padStart(2, '0');
-    const hm = `${hours}:${minutes}`
-帶入$obj.find('.searchdate_str_time')
-要怎麼做
+<div class="form-group form-inline my-3">
+        <h4 class="text-danger mx-1 mt-2">*</h4>
+        <span class="questionStyleA">預計錄音日期：</span>
+        <div class="input-group">
+          <label class="form-check-label ml-2">
+            <input type="radio" class="form-check-input phoneType" id="specified" name="phoneType" value="0" onchange="recordingSystemToggle(this)">指定
+          </label>
+          <input type="date" class="form-control phoneDate ml-2 hide"/>
+          <input type="text" class="form-control phoneTime ml-2 hide"/>
+          <label class="form-check-label ml-2">
+            <input type="radio" class="form-check-input phoneType ml-4" id="notSpecified" name="phoneType" value="1" onchange="recordingSystemToggle(this)">不指定
+          </label>
+          <label class="form-check-label ml-2">
+            <input type="radio" class="form-check-input phoneType ml-2" id="noRecording" name="phoneType" value="2" onchange="recordingSystemToggle(this)">免錄音
+          </label>
+        </div>
+      </div>
 
-------------
-原本是這樣 <input type="date" name="searchdate_str" class="form-control searchdate_str" /> 
 
-我想改成可以加上時跟分然後他是24小時制的
+當phoneType勾選 我要如何暫存給他對的值呢
 要怎麼改
 
-----
-我得到時、分
-要怎麼放到<input type="time" class="form-control searchdate_str_time" name="searchdate_str_time"/>上面
-這個目前是有上下午的
-    let date = new Date();
-    let today = date.toISOString().substr(0, 10);
-    const hours = String(date.getHours()).padStart(2, '0');     // 時 
-    const minutes = String(date.getMinutes()).padStart(2, '0'); // 分 
+let classArr = [".acc", ".modalallowcode", ".allocationDate", ".phoneDate", ".phoneTime",
+        ".phoneType"];
+$.each(classArr, function (i, className) {
+            let dataName = className.replace(".", "");
+            data.cfid = $(".btnOpDiv").attr("cfid");
+            data.cfType = $(".btnOpDiv").attr("cftype");
+            data[dataName] = $this.find(className).val() || "";
+            switch (dataName) {
+                case "acc":
+                    $.each($this.find('.acc'), function (a, b) {
+                        if ($this.find('.acc').eq(a).val() != "") {
+                            data[dataName] = $this.find(className).eq(a).val() || "";
+                        }
+                    });
+                    break;
+                case "modalallowcode":
+                    $.each($this.find('.modalallowcode'), function (a, b) {
+                        if ($this.find('.modalallowcode').eq(a).val() != "") {
+                            data[dataName] = $this.find(className).eq(a).val() || "";
+                        }
+                    });
+                    break;
+case "allocationDate":
+                    if ($this.find(className).val()) {
+                        data[dataName] = $this.find(className).val().replace(/-/g, "/") || "";
+                    }
+                    break;
+
+case "phoneDate":
+                    
+                    if ($this.find(".phoneType").val() != "") {
+                    }
+                    if ($this.find(className).val() != "") {
+                        data[dataName] = $this.find(className).val().replace(/-/g, "/") || "";
+                    }
+                    break;
+                case "phoneTime":
+                    // $.each($this.find('.acc'), function (a, b) {
+                        if ($this.find(className).val() != "") {
+                            data[dataName] = $this.find(className).val() || "";
+                        }
+                    // });
+                    break;
+                case "phoneType":
+                    // $.each($this.find('.acc'), function (a, b) {
+                        // if ($this.find(className).eq(a).val() != "") {
+                        //     data[dataName] = $this.find(className).eq(a).val() || "";
+                        // }
+
+                        // let codeVal = $row.find('.codeVal').val();
+                        // let $checkedRadio = $this.find(`input[name="collateral_${typeVal}"]:checked`);
+                    // });
+                    break;
+
