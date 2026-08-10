@@ -1,76 +1,12 @@
-<div class="form-group form-inline my-3">
-        <h4 class="text-danger mx-1 mt-2">*</h4>
-        <span class="questionStyleA">預計錄音日期：</span>
-        <div class="input-group">
-          <label class="form-check-label ml-2">
-            <input type="radio" class="form-check-input phoneType" id="specified" name="phoneType" value="0" onchange="recordingSystemToggle(this)">指定
-          </label>
-          <input type="date" class="form-control phoneDate ml-2 hide"/>
-          <input type="text" class="form-control phoneTime ml-2 hide"/>
-          <label class="form-check-label ml-2">
-            <input type="radio" class="form-check-input phoneType ml-4" id="notSpecified" name="phoneType" value="1" onchange="recordingSystemToggle(this)">不指定
-          </label>
-          <label class="form-check-label ml-2">
-            <input type="radio" class="form-check-input phoneType ml-2" id="noRecording" name="phoneType" value="2" onchange="recordingSystemToggle(this)">免錄音
-          </label>
-        </div>
-      </div>
+$.each($this.find('.rationale'), function (a, b) {
 
+為什麼他有些暫存 要寫這一段
 
-當phoneType勾選 我要如何暫存給他對的值呢
-要怎麼改
-
-let classArr = [".acc", ".modalallowcode", ".allocationDate", ".phoneDate", ".phoneTime",
-        ".phoneType"];
-$.each(classArr, function (i, className) {
-            let dataName = className.replace(".", "");
-            data.cfid = $(".btnOpDiv").attr("cfid");
-            data.cfType = $(".btnOpDiv").attr("cftype");
-            data[dataName] = $this.find(className).val() || "";
-            switch (dataName) {
-                case "acc":
-                    $.each($this.find('.acc'), function (a, b) {
-                        if ($this.find('.acc').eq(a).val() != "") {
+例如:
+case "rationale":
+                    $.each($this.find('.rationale'), function (a, b) {
+                        if ($this.find('.rationale').eq(a).val() != "") {
                             data[dataName] = $this.find(className).eq(a).val() || "";
                         }
                     });
                     break;
-                case "modalallowcode":
-                    $.each($this.find('.modalallowcode'), function (a, b) {
-                        if ($this.find('.modalallowcode').eq(a).val() != "") {
-                            data[dataName] = $this.find(className).eq(a).val() || "";
-                        }
-                    });
-                    break;
-case "allocationDate":
-                    if ($this.find(className).val()) {
-                        data[dataName] = $this.find(className).val().replace(/-/g, "/") || "";
-                    }
-                    break;
-
-case "phoneDate":
-                    
-                    if ($this.find(".phoneType").val() != "") {
-                    }
-                    if ($this.find(className).val() != "") {
-                        data[dataName] = $this.find(className).val().replace(/-/g, "/") || "";
-                    }
-                    break;
-                case "phoneTime":
-                    // $.each($this.find('.acc'), function (a, b) {
-                        if ($this.find(className).val() != "") {
-                            data[dataName] = $this.find(className).val() || "";
-                        }
-                    // });
-                    break;
-                case "phoneType":
-                    // $.each($this.find('.acc'), function (a, b) {
-                        // if ($this.find(className).eq(a).val() != "") {
-                        //     data[dataName] = $this.find(className).eq(a).val() || "";
-                        // }
-
-                        // let codeVal = $row.find('.codeVal').val();
-                        // let $checkedRadio = $this.find(`input[name="collateral_${typeVal}"]:checked`);
-                    // });
-                    break;
-
