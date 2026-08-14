@@ -1,8 +1,336 @@
-這個除了年月日以外
-可以增加時分秒嗎
-<input type="date" class="form-control searchdate_end" name="searchdate_end" />
+<div class="form-group form-inline my-3 recordingDiv">
+              <span class="questionStyleA">預計錄音日期：</span>
+              <div class="input-group">
+                <label class="form-check-label ml-2">
+                  <input type="radio" class="form-check-input phoneType" id="specified" name="phoneType" value="0" onchange="recordingSystemToggle(this)">指定
+                </label>
+                <input type="date" class="form-control phoneDate ml-2 hide"/>
+                <input type="text" class="form-control phoneTime ml-2 hide"/>
+                <label class="form-check-label ml-2">
+                  <input type="radio" class="form-check-input phoneType ml-2" id="notSpecified" name="phoneType" value="1" onchange="recordingSystemToggle(this)">不指定
+                </label>
+                <label class="form-check-label ml-2">
+                  <input type="radio" class="form-check-input phoneType ml-2" id="noRecording" name="phoneType" value="2" onchange="recordingSystemToggle(this)">免錄音
+                </label>
+                <label class="form-check-label ml-2">
+                  <input type="radio" class="form-check-input ml-2"  value="5">測試
+                </label>
+              </div>
+            </div>
 
+很奇怪我的[指定、不指定、免錄音]value值會不見 只有[測試]的value="5"
+為什麼阿
 
-// 範例：將 datetime-local 的值轉換成傳統的 "YYYY-MM-DD HH:mm:ss" 格式
-let rawDate = $('.searchdate_end').val(); // 拿到 "2026-06-26T13:51:30"
-let formattedDate = rawDate.replace('T', ' '); // 變成 "2026-06-26 13:51:30"
+async function openOpCaseWeb(obj, isOpCenter) {
+let userObj = getUidToken();
+    let uid = userObj.uid;
+    let token = userObj.token;
+    let table = $(obj).closest("table").DataTable();
+    let tr = $(obj).closest("tr");
+    let data = table.row(tr).data()[0];
+    let caseTypeValue = data.assign;
+
+...........不重要略過
+
+let jsondata = "";
+    if (caseTypeValue != "11") {
+        jsondata = await apiS060001031(uid, token, caseno);
+    } else {
+        jsondata = await apiS060001036(uid, token, caseno);//約據
+    }
+
+if (jsondata.rc == "M0000") {
+let url1v1Frame = ajaxhttpIPHostHtml("/opCenter/opCenter_openOpCaseWeb.html");
+        const frame = await $.ajax(url1v1Frame);
+        //1v1Frame
+        let $frame = $(frame);
+
+if (caseTypeValue == "13") {
+  //撥貸
+            $frame.find("#appropriationLoanDiv").removeClass("hide");  //這段是可以展開我的recordingDiv程式碼
+
+            //不動產地籍異動即時通
+            let $messageText = $frame.find("#appropriationLoanDiv").find('.messageText');
+            let $messageCG = $frame.find("#appropriationLoanDiv").find('.messageCG');
+
+            if (jsondata.result && jsondata.result.collateral) {
+                let collateralList = jsondata.result.collateral;
+                if (collateralList.length !== 0) {
+                    $messageText.removeClass('hide');
+                    $messageCG.removeClass('hide');
+                    $messageCG.empty();
+
+                    collateralList.forEach(function (item) {
+                        if(!item) return
+                        let typeVal = item.type;
+                        let nameVal = item.name;
+                        let codeVal = item.code;
+
+                        let isYesChecked = (nameVal == '1') ? "checked" : "";
+                        let isNoChecked = (nameVal == '2') ? "checked" : "";
+                        let isFreeChecked = (nameVal == '3') ? "checked" : "";
+
+                        let $rowHtml = `
+                            <div class="form-group form-inline collateralRE">
+                                <span class="questionStyleA numC ml-4">${typeVal}：</span>
+                                <input type="hidden" class="codeVal" value="${codeVal}"></input>
+                                <label class="form-check-label ml-2">
+                                    <input type="radio" class="form-check-input collateral" value="1" name="collateral_${typeVal}" ${isYesChecked} />是
+                                </label>
+                                <label class="form-check-label ml-2">
+                                    <input type="radio" class="form-check-input collateral" value="2" name="collateral_${typeVal}" ${isNoChecked} />否
+                                </label>
+                                <label class="form-check-label ml-2">
+                                    <input type="radio" class="form-check-input collateral" value="3" name="collateral_${typeVal}" ${isFreeChecked} />免
+                                </label>
+                                <span>(擔保品非不動產)</span>
+                            </div>`;
+                        $messageCG.append($rowHtml);
+                    })
+                } else {
+                    $messageText.addClass('hide');
+                    $messageCG.addClass('hide');
+                    $messageCG.empty();
+                }
+            }
+
+            // 撥貸前回查頁面
+            let $div = $frame.find("#appropriationLoanDiv").find("#beforeQueryDiv");
+            // isAccruals = 1 時，展示 '撥貸前回查' 頁面
+            if (jsondata.result.isAccruals == "1") {
+                $div.removeClass("hide");
+
+                if (jsondata.result.cfid) {
+                    let cfidCode = jsondata.result.cfid;
+                    $frame.find('#opCaseDiv').find('.beQuId').val(cfidCode);
+                }
+
+                $div.find('#transWorkReDiv').find('.idNumber').val(ucId);
+                $div.find('#transWorkCoDiv').find('.idNumber').val(ucId);
+
+                if (jsondata.result.accruals == "1") { //申請項目
+                    $div.find('#itemBeforeQuery').attr('checked', true);
+                }
+
+                if (jsondata.result.jcic) { //聯徵複查表
+                    $div.find('.add-tran-re-btn').addClass('hide');
+                    $div.find('.tran-re-data-unit').removeClass('hide');
+                    // disabled
+                    $div.find('.tableNoProduce').find('input, select, button').prop("disabled", true);
+                    $div.find('.tableNoProduce').find('.jcicFlag').prop("checked", false);
+                    // 選擇檔案、夾檔 btn 變 disabled 的設定
+                    $div.find('.tableNoProduce').find("label.btn-sm.my-0").css('cursor', 'default');
+                    $div.find('.tableNoProduce').find("label.btn-sm.my-0").css('opacity', '0.65');
+                } else {
+                    $div.find('.add-tran-re-btn').removeClass('hide');
+                    $div.find('.tran-re-data-unit').addClass('hide');
+                }
+
+                if (jsondata.result.jcicFlag == "1") { //聯徵複查表無法產出
+                    $div.find('.add-tran-re-btn').prop('disabled', true);
+                    $div.find('#unableProduce').attr('checked', true);
+                    $div.find('.remarkUnPrText').removeClass('hide');
+                    $div.find('#unableProduce').val('1');
+                } else {
+                    $div.find('.add-tran-re-btn').prop('disabled', false);
+                    $div.find('#unableProduce').attr('checked', false);
+                    $div.find('.remarkUnPrText').addClass('hide');
+                    $div.find('#unableProduce').val('0');
+                }
+
+                if (jsondata.result.host) { //本往複查表
+                    $div.find('.add-tran-co-btn').addClass('hide');
+                    $div.find('.tran-co-data-unit').removeClass('hide');
+                } else {
+                    $div.find('.add-tran-co-btn').removeClass('hide');
+                    $div.find('.tran-co-data-unit').addClass('hide');
+                }
+
+                if (jsondata.result.memo == "") { //無 memo 訊息
+                    // $div.find('#checkRadioY').prop('disabled', false);
+                    // $div.find('#checkRadioN').prop('disabled', false);
+                }
+
+                if (jsondata.result.abnormal == "1") {  //聯徵本往檢核有無異常 radio
+                    $div.find('#checkRadioY').attr('checked', true);
+                    $div.find('#yesNoAbnormal').removeClass('hide');
+                    $div.find('.checkHaveAb').removeClass('hide');
+
+                    //底下按鈕顯示(暫存、呈核、不予撥貸)
+                    $frame.find('#sendBtnOPDiv').find('.F500_001').removeClass('hide'); //暫存 btn
+                    $frame.find('#sendBtnOPDiv').find('.backFile').addClass('hide'); //撤件 btn
+                    $frame.find('#sendBtnOPDiv').find('.nucleated').removeClass('hide'); //呈核 btn
+                    $frame.find('#sendBtnOPDiv').find('.opCenterBranchSend').addClass('hide'); //傳送 btn
+                    $frame.find('#sendBtnOPDiv').find('.noLoan').removeClass('hide'); //不予撥貸 btn
+
+                    if (jsondata.result.agree == "1") {  //同意撥貸 = 1
+                        $div.find('#agreeRadioY').attr('checked', true);
+
+                        //底下按鈕顯示(暫存、呈核)
+                        $frame.find('#sendBtnOPDiv').find('.F500_001').removeClass('hide'); //暫存 btn
+                        $frame.find('#sendBtnOPDiv').find('.backFile').addClass('hide'); //撤件 btn
+                        $frame.find('#sendBtnOPDiv').find('.nucleated').removeClass('hide'); //呈核 btn
+                        $frame.find('#sendBtnOPDiv').find('.opCenterBranchSend').addClass('hide'); //傳送 btn
+                        $frame.find('#sendBtnOPDiv').find('.noLoan').addClass('hide'); //不予撥貸 btn
+
+                        if (jsondata.result.nextBtn == "1") { //流程按鈕(暫存、傳送)
+                            $frame.find('#yesNoAbnormal').find('.agreeNextBtn').val('1'); //塞 value=1
+                            //底下按鈕顯示(暫存、傳送)
+                            $frame.find('#sendBtnOPDiv').find('.F500_001').removeClass('hide'); //暫存 btn
+                            $frame.find('#sendBtnOPDiv').find('.backFile').addClass('hide'); //撤件 btn
+                            $frame.find('#sendBtnOPDiv').find('.nucleated').addClass('hide'); //呈核 btn
+                            $frame.find('#sendBtnOPDiv').find('.opCenterBranchSend').removeClass('hide'); //傳送 btn
+                            $frame.find('#sendBtnOPDiv').find('.noLoan').addClass('hide'); //不予撥貸 btn
+                        } else if (jsondata.result.nextBtn == "2") { //流程按鈕(暫存、呈核)
+                            $frame.find('#yesNoAbnormal').find('.agreeNextBtn').val('2'); //塞 value=2
+                            //底下按鈕顯示(暫存、呈核)
+                            $frame.find('#sendBtnOPDiv').find('.F500_001').removeClass('hide'); //暫存 btn
+                            $frame.find('#sendBtnOPDiv').find('.backFile').addClass('hide'); //撤件 btn
+                            $frame.find('#sendBtnOPDiv').find('.nucleated').removeClass('hide'); //呈核 btn
+                            $frame.find('#sendBtnOPDiv').find('.opCenterBranchSend').addClass('hide'); //傳送 btn
+                            $frame.find('#sendBtnOPDiv').find('.noLoan').addClass('hide'); //不予撥貸 btn
+                        }
+                    } else if (jsondata.result.agree == "0") { //不同意撥貸 = 0
+
+                        $div.find('#agreeRadioN').attr('checked', true);
+                        $div.find('.reasonExplan').addClass('hide');
+                        if (isOpCenter == false) { //分行的時候，底下按鈕才會變化
+                            //底下按鈕顯示(暫存、不予撥貸)
+                            $frame.find('#sendBtnOPDiv').find('.F500_001').removeClass('hide'); //暫存 btn
+                            $frame.find('#sendBtnOPDiv').find('.backFile').addClass('hide'); //撤件 btn
+                            $frame.find('#sendBtnOPDiv').find('.nucleated').addClass('hide'); //呈核 btn
+                            $frame.find('#sendBtnOPDiv').find('.opCenterBranchSend').addClass('hide'); //傳送 btn
+                            $frame.find('#sendBtnOPDiv').find('.noLoan').removeClass('hide'); //不予撥貸 btn
+                        }
+                    } else { //未給值
+                        $div.find('#agreeRadioY').attr('checked', false);
+                        $div.find('#agreeRadioN').attr('checked', false);
+
+                        //底下按鈕顯示(暫存、呈核、不予撥貸)
+                        $frame.find('#sendBtnOPDiv').find('.F500_001').removeClass('hide'); //暫存 btn
+                        $frame.find('#sendBtnOPDiv').find('.backFile').addClass('hide'); //撤件 btn
+                        $frame.find('#sendBtnOPDiv').find('.nucleated').removeClass('hide'); //呈核 btn
+                        $frame.find('#sendBtnOPDiv').find('.opCenterBranchSend').addClass('hide'); //傳送 btn
+                        $frame.find('#sendBtnOPDiv').find('.noLoan').removeClass('hide'); //不予撥貸 btn
+                    }
+
+                } else if (jsondata.result.abnormal == "0") {
+                    $div.find('#checkRadioN').attr('checked', true);
+                    $div.find('#yesNoAbnormal').addClass('hide');
+                    $div.find('.checkHaveAb').addClass('hide');
+                    //底下按鈕顯示(暫存、撤件、傳送)
+                    $frame.find('#sendBtnOPDiv').find('.F500_001').removeClass('hide'); //暫存 btn
+                    $frame.find('#sendBtnOPDiv').find('.backFile').removeClass('hide'); //撤件 btn
+                    $frame.find('#sendBtnOPDiv').find('.nucleated').addClass('hide'); //呈核 btn
+                    $frame.find('#sendBtnOPDiv').find('.opCenterBranchSend').removeClass('hide'); //傳送 btn
+                    $frame.find('#sendBtnOPDiv').find('.noLoan').addClass('hide'); //不予撥貸 btn
+                } else {
+                    $div.find('#checkRadioY').attr('checked', false);
+                    $div.find('#checkRadioN').attr('checked', false);
+                    $div.find('#checkRadioY').prop('disabled', true);
+                    $div.find('#checkRadioN').prop('disabled', true);
+                    $div.find('#yesNoAbnormal').addClass('hide');
+                    $div.find('.checkHaveAb').addClass('hide');
+                    //底下按鈕顯示(暫存、撤件、傳送)
+                    $frame.find('#sendBtnOPDiv').find('.F500_001').removeClass('hide'); //暫存 btn
+                    $frame.find('#sendBtnOPDiv').find('.backFile').removeClass('hide'); //撤件 btn
+                    $frame.find('#sendBtnOPDiv').find('.nucleated').addClass('hide'); //呈核 btn
+                    $frame.find('#sendBtnOPDiv').find('.opCenterBranchSend').removeClass('hide'); //傳送 btn
+                    $frame.find('#sendBtnOPDiv').find('.noLoan').addClass('hide'); //不予撥貸 btn
+                }
+
+                if (jsondata.result.nextBtn == "1") { //流程按鈕(暫存、傳送)
+                    $frame.find('#yesNoAbnormal').find('.agreeNextBtn').val('1'); //塞 value=1
+                } else if (jsondata.result.nextBtn == "2") { //流程按鈕(暫存、呈核)
+                    $frame.find('#yesNoAbnormal').find('.agreeNextBtn').val('2'); //塞 value=2
+                }
+
+                if (isOpCenter == undefined) {  //500作業中心時
+                    // disabled
+                    $div.find("input, select, button, textarea").prop("disabled", true);
+                    // 選擇檔案、夾檔 btn 變 disabled 的設定
+                    $div.find("label.btn-sm.my-0").css('cursor', 'default');
+                    $div.find("label.btn-sm.my-0").css('opacity', '0.65');
+
+                    if (jsondata.result.jcic) {
+                        // 預覽 btn
+                        $div.find('.openTranRe').attr('disabled', false);
+                    }
+
+                    if (jsondata.result.host) {
+                        // 預覽 btn
+                        $div.find('.openTranCo').attr('disabled', false);
+                    }
+                }
+            } else {
+                $div.addClass("hide");
+            }
+
+        }
+}
+
+ if (caseTypeValue == "13") {
+            let strTitle = "依消金部115.2.13聯消金字第0031號函規定，於辦理不動產相關業務時，應積極向客戶推廣內政部「地籍異動即時通」服務。";
+            methodToolTip.publicToolTip($("#frontBody").find('#appropriationLoanDiv .messageText .questionStyleA span'), strTitle);
+
+            let recordTitle = "時分留白表示指定年月日當日營業時間內皆可錄音。";
+            methodToolTip.recordingToolTip($("#openOpSendDiv").find('#appropriationLoanDiv .phoneTime'), recordTitle);
+            //先將提示文字隱藏
+            $('.recordingDiv').find('.fa-exclamation-circle').addClass('hide');
+
+            //預計錄音日期預設
+            $(".phoneDate").val(getTodayDate());
+            $(".phoneDate").attr("min", getTodayDate());
+            //預計錄音時間
+            $('.phoneTime').flatpickr({
+                enableTime: true,  //開啟時間功能:新增『時』、『分』
+                noCalendar: true,  //關閉日期，只顯示時間
+                dateFormat: "H:i",  //時間格式
+                allowInput: true,  //允許使用者自行輸入
+                time_24hr: true,  //是否使用24小時制,
+                minuteIncrement: 1 //分鐘間隔改為1
+            })
+        }
+
+if (caseTypeValue != "11") {
+            //各個資料帶入
+            let classArray = [".phoneDate", ".phoneTime", ".phoneType"];
+            $.each(classArray, (i, className) => {
+                let dataName = className.replace('.', '');
+                $(className).val(jsondata.result[dataName]);
+                switch (dataName) {
+                  case "phoneDate":
+                        let recordDate = jsondata.result[dataName].replace(/[/]/g, "-") || "";
+                        if (jsondata.result.phoneDate) {  //電話照會日期
+                            $(".phoneDate").removeClass('hide');
+                            $(".phoneDate").val(recordDate);
+                            $(".phoneDate").attr("min", getTodayDate());
+                        } else {
+                            $(".phoneDate").val("");
+                        }
+                        break;
+                    case "phoneTime":
+                        if (jsondata.result.phoneTime) {  //電話照會時間
+                            $(".phoneTime").removeClass('hide');
+                            $(".phoneTime").val(jsondata.result.phoneTime);
+                        } else {
+                            $(".phoneTime").val("");
+                        }
+                        break;
+                    case "phoneType":
+                        if (jsondata.result.phoneType) {  //電話照會類別
+                            if (jsondata.result.phoneType == "0") {  //指定
+                                $('#specified').prop('checked', true);
+                                //展開提示文字
+                                $('.recordingDiv').find('.fa-exclamation-circle').removeClass('hide');
+                            } else if (jsondata.result.phoneType == "1") {  //不指定
+                                $('#notSpecified').prop('checked', true);
+                            } else if (jsondata.result.phoneType == "2") {  //免錄音
+                                $('#noRecording').prop('checked', true);
+                            }
+                        }
+                        break;
+.........其他不重要
+}
+
+}
