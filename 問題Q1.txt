@@ -1,336 +1,178 @@
-<div class="form-group form-inline my-3 recordingDiv">
-              <span class="questionStyleA">預計錄音日期：</span>
-              <div class="input-group">
-                <label class="form-check-label ml-2">
-                  <input type="radio" class="form-check-input phoneType" id="specified" name="phoneType" value="0" onchange="recordingSystemToggle(this)">指定
-                </label>
-                <input type="date" class="form-control phoneDate ml-2 hide"/>
-                <input type="text" class="form-control phoneTime ml-2 hide"/>
-                <label class="form-check-label ml-2">
-                  <input type="radio" class="form-check-input phoneType ml-2" id="notSpecified" name="phoneType" value="1" onchange="recordingSystemToggle(this)">不指定
-                </label>
-                <label class="form-check-label ml-2">
-                  <input type="radio" class="form-check-input phoneType ml-2" id="noRecording" name="phoneType" value="2" onchange="recordingSystemToggle(this)">免錄音
-                </label>
-                <label class="form-check-label ml-2">
-                  <input type="radio" class="form-check-input ml-2"  value="5">測試
-                </label>
-              </div>
-            </div>
+obj.phoneDate,//預計錄音日期
+phoneDate資料為 "2026/08/27\n14:51"
+我要它在這格顯示2026/08/27換行14:51
+是要怎麼改
 
-很奇怪我的[指定、不指定、免錄音]value值會不見 只有[測試]的value="5"
-為什麼阿
 
-async function openOpCaseWeb(obj, isOpCenter) {
-let userObj = getUidToken();
-    let uid = userObj.uid;
-    let token = userObj.token;
-    let table = $(obj).closest("table").DataTable();
-    let tr = $(obj).closest("tr");
-    let data = table.row(tr).data()[0];
-    let caseTypeValue = data.assign;
+function sendJCTableInitHandler(addresseeName, list, searchCaseType, isBranch) {
+    let columnDefsArr = [
+        { "targets": 0, "width": "0%", "visible": false, "orderable": false },//data JSON
+        { "targets": 1, "width": "5%", "orderable": false, "className": "text-center align-middle" },//checkbox
+        { "targets": 2, "width": "5%", "className": "text-center align-middle" },//上傳時間
+        { "targets": 3, "width": "5%", "className": "text-center align-middle" },//授信帳號
+        { "targets": 4, "width": "5%", "className": "text-center align-middle" },//核准號碼
+        { "targets": 5, "width": "5%", "className": "text-center align-middle" },//戶名
+        { "targets": 6, "width": "5%", "className": "text-center align-middle" },//ID
+        { "targets": 7, "width": "5%", "className": "text-center align-middle" },//金額
+        { "targets": 8, "width": "5%", "className": "text-center align-middle" },//案件類型
+        { "targets": 9, "width": "5%", "className": "text-center align-middle" },//業務別
+        { "targets": 10, "width": "10%", "className": "text-center align-middle selectTd" },//收件人
+        { "targets": 11, "width": "10%", "className": "text-center align-middle" },//分行區域
+        { "targets": 12, "width": "10%", "className": "text-center align-middle" },//目前作業人員
+        { "targets": 13, "width": "10%", "className": "text-center align-middle" },//案件狀態
+        { "targets": 14, "width": "10%", "className": "text-center align-middle" },//案件編號
+    ];
+    //如果是撥貸columnDefsArr要長這樣
+    if (searchCaseType == "13" || searchCaseType == "default") {
+        columnDefsArr = [
+            { "targets": 0, "width": "0%", "visible": false, "orderable": false },//data JSON
+            { "targets": 1, "width": "5%", "orderable": false, "className": "text-center align-middle" },//checkbox
+            { "targets": 2, "width": "4%", "className": "text-center align-middle" },//上傳時間
+            { "targets": 3, "width": "5%", "className": "text-center align-middle" },//預計撥貸日期
+            { "targets": 4, "width": "9%", "className": "text-center align-middle" },//預計錄音日期
+            { "targets": 5, "width": "5%", "className": "text-center align-middle" },//授信帳號
+            { "targets": 6, "width": "5%", "className": "text-center align-middle" },//核准號碼
+            { "targets": 7, "width": "5%", "className": "text-center align-middle" },//戶名
+            { "targets": 8, "width": "5%", "className": "text-center align-middle" },//ID
+            { "targets": 9, "width": "5%", "className": "text-center align-middle" },//金額
+            { "targets": 10, "width": "5%", "className": "text-center align-middle" },//案件類型
+            { "targets": 11, "width": "5%", "className": "text-center align-middle" },//業務別
+            { "targets": 12, "width": "10%", "className": "text-center align-middle " },//收件人
+            { "targets": 13, "width": "5%", "className": "text-center align-middle" },//分行區域
+            { "targets": 14, "width": "10%", "className": "text-center align-middle " },//目前作業人員
+            { "targets": 15, "width": "7%", "className": "text-center align-middle" },//案件狀態
+            { "targets": 16, "width": "10%", "className": "text-center align-middle" },//案件編號
+        ];
 
-...........不重要略過
-
-let jsondata = "";
-    if (caseTypeValue != "11") {
-        jsondata = await apiS060001031(uid, token, caseno);
-    } else {
-        jsondata = await apiS060001036(uid, token, caseno);//約據
+    }
+    let opt = {
+        "bAutoWidth": false, //自動適應寬度
+        "bRetrieve": true,
+        "bStateSave": false,
+        "scrollCollapse": true,
+        "autowidth": false,
+        "language": {
+            search: "搜尋表格:",
+            info: "顯示第 _START_ 至 _END_ 筆結果，共 _TOTAL_ 筆",
+            infoFiltered: "",
+            infoEmpty: "無相關資料",
+            zeroRecords: "沒有符合的資料",
+            lengthMenu: "顯示 _MENU_ 筆",
+            paginate: {
+                "first": "第一頁",
+                "previous": "上一頁",
+                "next": "下一頁",
+                "last": "最後一頁"
+            },
+        },
+        "columnDefs": columnDefsArr,
+        "order": [2, 'asc']
     }
 
-if (jsondata.rc == "M0000") {
-let url1v1Frame = ajaxhttpIPHostHtml("/opCenter/opCenter_openOpCaseWeb.html");
-        const frame = await $.ajax(url1v1Frame);
-        //1v1Frame
-        let $frame = $(frame);
+    let dataTable = $('#resualtTable').DataTable(opt);
 
-if (caseTypeValue == "13") {
-  //撥貸
-            $frame.find("#appropriationLoanDiv").removeClass("hide");  //這段是可以展開我的recordingDiv程式碼
-
-            //不動產地籍異動即時通
-            let $messageText = $frame.find("#appropriationLoanDiv").find('.messageText');
-            let $messageCG = $frame.find("#appropriationLoanDiv").find('.messageCG');
-
-            if (jsondata.result && jsondata.result.collateral) {
-                let collateralList = jsondata.result.collateral;
-                if (collateralList.length !== 0) {
-                    $messageText.removeClass('hide');
-                    $messageCG.removeClass('hide');
-                    $messageCG.empty();
-
-                    collateralList.forEach(function (item) {
-                        if(!item) return
-                        let typeVal = item.type;
-                        let nameVal = item.name;
-                        let codeVal = item.code;
-
-                        let isYesChecked = (nameVal == '1') ? "checked" : "";
-                        let isNoChecked = (nameVal == '2') ? "checked" : "";
-                        let isFreeChecked = (nameVal == '3') ? "checked" : "";
-
-                        let $rowHtml = `
-                            <div class="form-group form-inline collateralRE">
-                                <span class="questionStyleA numC ml-4">${typeVal}：</span>
-                                <input type="hidden" class="codeVal" value="${codeVal}"></input>
-                                <label class="form-check-label ml-2">
-                                    <input type="radio" class="form-check-input collateral" value="1" name="collateral_${typeVal}" ${isYesChecked} />是
-                                </label>
-                                <label class="form-check-label ml-2">
-                                    <input type="radio" class="form-check-input collateral" value="2" name="collateral_${typeVal}" ${isNoChecked} />否
-                                </label>
-                                <label class="form-check-label ml-2">
-                                    <input type="radio" class="form-check-input collateral" value="3" name="collateral_${typeVal}" ${isFreeChecked} />免
-                                </label>
-                                <span>(擔保品非不動產)</span>
-                            </div>`;
-                        $messageCG.append($rowHtml);
-                    })
-                } else {
-                    $messageText.addClass('hide');
-                    $messageCG.addClass('hide');
-                    $messageCG.empty();
-                }
-            }
-
-            // 撥貸前回查頁面
-            let $div = $frame.find("#appropriationLoanDiv").find("#beforeQueryDiv");
-            // isAccruals = 1 時，展示 '撥貸前回查' 頁面
-            if (jsondata.result.isAccruals == "1") {
-                $div.removeClass("hide");
-
-                if (jsondata.result.cfid) {
-                    let cfidCode = jsondata.result.cfid;
-                    $frame.find('#opCaseDiv').find('.beQuId').val(cfidCode);
-                }
-
-                $div.find('#transWorkReDiv').find('.idNumber').val(ucId);
-                $div.find('#transWorkCoDiv').find('.idNumber').val(ucId);
-
-                if (jsondata.result.accruals == "1") { //申請項目
-                    $div.find('#itemBeforeQuery').attr('checked', true);
-                }
-
-                if (jsondata.result.jcic) { //聯徵複查表
-                    $div.find('.add-tran-re-btn').addClass('hide');
-                    $div.find('.tran-re-data-unit').removeClass('hide');
-                    // disabled
-                    $div.find('.tableNoProduce').find('input, select, button').prop("disabled", true);
-                    $div.find('.tableNoProduce').find('.jcicFlag').prop("checked", false);
-                    // 選擇檔案、夾檔 btn 變 disabled 的設定
-                    $div.find('.tableNoProduce').find("label.btn-sm.my-0").css('cursor', 'default');
-                    $div.find('.tableNoProduce').find("label.btn-sm.my-0").css('opacity', '0.65');
-                } else {
-                    $div.find('.add-tran-re-btn').removeClass('hide');
-                    $div.find('.tran-re-data-unit').addClass('hide');
-                }
-
-                if (jsondata.result.jcicFlag == "1") { //聯徵複查表無法產出
-                    $div.find('.add-tran-re-btn').prop('disabled', true);
-                    $div.find('#unableProduce').attr('checked', true);
-                    $div.find('.remarkUnPrText').removeClass('hide');
-                    $div.find('#unableProduce').val('1');
-                } else {
-                    $div.find('.add-tran-re-btn').prop('disabled', false);
-                    $div.find('#unableProduce').attr('checked', false);
-                    $div.find('.remarkUnPrText').addClass('hide');
-                    $div.find('#unableProduce').val('0');
-                }
-
-                if (jsondata.result.host) { //本往複查表
-                    $div.find('.add-tran-co-btn').addClass('hide');
-                    $div.find('.tran-co-data-unit').removeClass('hide');
-                } else {
-                    $div.find('.add-tran-co-btn').removeClass('hide');
-                    $div.find('.tran-co-data-unit').addClass('hide');
-                }
-
-                if (jsondata.result.memo == "") { //無 memo 訊息
-                    // $div.find('#checkRadioY').prop('disabled', false);
-                    // $div.find('#checkRadioN').prop('disabled', false);
-                }
-
-                if (jsondata.result.abnormal == "1") {  //聯徵本往檢核有無異常 radio
-                    $div.find('#checkRadioY').attr('checked', true);
-                    $div.find('#yesNoAbnormal').removeClass('hide');
-                    $div.find('.checkHaveAb').removeClass('hide');
-
-                    //底下按鈕顯示(暫存、呈核、不予撥貸)
-                    $frame.find('#sendBtnOPDiv').find('.F500_001').removeClass('hide'); //暫存 btn
-                    $frame.find('#sendBtnOPDiv').find('.backFile').addClass('hide'); //撤件 btn
-                    $frame.find('#sendBtnOPDiv').find('.nucleated').removeClass('hide'); //呈核 btn
-                    $frame.find('#sendBtnOPDiv').find('.opCenterBranchSend').addClass('hide'); //傳送 btn
-                    $frame.find('#sendBtnOPDiv').find('.noLoan').removeClass('hide'); //不予撥貸 btn
-
-                    if (jsondata.result.agree == "1") {  //同意撥貸 = 1
-                        $div.find('#agreeRadioY').attr('checked', true);
-
-                        //底下按鈕顯示(暫存、呈核)
-                        $frame.find('#sendBtnOPDiv').find('.F500_001').removeClass('hide'); //暫存 btn
-                        $frame.find('#sendBtnOPDiv').find('.backFile').addClass('hide'); //撤件 btn
-                        $frame.find('#sendBtnOPDiv').find('.nucleated').removeClass('hide'); //呈核 btn
-                        $frame.find('#sendBtnOPDiv').find('.opCenterBranchSend').addClass('hide'); //傳送 btn
-                        $frame.find('#sendBtnOPDiv').find('.noLoan').addClass('hide'); //不予撥貸 btn
-
-                        if (jsondata.result.nextBtn == "1") { //流程按鈕(暫存、傳送)
-                            $frame.find('#yesNoAbnormal').find('.agreeNextBtn').val('1'); //塞 value=1
-                            //底下按鈕顯示(暫存、傳送)
-                            $frame.find('#sendBtnOPDiv').find('.F500_001').removeClass('hide'); //暫存 btn
-                            $frame.find('#sendBtnOPDiv').find('.backFile').addClass('hide'); //撤件 btn
-                            $frame.find('#sendBtnOPDiv').find('.nucleated').addClass('hide'); //呈核 btn
-                            $frame.find('#sendBtnOPDiv').find('.opCenterBranchSend').removeClass('hide'); //傳送 btn
-                            $frame.find('#sendBtnOPDiv').find('.noLoan').addClass('hide'); //不予撥貸 btn
-                        } else if (jsondata.result.nextBtn == "2") { //流程按鈕(暫存、呈核)
-                            $frame.find('#yesNoAbnormal').find('.agreeNextBtn').val('2'); //塞 value=2
-                            //底下按鈕顯示(暫存、呈核)
-                            $frame.find('#sendBtnOPDiv').find('.F500_001').removeClass('hide'); //暫存 btn
-                            $frame.find('#sendBtnOPDiv').find('.backFile').addClass('hide'); //撤件 btn
-                            $frame.find('#sendBtnOPDiv').find('.nucleated').removeClass('hide'); //呈核 btn
-                            $frame.find('#sendBtnOPDiv').find('.opCenterBranchSend').addClass('hide'); //傳送 btn
-                            $frame.find('#sendBtnOPDiv').find('.noLoan').addClass('hide'); //不予撥貸 btn
-                        }
-                    } else if (jsondata.result.agree == "0") { //不同意撥貸 = 0
-
-                        $div.find('#agreeRadioN').attr('checked', true);
-                        $div.find('.reasonExplan').addClass('hide');
-                        if (isOpCenter == false) { //分行的時候，底下按鈕才會變化
-                            //底下按鈕顯示(暫存、不予撥貸)
-                            $frame.find('#sendBtnOPDiv').find('.F500_001').removeClass('hide'); //暫存 btn
-                            $frame.find('#sendBtnOPDiv').find('.backFile').addClass('hide'); //撤件 btn
-                            $frame.find('#sendBtnOPDiv').find('.nucleated').addClass('hide'); //呈核 btn
-                            $frame.find('#sendBtnOPDiv').find('.opCenterBranchSend').addClass('hide'); //傳送 btn
-                            $frame.find('#sendBtnOPDiv').find('.noLoan').removeClass('hide'); //不予撥貸 btn
-                        }
-                    } else { //未給值
-                        $div.find('#agreeRadioY').attr('checked', false);
-                        $div.find('#agreeRadioN').attr('checked', false);
-
-                        //底下按鈕顯示(暫存、呈核、不予撥貸)
-                        $frame.find('#sendBtnOPDiv').find('.F500_001').removeClass('hide'); //暫存 btn
-                        $frame.find('#sendBtnOPDiv').find('.backFile').addClass('hide'); //撤件 btn
-                        $frame.find('#sendBtnOPDiv').find('.nucleated').removeClass('hide'); //呈核 btn
-                        $frame.find('#sendBtnOPDiv').find('.opCenterBranchSend').addClass('hide'); //傳送 btn
-                        $frame.find('#sendBtnOPDiv').find('.noLoan').removeClass('hide'); //不予撥貸 btn
-                    }
-
-                } else if (jsondata.result.abnormal == "0") {
-                    $div.find('#checkRadioN').attr('checked', true);
-                    $div.find('#yesNoAbnormal').addClass('hide');
-                    $div.find('.checkHaveAb').addClass('hide');
-                    //底下按鈕顯示(暫存、撤件、傳送)
-                    $frame.find('#sendBtnOPDiv').find('.F500_001').removeClass('hide'); //暫存 btn
-                    $frame.find('#sendBtnOPDiv').find('.backFile').removeClass('hide'); //撤件 btn
-                    $frame.find('#sendBtnOPDiv').find('.nucleated').addClass('hide'); //呈核 btn
-                    $frame.find('#sendBtnOPDiv').find('.opCenterBranchSend').removeClass('hide'); //傳送 btn
-                    $frame.find('#sendBtnOPDiv').find('.noLoan').addClass('hide'); //不予撥貸 btn
-                } else {
-                    $div.find('#checkRadioY').attr('checked', false);
-                    $div.find('#checkRadioN').attr('checked', false);
-                    $div.find('#checkRadioY').prop('disabled', true);
-                    $div.find('#checkRadioN').prop('disabled', true);
-                    $div.find('#yesNoAbnormal').addClass('hide');
-                    $div.find('.checkHaveAb').addClass('hide');
-                    //底下按鈕顯示(暫存、撤件、傳送)
-                    $frame.find('#sendBtnOPDiv').find('.F500_001').removeClass('hide'); //暫存 btn
-                    $frame.find('#sendBtnOPDiv').find('.backFile').removeClass('hide'); //撤件 btn
-                    $frame.find('#sendBtnOPDiv').find('.nucleated').addClass('hide'); //呈核 btn
-                    $frame.find('#sendBtnOPDiv').find('.opCenterBranchSend').removeClass('hide'); //傳送 btn
-                    $frame.find('#sendBtnOPDiv').find('.noLoan').addClass('hide'); //不予撥貸 btn
-                }
-
-                if (jsondata.result.nextBtn == "1") { //流程按鈕(暫存、傳送)
-                    $frame.find('#yesNoAbnormal').find('.agreeNextBtn').val('1'); //塞 value=1
-                } else if (jsondata.result.nextBtn == "2") { //流程按鈕(暫存、呈核)
-                    $frame.find('#yesNoAbnormal').find('.agreeNextBtn').val('2'); //塞 value=2
-                }
-
-                if (isOpCenter == undefined) {  //500作業中心時
-                    // disabled
-                    $div.find("input, select, button, textarea").prop("disabled", true);
-                    // 選擇檔案、夾檔 btn 變 disabled 的設定
-                    $div.find("label.btn-sm.my-0").css('cursor', 'default');
-                    $div.find("label.btn-sm.my-0").css('opacity', '0.65');
-
-                    if (jsondata.result.jcic) {
-                        // 預覽 btn
-                        $div.find('.openTranRe').attr('disabled', false);
-                    }
-
-                    if (jsondata.result.host) {
-                        // 預覽 btn
-                        $div.find('.openTranCo').attr('disabled', false);
-                    }
-                }
-            } else {
-                $div.addClass("hide");
-            }
-
+    $.each(list, function (item, obj) {
+        //案件編號
+        let caseNoATag = `<a href="javascript: void(0)" onclick="getOpACWeb(this)">${obj.caseNo} </a>`;
+        // if (obj.assign == "15") {
+        //     //其他
+        //     caseNoATag = `<a href="javascript: void(0)">其他案件</a>`;
+        // }
+        //案件類型
+        let tmpAssignName = obj.cfTypeCht;
+        //續撥(row>1)
+        if (obj.assign == "13" && obj.row > 1) {
+            tmpAssignName = "續撥";
         }
-}
-
- if (caseTypeValue == "13") {
-            let strTitle = "依消金部115.2.13聯消金字第0031號函規定，於辦理不動產相關業務時，應積極向客戶推廣內政部「地籍異動即時通」服務。";
-            methodToolTip.publicToolTip($("#frontBody").find('#appropriationLoanDiv .messageText .questionStyleA span'), strTitle);
-
-            let recordTitle = "時分留白表示指定年月日當日營業時間內皆可錄音。";
-            methodToolTip.recordingToolTip($("#openOpSendDiv").find('#appropriationLoanDiv .phoneTime'), recordTitle);
-            //先將提示文字隱藏
-            $('.recordingDiv').find('.fa-exclamation-circle').addClass('hide');
-
-            //預計錄音日期預設
-            $(".phoneDate").val(getTodayDate());
-            $(".phoneDate").attr("min", getTodayDate());
-            //預計錄音時間
-            $('.phoneTime').flatpickr({
-                enableTime: true,  //開啟時間功能:新增『時』、『分』
-                noCalendar: true,  //關閉日期，只顯示時間
-                dateFormat: "H:i",  //時間格式
-                allowInput: true,  //允許使用者自行輸入
-                time_24hr: true,  //是否使用24小時制,
-                minuteIncrement: 1 //分鐘間隔改為1
-            })
+        console.log("是否為分行:", isBranch);
+        const addressNameHtml = getAddresseeJCNameHtml(addresseeName, obj, isBranch)
+        //金額轉千分位
+        let tmpAmount = "";
+        try {
+            tmpAmount = money_Thousands(obj.amount) || "";
+        } catch (e) { console.error(e) };
+        let tmpArr = [
+            obj,
+            '<input type="checkbox" class="align-middle"  style="width: 18px;height: 18px;"  onclick="tickTHIScheckbox(this)">',
+            obj.cDate,//上傳時間
+            //obj.caseNo,//案件編號
+            //caseNoATag,
+            obj.acc,//授信帳號
+            obj.modalAllowCode,//核准號碼
+            obj.name,//戶名
+            obj.id,//ID
+            tmpAmount,//金額
+            // tmpAssignName,//案件類型
+            // obj.businessText,//業務別
+            '<select class="form-control form-control-sm mr-2" onchange="changeAddresseeNameHandler(this)"><option value="default">請選擇...</option>' + addressNameHtml + '</select>',
+            obj.cBranchCh,//區域
+            obj.r002,//目前作業人員
+            tmpAssignName,//案件類型
+            obj.businessText,//業務別
+            `<a href="javascript: void(0)" onclick="viewProgress(this)" >${obj.caseStatus}</a>`,//案件狀態
+            caseNoATag//案件編號
+        ];
+        //如果是撥貸tmpArr要長這樣
+        if (searchCaseType == "13" || searchCaseType == "default") {
+            //1:建檔加撥貸   0:撥貸
+            if (obj.isMerge == "1") {
+                obj.assign = "13"
+                tmpAssignName = assignMap(obj.assign);
+            }
+            //續撥(row>1)
+            if (obj.assign == "13" && obj.row > 1) {
+                tmpAssignName = "續撥";
+            }
+            tmpArr = [
+                obj,
+                '<input type="checkbox" class="align-middle"  style="width: 18px;height: 18px;"  onclick="tickTHIScheckbox(this)">',
+                obj.cDate,//上傳時間
+                obj.allocationDate,//預計撥貸日期
+                obj.phoneDate,//預計錄音日期
+                //obj.caseNo,//案件編號
+                //caseNoATag,
+                obj.acc,//授信帳號
+                obj.modalAllowCode,//核准號碼
+                obj.name,//戶名
+                obj.id,//ID
+                tmpAmount,//金額
+                // tmpAssignName,//案件類型
+                // obj.businessText,//業務別
+                //obj.caseStatus,//案件狀態
+                '<select class="form-control form-control-sm mr-2" onchange="changeAddresseeNameHandler(this)"><option value="default">請選擇...</option>' + addressNameHtml + '</select>',
+                obj.cBranchCh,//區域
+                obj.r002,//目前作業人員
+                tmpAssignName,//案件類型
+                obj.businessText,//業務別
+                `<a href="javascript: void(0)" onclick="viewProgress(this)" >${obj.caseStatus}</a>`,//案件狀態
+                caseNoATag,//案件編號
+            ]
         }
+        dataTable.row.add(tmpArr)
+    });
 
-if (caseTypeValue != "11") {
-            //各個資料帶入
-            let classArray = [".phoneDate", ".phoneTime", ".phoneType"];
-            $.each(classArray, (i, className) => {
-                let dataName = className.replace('.', '');
-                $(className).val(jsondata.result[dataName]);
-                switch (dataName) {
-                  case "phoneDate":
-                        let recordDate = jsondata.result[dataName].replace(/[/]/g, "-") || "";
-                        if (jsondata.result.phoneDate) {  //電話照會日期
-                            $(".phoneDate").removeClass('hide');
-                            $(".phoneDate").val(recordDate);
-                            $(".phoneDate").attr("min", getTodayDate());
-                        } else {
-                            $(".phoneDate").val("");
-                        }
-                        break;
-                    case "phoneTime":
-                        if (jsondata.result.phoneTime) {  //電話照會時間
-                            $(".phoneTime").removeClass('hide');
-                            $(".phoneTime").val(jsondata.result.phoneTime);
-                        } else {
-                            $(".phoneTime").val("");
-                        }
-                        break;
-                    case "phoneType":
-                        if (jsondata.result.phoneType) {  //電話照會類別
-                            if (jsondata.result.phoneType == "0") {  //指定
-                                $('#specified').prop('checked', true);
-                                //展開提示文字
-                                $('.recordingDiv').find('.fa-exclamation-circle').removeClass('hide');
-                            } else if (jsondata.result.phoneType == "1") {  //不指定
-                                $('#notSpecified').prop('checked', true);
-                            } else if (jsondata.result.phoneType == "2") {  //免錄音
-                                $('#noRecording').prop('checked', true);
-                            }
-                        }
-                        break;
-.........其他不重要
-}
+    dataTable.draw();
 
+    //  //table初始化
+    //  changWindowWdthHandler();
+    //  changTdSortSymbolHandler();
+
+    //  //下次變更視窗時更改的動作
+    //  $(document).ready(function () {
+    //      $(window).resize(function () {
+    //          changWindowWdthHandler();
+    //          changTdSortSymbolHandler();
+    //      });
+    //  });
+
+    $('#resualtTable').css('border', '1px solid #dee2e6').css('width', '');
+    $('#resualtTable').find('thead th').addClass('align-middle');
+    $(".col-sm-12").addClass('my-1');
+    $(".dataTables_info").addClass('pt-2');
+    $(".dataTables_length").parent('div').after('<div class="col-sm-12 col-md-4 my-1"><div class="dataTables_length" id="middle"><label>收件人：' +
+        '<select id="addresseeName" onchange="addresseeNameSelect(this)" class="w-100 form-control form-control-sm mr-2"><option value="default">請選擇...</option>' + getAddresseeNameHtml(addresseeName) + '</select>' +
+        '</label></div></div>');
+    $('.dataTables_length,#resualtTable_filter').parent('div:first-child()').removeClass('col-md-6').addClass('col-md-3');
+    $('.dataTables_length,#resualtTable_filter').parent('div:last-child()').removeClass('col-md-6').addClass('col-md-5');
+    return dataTable;
 }
