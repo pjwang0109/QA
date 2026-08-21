@@ -1,33 +1,31 @@
+function handlePhoneTimeKeydown(e, element) {
+    // 檢查是否按下 Enter 鍵
+    if (e.key === "Enter" || e.keyCode === 13) {
+        e.preventDefault(); // 防止預設送出行為
 
-            
-        case "collateral":
-            // 🌟 1. 先初始化一個空陣列準備存資料
-            let collateralArr = [];
+        let $input = $(element);
+        let val = $input.val().trim();
 
-            // 🌟 2. 透過尋找畫面上所有的大標題（例如 C1：、C2：），來鎖定有幾列題目
-            // 這樣可以避免直接 each 丟失沒勾選（"0"）的列
-            $this.find('.questionStyleA').each(function () {
-                // 取得 code 值（去除冒號與空白，例如從 "C1：" 變成 "C1"）
-                let codeVal = $(this).text().replace("：", "").trim();
+        // 判斷是否為 4 碼純數字 (例如 "1430" 或 "0905")
+        if (/^\d{4}$/.test(val)) {
+            let hour = parseInt(val.substring(0, 2), 10);
+            let minute = parseInt(val.substring(2, 4), 10);
+
+            // 驗證時間範圍合法性 (00~23 時、00~59 分)
+            if (hour >= 0 && hour <= 23 && minute >= 0 && minute <= 59) {
+                let formattedTime = `${val.substring(0, 2)}:${val.substring(2, 4)}`;
                 
-                // 🌟 3. 去找當前這一組 radio (name="collateral_C1") 中，被勾選 (:checked) 的那一個
-                let $checkedRadio = $this.find(`input[name="collateral_${codeVal}"]:checked`);
-                
-                let nameVal = "0"; // 預設值為 "0" (若沒選)
-                
-                if ($checkedRadio.length > 0) {
-                    nameVal = $checkedRadio.val(); // 如果有勾選，取得 value ("1", "2" 或 "3")
+                // 若有綁定 Flatpickr，透過實例更新能確保內部同步
+                if (element._flatpickr) {
+                    element._flatpickr.setDate(formattedTime, true);
+                    element._flatpickr.close();
+                } else {
+                    $input.val(formattedTime).trigger('change');
                 }
-
-                // 🌟 4. 組合成物件，push 進入陣列
-                collateralArr.push({
-                    code: codeVal,
-                    name: nameVal
-                });
-            });
-
-            // 🌟 5. 最後把打包好的陣列塞回 data.collateral 中
-            data[dataName] = collateralArr;
-            break;
+                $input.blur();
+            } else {
+                alert("時間超出合法範圍（時需為 00-23，分需為 00-59）");
+            }
+        }
     }
-});
+}
