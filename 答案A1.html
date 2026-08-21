@@ -1,40 +1,26 @@
-//作業中心-更改企業名/姓名時，同步連動負責人與保證人額度區塊
-suretyCenterName: function (target) {
-    let centerName = $(target).val();
-    let currentId = $(target).closest('.form-group.form-inline.my-2').find('.id').val();
-    
-    $('.responsibleDiv .responsible').each(function () { 
-        let codeVal = $(this).find(".code").val();
-        
-        // 1. 先確認統編/ID 是否相符
-        if (currentId === codeVal && currentId != "") {
-            // 先把這一個符合的負責人名字改掉
-            $(this).find('.principal').val(centerName);
-            
-            // 🌟 2. 抓取當前這一個 .responsible 區塊內的 .rePeople 文字
-            // trim() 可以去除前後可能不小心混入的空白字元
-            let rePeopleText = $(this).find('.rePeople').text().trim();
-            console.log("@@找到負責人區域的 rePeopleText:", rePeopleText);
+使用 jQuery 監聽 keydown 事件
+$('.phoneTime').on('keydown', function (e) {
+    if (e.which === 13 || e.key === "Enter") {
+        e.preventDefault(); // 防止表單被送出
 
-            // 🌟 3. 開始遍歷保證人額度區塊
-            $('#GCC .guarantor').each(function () {
-                let $guarantorRow = $(this); // 暫存當前這一列的 jQuery 物件
-                let jsGuarantor = $guarantorRow.find('.jsGuarantor').text().trim();
-                
-                // 🌟 4. 比對 rePeopleText 跟 jsGuarantor 是否相同
-                if (rePeopleText === jsGuarantor && jsGuarantor != "") {
-                    console.log("@@找到相符的保證人項目:", jsGuarantor);
-                    
-                    // 🌟 5. 檢查該列的 principal 欄位值是否為空
-                    let currentPrincipalVal = $guarantorRow.find('.principal').val() || "";
-                    
-                    if (currentPrincipalVal.trim() === "") {
-                        console.log("@@此項目的 principal 為空，帶入 centerName:", centerName);
-                        // 將 centerName 帶入保證人額度列的 principal 欄位
-                        $guarantorRow.find('.principal').val(centerName);
-                    }
-                }
-            });
+        let $input = $(this);
+        let val = $input.val().trim();
+
+        // 判斷是否為剛好 4 碼純數字 (例如 "0930", "1420")
+        if (/^\d{4}$/.test(val)) {
+            let hour = parseInt(val.substring(0, 2), 10);
+            let minute = parseInt(val.substring(2, 4), 10);
+
+            // 驗證時間範圍：小時 00~23，分鐘 00~59
+            if (hour >= 0 && hour <= 23 && minute >= 0 && minute <= 59) {
+                let formattedTime = `${val.substring(0, 2)}:${val.substring(2, 4)}`;
+
+                // 用 jQuery 寫入格式化後的字串，並觸發 change 事件
+                $input.val(formattedTime).trigger('change').blur();
+            } else {
+                alert("請輸入有效的時間範圍（小時 00~23，分鐘 00~59）");
+                $input.val("");
+            }
         }
-    });
-},
+    }
+});
