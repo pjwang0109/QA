@@ -1,1 +1,3 @@
 
+這是我的152行
+const rating_json = JSON.parse(DOMPurify.sanitize(sessionStorage.getItem("openRatingWindowData")));
