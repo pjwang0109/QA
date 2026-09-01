@@ -1,3 +1,33 @@
 
-這是我的152行
-const rating_json = JSON.parse(DOMPurify.sanitize(sessionStorage.getItem("openRatingWindowData")));
+這是我的151-181行
+$(() => {
+    const rating_json = JSON.parse(DOMPurify.sanitize(sessionStorage.getItem("openRatingWindowData")));
+    const CRRrating_json = JSON.parse(sessionStorage.getItem("openCRRRatingWindowData"));
+    console.log(rating_json);
+    console.log(CRRrating_json);
+
+    // $("section>.container-fluid").load(
+    //   "../../acceptcase/ademo_AC_CreditRatingmodal.html"
+    //   ,
+    //   function () {
+    //     fillCreditRating(rating_json);
+    //   }
+    // );
+
+    if (rating_json) {
+      openModal("../../acceptcase/ademo_AC_CreditRatingmodal.html", fillCreditRating(rating_json));
+    }
+
+    if (CRRrating_json) {
+      openModal("../../acceptcase/ademo_AC_CreditRatingmodal.html", fillCreditRating(CRRrating_json));
+    }
+
+    function openModal(path, fn) {
+      $("section>.container-fluid").load(path,async function() {
+        await fn
+      }); 
+    }
+  });
+  function checkScriptHandler() {
+    return false;
+  }
