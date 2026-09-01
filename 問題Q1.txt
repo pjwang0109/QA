@@ -18,3 +18,11 @@ function openCRRRatingmodalWindow(obj) {
 
 這段在幹嘛
 他有打API嗎
+
+
+他的錯誤訊息是這個 這是什麼意思
+Uncaught SyntaxError: Unexpected end of JSON input
+    at JSON.parse (<anonymous>)
+    at HTMLDocument.<anonymous> (oldCase_CR.html:152:30)
+    at l (jquery-3.3.1.min.js:2:29375)
+    at c (jquery-3.3.1.min.js:2:29677)
