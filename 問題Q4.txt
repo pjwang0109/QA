@@ -1,5 +1,1 @@
-我想要一個是原始的date 只有日期(年月日)
-但另一個只有時間 要怎麼寫比較好
 
-<input type="date" class="form-control recordingDate ml-2"/>
-<input type="text" class="form-control recordingTime" name="recordingTime ml-2"/>
