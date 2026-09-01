@@ -1,12 +1,1 @@
-$.each($this.find('.rationale'), function (a, b) {
 
-為什麼他有些暫存 要寫這一段
-
-例如:
-case "rationale":
-                    $.each($this.find('.rationale'), function (a, b) {
-                        if ($this.find('.rationale').eq(a).val() != "") {
-                            data[dataName] = $this.find(className).eq(a).val() || "";
-                        }
-                    });
-                    break;
