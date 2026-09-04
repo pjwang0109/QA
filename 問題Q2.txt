@@ -1,33 +1,88 @@
+//ESG氣候風險檢核表-查詢
+function s140_022() {
+    let textList = ['首頁', 'ESG專區', '氣候風險檢核表查詢'];
+    let path = "frame.html";
+    $('body').find('ol').empty().append(appendBreadcrumbs(textList));
 
-這是我的151-181行
-$(() => {
-    const rating_json = JSON.parse(DOMPurify.sanitize(sessionStorage.getItem("openRatingWindowData")));
-    const CRRrating_json = JSON.parse(sessionStorage.getItem("openCRRRatingWindowData"));
-    console.log(rating_json);
-    console.log(CRRrating_json);
+    $.ajax({
+        url: path,
+        async: true,
+        type: 'GET',
+        success: function (result) {
+            $("section").empty().html(DOMPurify.sanitize(result));
+            let path = ajaxhttpIPHostHtml('/esg/esg_search_ClimateCheckList.html');
+            $.when($.ajax(path)).done(function (html) {
+                // 1. 配置 DOMPurify：明確允許你需要的標籤與屬性
+                const cleanHtml = DOMPurify.sanitize(html, {
+                    ADD_TAGS: ["script"],            // 允許 script 標籤
+                    ADD_ATTR: ["onclick", "onchange"], // 允許常用的事件屬性
+                    FORCE_BODY: true                 // 確保完整解析
+                });
+                $('#search').html(cleanHtml);
+            });
+            createClimateSearch();
+            $('html').animate({ scrollTop: 0 }, 100);
+        }
+    });
+}
 
-    // $("section>.container-fluid").load(
-    //   "../../acceptcase/ademo_AC_CreditRatingmodal.html"
-    //   ,
-    //   function () {
-    //     fillCreditRating(rating_json);
-    //   }
-    // );
 
-    if (rating_json) {
-      openModal("../../acceptcase/ademo_AC_CreditRatingmodal.html", fillCreditRating(rating_json));
-    }
 
-    if (CRRrating_json) {
-      openModal("../../acceptcase/ademo_AC_CreditRatingmodal.html", fillCreditRating(CRRrating_json));
-    }
+async function createClimateSearch() {
+    loadingShow();
+    let userObj = getUidToken();
+    let uid = userObj.uid;
+    let token = userObj.token;
+    await apiS140020007(uid, token).done(function (json) {
+        if (json && json.rc == "M0000") {
+            //目前經辦
+            let uId = $('.personalDiv').find(".msg_uid").text();
+            $('.uid').val(uId);
+            //建立日期
+            let searchDate_str = new Date().toISOString().substring(0, 10).replace(/-/g, "-");
+            $('.searchdate_str').val(searchDate_str);
+            let searchDate_end = new Date().toISOString().substring(0, 10).replace(/-/g, "-");
+            $('.searchdate_end').val(searchDate_end);
+            //分行別
+            if (json.result && json.result.branch) {
+                $.each(json.result.branch, (i, v) => {
+                    const $opt = $("<option>");
+                    $opt.attr("value", v.code);
+                    $opt.text(v.name);
+                    $(".branch").append($opt);
+                });
+            }
+            //業務別
+            if (json.result && json.result.business) {
+                $.each(json.result.business, (i, v) => {
+                    const $opt = $("<option>");
+                    $opt.attr("value", v.code);
+                    $opt.text(v.name);
+                    $(".business").append($opt);
+                });
+            }
 
-    function openModal(path, fn) {
-      $("section>.container-fluid").load(path,async function() {
-        await fn
-      }); 
-    }
-  });
-  function checkScriptHandler() {
-    return false;
-  }
+            let $id = $('#esgSearchCaseDiv');
+            //查詢按鈕
+            let $btn = $id.find(".searchBtnTCFD");
+            //綁定欄位
+            let inputListArr = [".uid", ".searchdate_str", ".searchdate_end", ".branch",
+                "business", "accID", "accName", "appNumber"];
+            //綁定enter 
+            enterSearch($id, inputListArr, $btn);//給予預設值
+
+            loadingHide();
+        } else {
+            apiErrorHandler(json);
+            loadingHide();
+        }
+    })
+}
+
+我的問題是 
+//目前經辦
+            let uId = $('.personalDiv').find(".msg_uid").text();
+            $('.uid').val(uId);
+有時候[目前經辦]的值會出不來 
+這樣是否為同步或非同步的影響?
+如何修改
