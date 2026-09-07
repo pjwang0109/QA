@@ -1,1 +1,70 @@
 
+if (caseTypeValue != "11") {
+    // 1. 在 classArray 陣列中加入 ".collateral"
+    let classArray = [
+        ".acc", ".modalallowcode", ".subjectAmount", ".name", ".uid", ".id", 
+        ".allocationDate", ".amount", ".businessType", ".otherCaseType",
+        ".jcic", ".host", ".memo", ".rationale", ".phoneDate", ".phoneTime", 
+        ".phoneType", ".collateral"
+    ];
+
+    $.each(classArray, (i, className) => {
+        let dataName = className.replace('.', '');
+        let apiData = jsondata.result ? jsondata.result[dataName] : null;
+
+        // 🌟 防呆：一般文字 input 才直接賦值，陣列/物件或特殊群組(collateral, phoneType)不要在外層直接 .val()
+        if (dataName !== "collateral" && dataName !== "phoneType") {
+            $(className).val(apiData || "");
+        }
+
+        switch (dataName) {
+            // 🌟 2. 新增 collateral 的處理邏輯
+            case "collateral":
+                let $appropriationDiv = $("#appropriationLoanDiv"); // 或使用 $frame.find("#appropriationLoanDiv")
+                let $messageText = $appropriationDiv.find('.messageText');
+                let $messageCG = $appropriationDiv.find('.messageCG');
+
+                // 檢查是否有擔保品清單資料
+                if (apiData && Array.isArray(apiData) && apiData.length > 0) {
+                    $messageText.removeClass('hide');
+                    $messageCG.removeClass('hide');
+                    $messageCG.empty(); // 清空舊內容避免重複 append
+
+                    apiData.forEach(function (item) {
+                        if (!item) return;
+                        let typeVal = item.type || "";
+                        let nameVal = item.name || "";
+                        let codeVal = item.code || "";
+
+                        let isYesChecked = (nameVal == '1') ? "checked" : "";
+                        let isNoChecked = (nameVal == '2') ? "checked" : "";
+                        let isFreeChecked = (nameVal == '3') ? "checked" : "";
+
+                        let $rowHtml = `
+                            <div class="form-group form-inline collateralRE">
+                                <span class="questionStyleA numC ml-4">${typeVal}：</span>
+                                <input type="hidden" class="codeVal" value="${codeVal}"></input>
+                                <label class="form-check-label ml-2">
+                                    <input type="radio" class="form-check-input collateral" value="1" name="collateral_${typeVal}" ${isYesChecked} />是
+                                </label>
+                                <label class="form-check-label ml-2">
+                                    <input type="radio" class="form-check-input collateral" value="2" name="collateral_${typeVal}" ${isNoChecked} />否
+                                </label>
+                                <label class="form-check-label ml-2">
+                                    <input type="radio" class="form-check-input collateral" value="3" name="collateral_${typeVal}" ${isFreeChecked} />免
+                                </label>
+                                <span>(擔保品非不動產)</span>
+                            </div>`;
+                        $messageCG.append($rowHtml);
+                    });
+                } else {
+                    $messageText.addClass('hide');
+                    $messageCG.addClass('hide');
+                    $messageCG.empty();
+                }
+                break;
+
+           
+        }
+    });
+}
