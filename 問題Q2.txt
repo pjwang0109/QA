@@ -2,12 +2,11 @@ let phoneDate = jsondata.result[dataName].replace(/[/]/g, "-") || "";
 這段有什麼問題嗎
 
 
-上方已經有$(className).val(jsondata.result[dataName]);
-還需要寫phoneTime這段嗎
-case "phoneTime":
-                        if (jsondata.result.phoneTime) { //電話照會時間
-                            $(".phoneTime").val(jsondata.result.phoneTime);
+
+let phoneDate = ""
+                        if (jsondata.result.phoneDate) {
+                            phoneDate = jsondata.result[dataName].replace(/[/]/g, "-");
                         } else {
-                            $(".phoneTime").val('');
+                            phoneDate = "";
                         }
-                        break;
+上方這段為何不能改寫成let phoneDate = jsondata.result[dataName] ? jsondata.result[dataName].replace(/[/]/g, "-") : "";
