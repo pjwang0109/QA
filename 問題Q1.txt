@@ -1,28 +1,79 @@
-function openCRRRatingmodalWindow(obj) {
-    $(obj).prop("disabled", true);//先鎖住
-    loadingShow("資料處理中...");
-    let userObj = getUidToken();
-    let uid = userObj.uid;
-    let token = userObj.token;
-    let ufid = $('#creditRatingTittle').attr("ufid");
-    let dataObj = { "uid": uid, "token": token, "ufid": ufid };
-    console.log(dataObj)
-    sessionStorage.setItem("openCRRRatingWindowData", JSON.stringify(dataObj));
+//TABLE-編輯功能-預取畫面
+async function openOpCaseWeb(obj, isOpCenter) {
+...
 
-    setTimeout(() => {
-        window.open("../../acceptcase/page/oldCase_CR.html", undefined, "menubar=no");
-        $(obj).prop("disabled", false);
-    }, 500)
-    loadingHide();
+if (caseTypeValue == "13") {
+//不動產地籍異動即時通
+            let $messageText = $frame.find("#appropriationLoanDiv").find('.messageText');
+            let $messageCG = $frame.find("#appropriationLoanDiv").find('.messageCG');
+
+            if (jsondata.result && jsondata.result.collateral) {
+                let collateralList = jsondata.result.collateral;
+                if (collateralList.length !== 0) {
+                    $messageText.removeClass('hide');
+                    $messageCG.removeClass('hide');
+                    $messageCG.empty();
+
+                    collateralList.forEach(function (item) {
+                        if(!item) return
+                        let typeVal = item.type;
+                        let nameVal = item.name;
+                        let codeVal = item.code;
+
+                        let isYesChecked = (nameVal == '1') ? "checked" : "";
+                        let isNoChecked = (nameVal == '2') ? "checked" : "";
+                        let isFreeChecked = (nameVal == '3') ? "checked" : "";
+
+                        let $rowHtml = `
+                            <div class="form-group form-inline collateralRE">
+                                <span class="questionStyleA numC ml-4">${typeVal}：</span>
+                                <input type="hidden" class="codeVal" value="${codeVal}"></input>
+                                <label class="form-check-label ml-2">
+                                    <input type="radio" class="form-check-input collateral" value="1" name="collateral_${typeVal}" ${isYesChecked} />是
+                                </label>
+                                <label class="form-check-label ml-2">
+                                    <input type="radio" class="form-check-input collateral" value="2" name="collateral_${typeVal}" ${isNoChecked} />否
+                                </label>
+                                <label class="form-check-label ml-2">
+                                    <input type="radio" class="form-check-input collateral" value="3" name="collateral_${typeVal}" ${isFreeChecked} />免
+                                </label>
+                                <span>(擔保品非不動產)</span>
+                            </div>`;
+                        $messageCG.append($rowHtml);
+                    })
+                } else{
+                $div.addClass("hide");
+            }
+
 }
 
-這段在幹嘛
-他有打API嗎
+想把[不動產地籍異動即時通]的資料 改放到switch (dataName) { 底下 這要怎麼修改
 
 
-他的錯誤訊息是這個 這是什麼意思
-Uncaught SyntaxError: Unexpected end of JSON input
-    at JSON.parse (<anonymous>)
-    at HTMLDocument.<anonymous> (oldCase_CR.html:152:30)
-    at l (jquery-3.3.1.min.js:2:29375)
-    at c (jquery-3.3.1.min.js:2:29677)
+        if (caseTypeValue != "11") {
+            //各個資料帶入
+            let classArray = [".acc", ".modalallowcode", ".subjectAmount", ".name", ".uid", ".id", ".allocationDate", ".amount", ".businessType", ".otherCaseType",
+                ".jcic", ".host", ".memo", ".rationale", ".phoneDate", ".phoneTime", ".phoneType"];
+            $.each(classArray, (i, className) => {
+                let dataName = className.replace('.', '');
+                $(className).val(jsondata.result[dataName]);
+                switch (dataName) {
+                    ....
+
+                    case "phoneType":
+                        if (jsondata.result.phoneType) {  //電話照會類別
+                            if (jsondata.result.phoneType == "0") {  //指定
+                                $('.phoneDate').removeClass('hide');
+                                $('.phoneTime').removeClass('hide');
+                                $('#specified').prop('checked', true);
+                                //展開提示文字
+                                $('.recordingDiv').find('.fa-exclamation-circle').removeClass('hide');
+                            } else if (jsondata.result.phoneType == "1") {  //不指定
+                                $('#notSpecified').prop('checked', true);
+                            } else if (jsondata.result.phoneType == "2") {  //免錄音
+                                $('#noRecording').prop('checked', true);
+                            }
+                        }
+                        break;
+                }
+            }
