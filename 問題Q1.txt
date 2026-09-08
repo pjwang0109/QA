@@ -1,79 +1,61 @@
-//TABLE-編輯功能-預取畫面
-async function openOpCaseWeb(obj, isOpCenter) {
-...
+這程式在幹嘛
+function addCollDiv() {
+    let userObj = getUidToken();
+    let uid = userObj.uid;
+    let token = userObj.token;
+    let business = $('.business').val();
 
-if (caseTypeValue == "13") {
-//不動產地籍異動即時通
-            let $messageText = $frame.find("#appropriationLoanDiv").find('.messageText');
-            let $messageCG = $frame.find("#appropriationLoanDiv").find('.messageCG');
+    if ($('#collModel form').length != 0) {
+        collModalinit();
+    } else {
+        let url = ajaxhttpIPHostHtml('/acceptcase/ademo_AC_collModal.html');
 
-            if (jsondata.result && jsondata.result.collateral) {
-                let collateralList = jsondata.result.collateral;
-                if (collateralList.length !== 0) {
-                    $messageText.removeClass('hide');
-                    $messageCG.removeClass('hide');
-                    $messageCG.empty();
+        //擔保品選單
+        let s020010008 = getS020010008(uid, token, business);
 
-                    collateralList.forEach(function (item) {
-                        if(!item) return
-                        let typeVal = item.type;
-                        let nameVal = item.name;
-                        let codeVal = item.code;
-
-                        let isYesChecked = (nameVal == '1') ? "checked" : "";
-                        let isNoChecked = (nameVal == '2') ? "checked" : "";
-                        let isFreeChecked = (nameVal == '3') ? "checked" : "";
-
-                        let $rowHtml = `
-                            <div class="form-group form-inline collateralRE">
-                                <span class="questionStyleA numC ml-4">${typeVal}：</span>
-                                <input type="hidden" class="codeVal" value="${codeVal}"></input>
-                                <label class="form-check-label ml-2">
-                                    <input type="radio" class="form-check-input collateral" value="1" name="collateral_${typeVal}" ${isYesChecked} />是
-                                </label>
-                                <label class="form-check-label ml-2">
-                                    <input type="radio" class="form-check-input collateral" value="2" name="collateral_${typeVal}" ${isNoChecked} />否
-                                </label>
-                                <label class="form-check-label ml-2">
-                                    <input type="radio" class="form-check-input collateral" value="3" name="collateral_${typeVal}" ${isFreeChecked} />免
-                                </label>
-                                <span>(擔保品非不動產)</span>
-                            </div>`;
-                        $messageCG.append($rowHtml);
-                    })
-                } else{
-                $div.addClass("hide");
+        $.when($.ajax(url), $.ajax(s020010008)).done(function (html, seldata) {
+            $('#modalAll').append(html[0]);
+            let option = '<option value="default">請選擇...</option>';
+            $('#collModel .selCollItem_mod select').empty().append(option);
+            $('#msg_token').text(seldata[0].token);
+            if (seldata[0].rc == "M0000") {
+                let select = seldata[0].result;
+                $.each(select, function (item, jdata) {
+                    $('#collModel .selCollItem_mod select').append(option.replace(/default/g, jdata.id).replace(/請選擇.../g, jdata.mean));
+                });
+            } else {
+                apiErrorHandler(seldata[0]);
             }
+            collModalinit();
 
-}
+            $('#appraisalcode_colMod').on({
+                keyup: function (e) {
+                    var flag = e.target.isNeedPrevent;
+                    if (flag) return;
+                    let val = $(this).val();
+                    //只留數字
+                    //digitalboxHandler(this)
+                    checkappraisalcode(val);
+                    e.target.keyEvent = false;
 
-想把[不動產地籍異動即時通]的資料 改放到switch (dataName) { 底下 這要怎麼修改
+                },
+                keydown: function (e) {
+                    e.target.keyEvent = true;
+                },
+                input: function (e) {
+                    console.log(e.target.keyEvent);
+                    if (!e.target.keyEvent) {
+                        let val = $(this).val();
+                        checkappraisalcode(val);
+                    }
+                },
+                compositionstart: function (e) {
+                    e.target.isNeedPrevent = true;
+                },
+                compositionend: function (e) {
+                    e.target.isNeedPrevent = false;
 
-
-        if (caseTypeValue != "11") {
-            //各個資料帶入
-            let classArray = [".acc", ".modalallowcode", ".subjectAmount", ".name", ".uid", ".id", ".allocationDate", ".amount", ".businessType", ".otherCaseType",
-                ".jcic", ".host", ".memo", ".rationale", ".phoneDate", ".phoneTime", ".phoneType"];
-            $.each(classArray, (i, className) => {
-                let dataName = className.replace('.', '');
-                $(className).val(jsondata.result[dataName]);
-                switch (dataName) {
-                    ....
-
-                    case "phoneType":
-                        if (jsondata.result.phoneType) {  //電話照會類別
-                            if (jsondata.result.phoneType == "0") {  //指定
-                                $('.phoneDate').removeClass('hide');
-                                $('.phoneTime').removeClass('hide');
-                                $('#specified').prop('checked', true);
-                                //展開提示文字
-                                $('.recordingDiv').find('.fa-exclamation-circle').removeClass('hide');
-                            } else if (jsondata.result.phoneType == "1") {  //不指定
-                                $('#notSpecified').prop('checked', true);
-                            } else if (jsondata.result.phoneType == "2") {  //免錄音
-                                $('#noRecording').prop('checked', true);
-                            }
-                        }
-                        break;
                 }
-            }
+            });
+        });
+    }
