@@ -1,12 +1,1 @@
-let phoneDate = jsondata.result[dataName].replace(/[/]/g, "-") || "";
-這段有什麼問題嗎
 
-
-
-let phoneDate = ""
-                        if (jsondata.result.phoneDate) {
-                            phoneDate = jsondata.result[dataName].replace(/[/]/g, "-");
-                        } else {
-                            phoneDate = "";
-                        }
-上方這段為何不能改寫成let phoneDate = jsondata.result[dataName] ? jsondata.result[dataName].replace(/[/]/g, "-") : "";
