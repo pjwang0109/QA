@@ -1,1 +1,67 @@
+原本:
 
+let $gccDiv1 = `<div id="guarantor1" class="form-group form-inline my-2 guarantor">
+                <span class="mr-2">保證人擔保額度：</span>
+                <span class="mr-2 jsGuarantor">${typeText}${checkNum[typeText]}：</span>
+                <input type="text" class="form-control principal" style="margin:0 20px;" value="${name}" disabled>
+                <select class="form-control guaCurrency" required="required">
+                    <option value="">請選擇</option>
+                    <option value="1">美元</option>
+                    <option value="2">日圓</option>
+                    <option value="3">英磅</option>
+                    <option value="4">瑞郎</option>
+                    <option value="5">加幣</option>
+                    <option value="6">星幣</option>
+                    <option value="7">港幣</option>
+                    <option value="8">澳幣</option>
+                    <option value="9">紐幣</option>
+                    <option value="10">歐元</option>
+                    <option value="11">南非幣</option>
+                    <option value="12">人民幣</option>
+                    <option value="13">新臺幣</option>
+                </select>
+                <input type="text" class="form-control mx-2 gccMoney" placeholder="" value=""
+                onblur="set_money_Thousands(this)" onfocus="cancel_money_Thousands(this)"
+                oninput=" digitalboxHandler(this)">
+                <input type="hidden" class="code" name="code" value="${id}">
+                <span>元</span></div>`;
+
+他原本是這樣 為何我加了連帶保證條款 整個連帶保證條款的東西都看不到
+
+後來:
+let $gccDiv1 = `<div id="guarantor1" class="form-group form-inline my-2 guarantor">
+                <span class="mr-2">保證人擔保額度：</span>
+                <span class="mr-2 jsGuarantor">${typeText}${checkNum[typeText]}：</span>
+                <input type="text" class="form-control principal" style="margin:0 20px;" value="${name}" disabled>
+                <select class="form-control guaCurrency" required="required">
+                    <option value="">請選擇</option>
+                    <option value="1">美元</option>
+                    <option value="2">日圓</option>
+                    <option value="3">英磅</option>
+                    <option value="4">瑞郎</option>
+                    <option value="5">加幣</option>
+                    <option value="6">星幣</option>
+                    <option value="7">港幣</option>
+                    <option value="8">澳幣</option>
+                    <option value="9">紐幣</option>
+                    <option value="10">歐元</option>
+                    <option value="11">南非幣</option>
+                    <option value="12">人民幣</option>
+                    <option value="13">新臺幣</option>
+                </select>
+                <input type="text" class="form-control mx-2 gccMoney" placeholder="" value=""
+                onblur="set_money_Thousands(this)" onfocus="cancel_money_Thousands(this)"
+                oninput=" digitalboxHandler(this)">
+                <input type="hidden" class="code" name="code" value="${id}">
+                <span>元</span>
+                <div class="form-group form-inline my-1 mx-4>
+                    <span class="questionStyleA">連帶保證條款：</span>
+                    <label class="form-check-label">
+                        <input type="radio" name="clauseType" class="form-check-input clauseType1" value="1">
+                            定有期間保證：約定期間至民國
+                    </label>
+                    <input type="text" class="form-control col-1 year">年
+                    <input type="text" class="form-control col-1 moon">月
+                    <input type="text" class="form-control col-1 day">日止
+                </div>
+            </div>`;
