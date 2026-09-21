@@ -1,37 +1,17 @@
-這是他原本寫的 可以幫我用他的方法改寫嗎
-const classContractsArr = [".no", ".acc", ".clause", ".clauseType", ".year", ".month", ".day", ".quality",
-            ".qualityType1", ".qualityCurrency1", ".qualityType2", ".qualityCurrency2", ".qualityType3", ".qualityCurrency3",
-            ".qualityType4", ".qualityCurrency4", ".otheClause", ".guarantor", ".responsible", ".seal", ".sign", ".seal2" ,
-            ".pledgeSeal1", ".pledgeSeal2"];
-        const contractsArr = new Array;
+Object.entries(val.guarantor).forEach(([key, value]) => {//授信約定書保證人擔保額度
+                    let guaId = value.code
+                    let guaCurrency = value.currencyType
+                    let guaMoney = value.name
+                    $.each($('.guarantor'), function () {
+                        let code = $(this).find('.code').val()
+                        if (code === guaId) {
+                            $(this).find('.guaCurrency').val(guaCurrency)
+                            $(this).find('.gccMoney').val(guaMoney)
+                        }
+                    })
+                });
 
-        $this.find("#contractsDiv").find(".contracts").each(function (item, thisContracts) {
-            const contractsObj = new Object;
-            let clauseArr = new Array;
-            let clause = "";
-            let guaArr = new Array;
-            let resArr = new Array;
-            $.each(classContractsArr, function (item, classContracts) {
-                const dataContracts = classContracts.replace('.', '');
-                let classVal = $(thisContracts).find(classContracts).val() || "";
-                switch (dataContracts) {
-....
-case "guarantor":  //保證人擔保金額
-                        $this.find(`.${dataContracts}`).each(function () {
-                        console.log('QQ@@@', $(this));
-                            let code = $(this).find(".code").val() || "";
-                            let currencyType = $(this).find(".guaCurrency").val() || "";
-                            let name = $(this).find(".gccMoney").val() || "";
-                            let checkbox = $(this).find(".checkbox").val() || "";
-                            let clauseType = $(this).find(".clauseType").val() || "";
-                            let year = $(this).find(".year").val() || "";
-                            let month = $(this).find(".month").val() || "";
-                            let day = $(this).find(".day").val() || "";
-                            let guaObj = { "code": code, "currencyType": currencyType, "name": name, 
-                                "checkbox": checkbox, "clauseType": clauseType, "year": year, "month": month, "day": day };
-                            guaArr.push(guaObj);
-                        })
-                        contractsObj[dataContracts] = guaArr;
-                        break;
-
-....
+這是暫存後 取出案件的資料
+我要加入
+checkbox  clauseType  year  month  day
+怎麼修改
