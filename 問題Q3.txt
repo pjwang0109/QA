@@ -1,134 +1,78 @@
-//身分別連動綜合契約書下的負責人部分(判斷ID是否符合法人身分)
-function suretyIDGearing() {
-    let count = {}
-    let idtArr = []
-    $(".responsible").remove();
-    $(".identities").map(function (index) {//身分別
-        let $item = $(this)
-        let typeVal = $item.find(".type").val()
-        let typeText = $item.find(".type option:selected").text()
-        let name = $item.find(".name").val()
-        let id = $item.find(".id").val()
+responDel() // 刪除負責人欄位
+    renderResponsibleList();
 
-        if (typeVal) {
-            idtArr.push({ "typeVal": typeVal, "name": name, "id": id, "typeText": typeText })
-        }
-    })
-    idtArr.sort((a, b) => { return a.typeVal - b.typeVal })
-
-    Object.entries(idtArr).forEach(([index, item]) => {
-        let num = Number(index) + 1
-        let type = item.typeVal
-        let name = item.name
-        let id = item.id
-        // let legalPerson = id.match(/[A-Z]/g)
-        let typeText = item.typeText
-
-        count[typeText] = (count[typeText] || 0) + 1
-        // if (type !== "4" && type !== "5") {
-        if (type) {
-            // if ((legalPerson == null) && id.length === 8) {//顯示符合法人身分
-            if (id.length === 8) {//顯示符合法人身分
-                if (type === '0') {
-                    typeText = "立約人(即借款人)"
-                    count[typeText] = ""
-                }
-                let $responsibleDiv = `<div id="responsible${num}" class="form-group form-inline responsible">
-                    <span class="ml-5 mr-1 rePeople">${typeText}${count[typeText]}：</span>
-                    <input type="text" class="form-control principal" style="margin-left: 47px;" value="${name}" disabled>
-                    <input type="hidden" class="code" name="code" value="${id}">
-                    <div class="principalDiv hide">
-                        <span class="ml-5">負責人：</span>
-                        <input type="text" class="form-control responsibleName" placeholder="" value="">
-                        <span>(自行輸入)</span>
-                    </div>
-                        <button type="button" class="btn btn-info principalbtn ml-5" onclick="principalBtn(this)">負責人</button>
-                    </div>`
-                $(".responsibleDiv").append($responsibleDiv);
-            }
-        }
-
-    })
+responDel方法我可以用  renderResponsibleList替換掉嗎
 
 
-}
-
-//onblur:身分別連動綜合契約書下的負責人部分(判斷ID是否符合法人身分)
-function onblurIDGearing() {
-    let count = {};
+function responDel() {
     let idtArr = [];
-    
-    //先暫存目前畫面上，已有的負責人資料
-    let existingIDData = {};
-    $(".responsible").each(function() {
-        let id = $(this).find(".code").val();
-        if (id) {
-            existingIDData[id] = {
-                responsibleName: $(this).find(".responsibleName").val(),
-                isExpanded: !$(this).find(".principalDiv").hasClass("hide") //紀錄是否已展開
-            };
-        }
+    let responsibleArr = [];
+
+    $(".responsible").each(function () {
+        let $item = $(this);
+        let resName = $item.find(".principal").val();
+        let resPerson = $item.find(".responsibleName").val();
+
+        responsibleArr.push({ resName: resName, resPerson: resPerson });
     });
 
-    //清空舊畫面
-    $(".responsible").remove();
-
-    //蒐集身份別資料
     $(".identities").each(function () {
         let $item = $(this);
-        let typeVal = $item.find(".type").val();
-        let typeText = $item.find(".type option:selected").text();
-        let name = $item.find(".name").val();
         let id = $item.find(".id").val();
+        let type = $item.find(".type").val();
+        let name = $item.find(".name").val();
+        let typeText = $item.find(".type option:selected").text();
 
-        if (typeVal) {
-            idtArr.push({ "typeVal": typeVal, "name": name, "id": id, "typeText": typeText });
-        }
-    });
+        // 找出對應的 responsible 資料
+        let responsible = responsibleArr.find(r => r.resName === name);
 
-    idtArr.sort((a, b) => { return a.typeVal - b.typeVal });
-    Object.entries(idtArr).forEach(([index, item]) => {
-        let num = Number(index) + 1;
-        let type = item.typeVal;
-        let name = item.name;
-        let id = item.id;
-        let typeText = item.typeText;
-
-        count[typeText] = (count[typeText] || 0) + 1;
-        if (type) {
-            //顯示符合法人身分
-            if (id.length === 8) {
-                if (type === '0') {
-                    typeText = "立約人(即借款人)";
-                    count[typeText] = "";
-                }
-
-                //取得舊資料
-                let oldResName = existingIDData[id] ? existingIDData[id].responsibleName : "";
-                let isExpanded = existingIDData[id] ? existingIDData[id].isExpanded : false;
-                
-                //負責人按鈕是否加上hide
-                let divClass = isExpanded ? "principalDiv" : "principalDiv hide";
-
-                let $responsibleDiv = `
-                    <div id="responsible${num}" class="form-group form-inline responsible">
-                        <span class="ml-5 mr-1 rePeople">${typeText}${count[typeText]}：</span>
-                        <input type="text" class="form-control principal" style="margin-left: 47px;" value="${name}" disabled>
-                        <input type="hidden" class="code" name="code" value="${id}">
-                        
-                        <div class="${divClass}">
-                            <span class="ml-5">負責人：</span>
-                            <input type="text" class="form-control responsibleName" placeholder="" value="${oldResName}">
-                            <span>(自行輸入)</span>
-                        </div>
-                        
-                        <button type="button" class="btn btn-info principalbtn ml-5" onclick="principalBtn(this)">負責人</button>
-                    </div>`;
-                
-                $(".responsibleDiv").append($responsibleDiv);
+        if (id) { // 資料合併
+            if (responsible) {
+                // 若找到對應的 responsible 資料，將其合併到 identities
+                idtArr.push({
+                    id: id, type: type, name: name, typeText: typeText,
+                    resName: responsible.resName, resPerson: responsible.resPerson
+                });
+            } else {
+                // 若找不到，則將 resName 和 resPerson 設為空
+                idtArr.push({
+                    id: id, type: type, name: name, typeText: typeText,
+                    resName: "", resPerson: ""
+                });
             }
         }
     });
-}
 
-這兩個程式 可以改成共用嗎
+    idtArr.sort((a, b) => a.type - b.type);
+
+    $(".responsible").remove();
+    let count = {};
+    Object.entries(idtArr).forEach(([index, item]) => {
+        let num = index + 1;
+        let id = item.id;
+        let type = item.type;
+        let name = item.name;
+        let typeText = item.typeText;
+        let resPerson = item.resPerson;
+        count[typeText] = (count[typeText] || 0) + 1;
+
+        if (id.length === 8) {
+            if (type === '0') {
+                typeText = "立約人(即借款人)";
+                count[typeText] = "";
+            }
+            let $responsibleDiv = `<div id="responsible${num}" class="form-group form-inline responsible">
+                <span class="ml-5 mr-1 rePeople">${typeText}${count[typeText]}：</span>
+                <input type="text" class="form-control principal" style="margin-left: 47px;" value="${name}" disabled>
+                <input type="hidden" class="code" name="code" value="${id}">
+                <div class="principalDiv ${resPerson ? '' : 'hide'}">
+                    <span class="ml-5">負責人：</span>
+                    <input type="text" class="form-control responsibleName" placeholder="" value="${resPerson}">
+                    <span>(自行輸入)</span>
+                </div>
+                <button type="button" class="btn btn-info principalbtn ml-5" onclick="principalBtn(this)">負責人</button>
+            </div>`;
+            $(".responsibleDiv").append($responsibleDiv);
+        }
+    });
+}
