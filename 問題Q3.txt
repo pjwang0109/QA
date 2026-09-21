@@ -1,6 +1,11 @@
-<input type="text" class="form-control col-1 year" onchange="isClauseType(this)">年
-                                      <input type="text" class="form-control col-1 month" onchange="isClauseType(this)">月
-                                      <input type="text" class="form-control col-1 day" onchange="isClauseType(this)">日止
+<input type="radio" class="form-check-input clauseType2" name="clauseType_${num}" value="2" ${isClause2} onchange="gu_isClause(this)">
+                        未定期間保證：不約定
 
-我的年月日在填寫 也要連動 我可以用onchange 還是其他?
-另外要用isClauseType此方法 還是另寫一個
+我加了一個 onchange="gu_isClause(this)"
+
+當她被點選時
+<input type="text" class="form-control text-center mx-1 year" style="width: 60px;" maxlength="3" value="${oldYear}">年
+                    <input type="text" class="form-control text-center mx-1 month" style="width: 50px;" maxlength="2" value="${oldMonth}">月
+                    <input type="text" class="form-control text-center mx-1 day" style="width: 50px;" maxlength="2" value="${oldDay}">日止
+的資料要被清空
+怎麼寫
