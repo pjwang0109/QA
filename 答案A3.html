@@ -1,29 +1,18 @@
-function isClauseType(obj) {
-    let selectedVal = $(obj).val(); // "1" 或 "2"
-    let $gcc = $('#GCC');
+function gu_isClause(obj) {
+    // 只有在當前這顆 radio 被勾選，且值為 "2"（未定期間保證）時才執行清空
+    if ($(obj).is(":checked") && $(obj).val() === "2") {
+        // 往上找到當前保證人的最外層大容器
+        let $currentBlock = $(obj).closest(".guarantor-block");
 
-    if (selectedVal === "1") {
-        // 1. 取得「主選項」目前填寫的年月日
-        // 提示：若母欄位的 input 在同一個區塊，可用 $(obj).closest(...) 或指定的 ID/class 取得
-        let mainYear = $(obj).closest('.form-group').find('.year').val() || $("#mainYear").val() || "";
-        let mainMonth = $(obj).closest('.form-group').find('.month').val() || $("#mainMonth").val() || "";
-        let mainDay = $(obj).closest('.form-group').find('.day').val() || $("#mainDay").val() || "";
+        // 也可以加上備用選取器，確保如果沒有 .guarantor-block 時用 parent() 往上找
+        if ($currentBlock.length === 0) {
+            $currentBlock = $(obj).closest("[id^='guarantor_block_']");
+        }
+        if ($currentBlock.length === 0) {
+            $currentBlock = $(obj).parent().parent(); // 回退機制
+        }
 
-        // 2. 連動所有保證人
-        $gcc.find("input[type='radio'][name^='clauseType'][value='1']").prop("checked", true);
-        
-        // 3. 日期全部同步填入一樣的值
-        $gcc.find(".year").val(mainYear);
-        $gcc.find(".month").val(mainMonth);
-        $gcc.find(".day").val(mainDay);
-
-    } else if (selectedVal === "2") {
-        // 1. 連動所有保證人選取「未定期間保證」
-        $gcc.find("input[type='radio'][name^='clauseType'][value='2']").prop("checked", true);
-
-        // 2. 切換為未定期間時，通常需要將所有保證人的年月日清空
-        $gcc.find(".year").val("");
-        $gcc.find(".month").val("");
-        $gcc.find(".day").val("");
+        // 只清空「當前保證人」的年、月、日欄位
+        $currentBlock.find(".year, .month, .day").val("");
     }
 }
