@@ -1,19 +1,4 @@
-<div id="GCC" class="form-group form-inline my-1" style="padding-left: 90px;"></div>
-我希望的排版是 以每一列來說
-1 保證人擔保額度：連帶保證人1：principal guaCurrency gccMoney 元
-2 保證期間(請擇一勾選)：
-3 定有期間保證：約定期間至民國 year month day 
-4 未定期間保證：不約定
-...
-為什麼我的順序還是有問題
-let num = Number(index) + 1;
-        let id = item.id;
-        let name = item.name;
-        let typeText = item.typeText;
-        checkNum[typeText] = (checkNum[typeText] || 0) + 1;
-        let gu_num = "1";
-        if (gccArr.length === 1) {
-            let $gccDiv1 = `
+let $gccDiv1 = `<div id="t1">
                 <div id="guarantor1" class="form-group form-inline my-2 guarantor">
                     <span class="mr-2">保證人擔保額度：</span>
                     <span class="mr-2 jsGuarantor">${typeText}${checkNum[typeText]}：</span>
@@ -64,5 +49,4 @@ let num = Number(index) + 1;
                         未定期間保證：不約定
                     </label>
                 </div>
-                `;
-            $gcc.append($gccDiv1);
+            </div>`;
