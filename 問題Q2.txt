@@ -1,1 +1,52 @@
+這是我目前修改後的，他的[保證期間(請擇一勾選)]那一段有出來了
+可是我希望的排版是 以每一列來說
+1 保證人擔保額度：連帶保證人1：principal guaCurrency gccMoney 元
+2 保證期間(請擇一勾選)：
+3 定有期間保證：約定期間至民國 year month day 
+4 未定期間保證：不約定
 
+ else if (gccArr.length > 1) {
+            if (index === "0") {
+                console.log("HHHH");
+                let $gccDiv1 = `<div id="guarantor1" class="form-group form-inline my-2 guarantor">
+                <span class="mr-2">保證人擔保額度：</span>
+                <span class="mr-2 jsGuarantor">${typeText}${checkNum[typeText]}：</span>
+                <input type="text" class="form-control principal" style="margin:0 20px;" value="${name}" disabled>
+                <select class="form-control guaCurrency" required="required">
+                    <option value="">請選擇</option>
+                    <option value="1">美元</option>
+                    <option value="2">日圓</option>
+                    <option value="3">英磅</option>
+                    <option value="4">瑞郎</option>
+                    <option value="5">加幣</option>
+                    <option value="6">星幣</option>
+                    <option value="7">港幣</option>
+                    <option value="8">澳幣</option>
+                    <option value="9">紐幣</option>
+                    <option value="10">歐元</option>
+                    <option value="11">南非幣</option>
+                    <option value="12">人民幣</option>
+                    <option value="13">新臺幣</option>
+                </select>
+                <input type="text" class="form-control mx-2 gccMoney" placeholder="" value=""
+                onblur="set_money_Thousands(this)" onfocus="cancel_money_Thousands(this)"
+                oninput=" digitalboxHandler(this)">
+                <input type="hidden" class="code" name="code" value="${id}">
+                <span>元</span>
+                </div>
+
+                <label class="form-check-label" style="padding-left: 138px;">保證期間(請擇一勾選)：</label>
+                <div class="form-group form-inline my-1 mx-4">
+                    <label class="form-check-label">
+                        <input type="radio" name="clauseType" class="form-check-input clauseType1" value="1">
+                            定有期間保證：約定期間至民國
+                    </label>
+                    <input type="text" class="form-control col-1 year">年
+                    <input type="text" class="form-control col-1 month">月
+                    <input type="text" class="form-control col-1 day">日止
+                </div>
+                <label class="form-check-label" style="padding-left: 168px;">
+                    <input type="radio" name="clauseType" class="form-check-input clauseType2"
+                    value="2">未定期間保證：不約定
+                </label>`;
+                $gcc.append($gccDiv1);
