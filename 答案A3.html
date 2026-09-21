@@ -1,18 +1,80 @@
-function gu_isClause(obj) {
-    // 只有在當前這顆 radio 被勾選，且值為 "2"（未定期間保證）時才執行清空
-    if ($(obj).is(":checked") && $(obj).val() === "2") {
-        // 往上找到當前保證人的最外層大容器
-        let $currentBlock = $(obj).closest(".guarantor-block");
+// 共用：身分別連動綜合契約書下的負責人部分(判斷ID是否符合法人身分)
+function renderResponsibleList() {
+    let count = {};
+    let idtArr = [];
+    let $container =$(".responsibleDiv");
 
-        // 也可以加上備用選取器，確保如果沒有 .guarantor-block 時用 parent() 往上找
-        if ($currentBlock.length === 0) {
-            $currentBlock = $(obj).closest("[id^='guarantor_block_']");
+    // 1. 先暫存目前畫面上已有的負責人資料 (初次載入時這裡為空)
+    let existingIDData = {};
+    $container.find(".responsible").each(function () {
+        let id = $(this).find(".code").val();
+        if (id) {
+            existingIDData[id] = {
+                responsibleName: $(this).find(".responsibleName").val() || "",
+                isExpanded: !$(this).find(".principalDiv").hasClass("hide") // 紀錄是否已展開
+            };
         }
-        if ($currentBlock.length === 0) {
-            $currentBlock = $(obj).parent().parent(); // 回退機制
-        }
+    });
 
-        // 只清空「當前保證人」的年、月、日欄位
-        $currentBlock.find(".year, .month, .day").val("");
-    }
+    // 2. 清空舊畫面
+    $container.empty();
+
+    // 3. 蒐集符合的身分別資料
+    $(".identities").each(function () {
+        let $item =$(this);
+        let typeVal = $item.find(".type").val();
+        let typeText = $item.find(".type option:selected").text();
+        let name = $item.find(".name").val();
+        let id = $item.find(".id").val();
+
+        if (typeVal) {
+            idtArr.push({ "typeVal": typeVal, "name": name, "id": id, "typeText": typeText });
+        }
+    });
+
+    idtArr.sort((a, b) => a.typeVal - b.typeVal);
+
+    // 4. 重新渲染輸出
+    idtArr.forEach((item, index) => {
+        let num = index + 1;
+        let type = item.typeVal;
+        let name = item.name;
+        let id = item.id;
+        let typeText = item.typeText;
+
+        count[typeText] = (count[typeText] || 0) + 1;
+
+        if (type) {
+            // 判斷是否符合法人身分 (統編 8 碼)
+            if (id && id.length === 8) {
+                if (type === '0') {
+                    typeText = "立約人(即借款人)";
+                    count[typeText] = "";
+                }
+
+                // 取得暫存資料（若無暫存則給預設值）
+                let saved = existingIDData[id] || {};
+                let oldResName = saved.responsibleName || "";
+                let isExpanded = saved.isExpanded || false;
+                let divClass = isExpanded ? "principalDiv" : "principalDiv hide";
+
+                let $responsibleDiv = `
+                    <div id="responsible${num}" class="form-group form-inline responsible">
+                        <span class="ml-5 mr-1 rePeople">${typeText}${count[typeText]}：</span>
+                        <input type="text" class="form-control principal" style="margin-left: 47px;" value="${name}" disabled>
+                        <input type="hidden" class="code" name="code" value="${id}">
+                        
+                        <div class="${divClass}">
+                            <span class="ml-5">負責人：</span>
+                            <input type="text" class="form-control responsibleName" placeholder="" value="${oldResName}">
+                            <span>(自行輸入)</span>
+                        </div>
+                        
+                        <button type="button" class="btn btn-info principalbtn ml-5" onclick="principalBtn(this)">負責人</button>
+                    </div>`;
+
+                $container.append($responsibleDiv);
+            }
+        }
+    });
 }
