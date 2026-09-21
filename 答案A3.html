@@ -1,189 +1,28 @@
-function renderGuarantorList() {
-    let $gcc =$('#GCC');
-    let gccArr = [];
+// 約據-刪除保人
+function deleteSurety(obj) {
+    let $identity =$(obj).closest(`.identities`);
 
-    // 1. 先抓取畫面上已經填寫的資料 (如果是第一次執行，畫面空空，existingData 就是空的)
-    let existingData = {};
-    $gcc.find(".guarantor-block").each(function () {
-        let $block =$(this);
-        let id = $block.find(".code").val();
-        if (id) {
-            existingData[id] = {
-                currency: $block.find(".guaCurrency").val() || "",
-                money: $block.find(".gccMoney").val() || "",
-                hasCheckbox: $block.find(".checkbox").is(":checked"),
-                clauseType: $block.find("input[name^='clauseType_']:checked").val() || "",
-                year: $block.find(".year").val() || "",
-                month: $block.find(".month").val() || "",
-                day: $block.find(".day").val() || ""
-            };
-        }
+    // 重新計算身分別序號
+    $identity.nextAll(`.identities`).each(function () {
+        let $creThis =$(this);
+        let callLoanID = $creThis.attr("id"); 
+        let callLoanIDNum = callLoanID.replace("identities", "");
+        let numNew = parseInt(callLoanIDNum, 10) - 1;
+
+        $creThis.find(".addNum").text(numNew + `：預計動用日期：`);
+        $creThis.find(".accCallNumber").val(numNew);
+        $creThis.attr("id", "identities" + numNew);
     });
 
-    // 2. 清空容器
-    $gcc.empty();
+    // 真正移除該筆身分
+    $identity.remove();
 
-    // 3. 收集身分別為連帶保證人 (type === '6') 的資料
-    $(".identities").each(function () {
-        let $item =$(this);
-        let id = $item.find(".id").val();
-        let type = $item.find(".type").val();
-        let name = $item.find(".name").val();
-        let typeText = $item.find(".type option:selected").text();
-
-        if (type === "6") {
-            gccArr.push({ id, type, name, typeText });
-        }
-    });
-
-    gccArr.sort((a, b) => a.type - b.type);
-
-    // 4. 幣別清單
-    const currencies = [
-        {v:"1", n:"美元"}, {v:"2", n:"日圓"}, {v:"3", n:"英磅"}, {v:"4", n:"瑞郎"},
-        {v:"5", n:"加幣"}, {v:"6", n:"星幣"}, {v:"7", n:"港幣"}, {v:"8", n:"澳幣"},
-        {v:"9", n:"紐幣"}, {v:"10", n:"歐元"}, {v:"11", n:"南非幣"}, {v:"12", n:"人民幣"},
-        {v:"13", n:"新臺幣"}
-    ];
-
-    let checkNum = {};
-
-    // 5. 統一渲染
-    gccArr.forEach((item, index) => {
-        let num = index + 1;
-        let id = item.id;
-        let name = item.name;
-        let typeText = item.typeText;
-        checkNum[typeText] = (checkNum[typeText] || 0) + 1;
-
-        // 如果 existingData 有值就帶入，沒有就給預設空值
-        let saved = existingData[id] || {};
-        let oldCurrency = saved.currency || "";
-        let oldMoney = saved.money || "";
-        let isCheck = saved.hasCheckbox ? "checked" : "";
-        let isClause1 = (saved.clauseType === "1") ? "checked" : "";
-        let isClause2 = (saved.clauseType === "2") ? "checked" : "";
-        let oldYear = saved.year || "";
-        let oldMonth = saved.month || "";
-        let oldDay = saved.day || "";
-
-        // 組裝幣別 options
-        let currencyOptions = `<option value="">請選擇</option>`;
-        currencies.forEach(c => {
-            let selected = (c.v === oldCurrency) ? "selected" : "";
-            currencyOptions += `<option value="${c.v}" ${selected}>${c.n}</option>`;
-        });
-
-        let paddingStyle = (index === 0) ? "" : 'style="padding-left: 135px;"';
-        let mainTitle = (index === 0) ? '<span class="mr-2 font-weight-bold">保證人擔保額度：</span>' : '';
-
-        let $gccDiv = `
-            <div id="guarantor_block_${num}" class="guarantor-block mb-3" data-id="${id}">
-                <!-- 第 1 列：主額度與幣別 -->
-                <div id="guarantor${num}" class="form-group form-inline my-2 guarantor" ${paddingStyle}>
-                    ${mainTitle}
-                    <span class="mr-2 jsGuarantor">${typeText}${checkNum[typeText]}：</span>
-                    <input type="text" class="form-control principal" style="margin:0 20px;" value="${name}" disabled>
-                    <select class="form-control guaCurrency" required="required">
-                        ${currencyOptions}
-                    </select>
-                    <input type="text" class="form-control mx-2 gccMoney" placeholder=""
-                        value="${oldMoney}"
-                        onblur="set_money_Thousands(this)" onfocus="cancel_money_Thousands(this)"
-                        oninput="digitalboxHandler(this)">
-                    <input type="hidden" class="code" name="code" value="${id}">
-                    <span>元</span>
-                </div>
-
-                <!-- 第 2 列：保證期間提示 -->
-                <div class="form-group mb-1" style="padding-left: 130px;">
-                    <label class="font-weight-bold">
-                        <input type="checkbox" class="form-check-input checkbox" name="checkbox_${num}" ${isCheck}>
-                        保證期間(請擇一勾選)：
-                    </label>
-                </div>
-
-                <!-- 第 3 列：定有期間保證 -->
-                <div class="form-group form-inline my-1" style="padding-left: 155px;">
-                    <label class="form-check-label mr-2">
-                        <input type="radio" class="form-check-input clauseType1" name="clauseType_${num}" value="1" ${isClause1}>
-                        定有期間保證：約定期間至民國
-                    </label>
-                    <input type="text" class="form-control text-center mx-1 year" style="width: 60px;" maxlength="3" value="${oldYear}">年
-                    <input type="text" class="form-control text-center mx-1 month" style="width: 50px;" maxlength="2" value="${oldMonth}">月
-                    <input type="text" class="form-control text-center mx-1 day" style="width: 50px;" maxlength="2" value="${oldDay}">日止
-                </div>
-
-                <!-- 第 4 列：未定期間保證 -->
-                <div class="form-group form-inline mb-1" style="padding-left: 155px;">
-                    <label class="form-check-label">
-                        <input type="radio" class="form-check-input clauseType2" name="clauseType_${num}" value="2" ${isClause2}>
-                        未定期間保證：不約定
-                    </label>
-                </div>
-            </div>`;
-
-        $gcc.append($gccDiv);
-    });
+    // 綜合契約書連動
+    guaAmountDel(); // 重新整理連帶保證人區塊
+    responDel();    // 刪除負責人欄位
 }
-----------------------------------------
-let $gccDiv1 = `
-        <!-- 外層大容器，確保 4 列垂直向下排列 -->
-        <div id="guarantor_${gu_num}" class="guarantor-block mb-3" style="width: 100%;">
-            
-            <!-- 第 1 列：主欄位 (只在需要橫向排的這行加 form-inline) -->
-            <div class="form-group form-inline mb-2">
-                <span class="mr-2 font-weight-bold">保證人擔保額度：</span>
-                <span class="mr-2 jsGuarantor">${typeText}${checkNum[typeText]}：</span>
-                <input type="text" class="form-control principal mr-2" style="width: 120px;" value="${name}" disabled>
-                <select class="form-control guaCurrency mr-2" required="required">
-                    <option value="">請選擇</option>
-                    <option value="1">美元</option>
-                    <option value="2">日圓</option>
-                    <option value="3">英磅</option>
-                    <option value="4">瑞郎</option>
-                    <option value="5">加幣</option>
-                    <option value="6">星幣</option>
-                    <option value="7">港幣</option>
-                    <option value="8">澳幣</option>
-                    <option value="9">紐幣</option>
-                    <option value="10">歐元</option>
-                    <option value="11">南非幣</option>
-                    <option value="12">人民幣</option>
-                    <option value="13">新臺幣</option>
-                </select>
-                <input type="text" class="form-control mr-2 gccMoney" placeholder="" value=""
-                    onblur="set_money_Thousands(this)" onfocus="cancel_money_Thousands(this)"
-                    oninput="digitalboxHandler(this)">
-                <input type="hidden" class="code" name="code" value="${id}">
-                <span>元</span>
-            </div>
 
-            <!-- 第 2 列：保證期間標題 -->
-            <div class="form-group mb-1" style="padding-left: 130px;">
-                <label class="font-weight-bold mb-0">
-                    <input type="checkbox" class="form-check-input checkbox" name="gu_checkbox_${gu_num}">
-                    保證期間(請擇一勾選)：
-                </label>
-            </div>
-
-            <!-- 第 3 列：定有期間保證 (統整縮排 155px，拿掉 mx-4) -->
-            <div class="form-group form-inline mb-1" style="padding-left: 155px;">
-                <label class="form-check-label mr-2 mb-0">
-                    <input type="radio" class="form-check-input clauseType1" name="gu_clauseType_${gu_num}" value="1">
-                    定有期間保證：約定期間至民國
-                </label>
-                <input type="text" class="form-control text-center mx-1 year" style="width: 60px;" maxlength="3">年
-                <input type="text" class="form-control text-center mx-1 month" style="width: 50px;" maxlength="2">月
-                <input type="text" class="form-control text-center mx-1 day" style="width: 50px;" maxlength="2">日止
-            </div>
-
-            <!-- 第 4 列：未定期間保證 (縮排對齊 155px) -->
-            <div class="form-group form-inline mb-1" style="padding-left: 155px;">
-                <label class="form-check-label mb-0">
-                    <input type="radio" class="form-check-input clauseType2" name="gu_clauseType_${gu_num}" value="2">
-                    未定期間保證：不約定
-                </label>
-            </div>
-
-        </div>`;
+// 刪除後連動：直接呼叫共用渲染函式即可！
+function guaAmountDel() {
+    renderGuarantorList(); 
+}
