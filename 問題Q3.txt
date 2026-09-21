@@ -1,5 +1,9 @@
 <div id="GCC" class="form-group form-inline my-1" style="padding-left: 90px;"></div>
-
+我希望的排版是 以每一列來說
+1 保證人擔保額度：連帶保證人1：principal guaCurrency gccMoney 元
+2 保證期間(請擇一勾選)：
+3 定有期間保證：約定期間至民國 year month day 
+4 未定期間保證：不約定
 ...
 為什麼我的順序還是有問題
 let num = Number(index) + 1;
