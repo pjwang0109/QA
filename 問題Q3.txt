@@ -1,23 +1,6 @@
-<input type="radio" name="clauseType" id="hasClauseType1" class="form-check-input clauseType1"
-                                          value="1" onchange="isClauseType(this)">定有期間保證：約定期間至民國
+<input type="text" class="form-control col-1 year" onchange="isClauseType(this)">年
+                                      <input type="text" class="form-control col-1 month" onchange="isClauseType(this)">月
+                                      <input type="text" class="form-control col-1 day" onchange="isClauseType(this)">日止
 
-
-<label class="form-check-label" style="padding-left: 168px;">
-                                      <input type="radio" name="clauseType" id="hasClauseType2" class="form-check-input clauseType2"
-                                        value="2" onchange="isClauseType(this)">未定期間保證：不約定
-                                    </label>
-
-當isClauseType value="1"或是 value="2"被選到的時候
-renderGuarantorList底下的 
-定有期間保證：約定期間至民國 或 未定期間保證：不約定
-也要同時連動 
-
-若 id="hasClauseType1" value="1"選到 
-renderGuarantorList底下的 
-定有期間保證：約定期間至民國 全部都要勾選 而且日期也要都填一樣的
-
-若 id="hasClauseType2" value="2"選到 
-renderGuarantorList底下的 
-未定期間保證：不約定 全部都要勾選
-
-這樣我的isClauseType怎麼寫
+我的年月日在填寫 也要連動 我可以用onchange 還是其他?
+另外要用isClauseType此方法 還是另寫一個
