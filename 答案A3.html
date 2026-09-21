@@ -1,28 +1,29 @@
-// 約據-刪除保人
-function deleteSurety(obj) {
-    let $identity =$(obj).closest(`.identities`);
+function isClauseType(obj) {
+    let selectedVal = $(obj).val(); // "1" 或 "2"
+    let $gcc = $('#GCC');
 
-    // 重新計算身分別序號
-    $identity.nextAll(`.identities`).each(function () {
-        let $creThis =$(this);
-        let callLoanID = $creThis.attr("id"); 
-        let callLoanIDNum = callLoanID.replace("identities", "");
-        let numNew = parseInt(callLoanIDNum, 10) - 1;
+    if (selectedVal === "1") {
+        // 1. 取得「主選項」目前填寫的年月日
+        // 提示：若母欄位的 input 在同一個區塊，可用 $(obj).closest(...) 或指定的 ID/class 取得
+        let mainYear = $(obj).closest('.form-group').find('.year').val() || $("#mainYear").val() || "";
+        let mainMonth = $(obj).closest('.form-group').find('.month').val() || $("#mainMonth").val() || "";
+        let mainDay = $(obj).closest('.form-group').find('.day').val() || $("#mainDay").val() || "";
 
-        $creThis.find(".addNum").text(numNew + `：預計動用日期：`);
-        $creThis.find(".accCallNumber").val(numNew);
-        $creThis.attr("id", "identities" + numNew);
-    });
+        // 2. 連動所有保證人
+        $gcc.find("input[type='radio'][name^='clauseType'][value='1']").prop("checked", true);
+        
+        // 3. 日期全部同步填入一樣的值
+        $gcc.find(".year").val(mainYear);
+        $gcc.find(".month").val(mainMonth);
+        $gcc.find(".day").val(mainDay);
 
-    // 真正移除該筆身分
-    $identity.remove();
+    } else if (selectedVal === "2") {
+        // 1. 連動所有保證人選取「未定期間保證」
+        $gcc.find("input[type='radio'][name^='clauseType'][value='2']").prop("checked", true);
 
-    // 綜合契約書連動
-    guaAmountDel(); // 重新整理連帶保證人區塊
-    responDel();    // 刪除負責人欄位
-}
-
-// 刪除後連動：直接呼叫共用渲染函式即可！
-function guaAmountDel() {
-    renderGuarantorList(); 
+        // 2. 切換為未定期間時，通常需要將所有保證人的年月日清空
+        $gcc.find(".year").val("");
+        $gcc.find(".month").val("");
+        $gcc.find(".day").val("");
+    }
 }
