@@ -1,1 +1,109 @@
+//約據-個別契約-新增：開啟類別選擇 MODAL
+let icSelection = {};//MODAL 的選取狀態 { icType: 份數 }，畫面一律由這個物件產生（搜尋隱藏的列也不會漏掉）
+async function addIndivdualContratc(obj) {
+    $(obj).prop("disabled", true);
+    $('#icTypeModal').remove();
+    try {
+        const html = await icGetTemplate("ic_modal");
+        const $modal = $("<div>").html(html).find("#icTypeModal");
+        icSelection = {};
+        icBuildModal($modal);
+        $('#modalAll').append($modal);
+        $modal.one('shown.bs.modal', function () {
+            if (!$modal.find(".icSearchWrap").hasClass("d-none")) {
+                $modal.find(".icSearchInput").trigger("focus");
+            }
+        });
+        $modal.modal('show');
+    } catch (e) {
+        console.error(e);
+    }
+    $(obj).prop("disabled", false);
+}
+
+
+//模板快取（存 ajax 物件，同一支模板只抓一次）
+const icTemplateCache = {};
+let icTmpSeq = 0;//建立卡片時的暫時編號，建立完會由 renumberIndividualContract 重排
+
+function icGetTemplate(name) {
+    if (!icTemplateCache[name]) {
+        icTemplateCache[name] = $.ajax(ajaxhttpIPHostHtml(IC_TEMPLATE_PATH + name + ".html"))
+            .fail(function () {
+                delete icTemplateCache[name];//失敗不快取，下次重抓
+            });
+    }
+    return icTemplateCache[name];
+}
+
+
+//MODAL-依對照表產生類別列並綁定事件（類別數超過 IC_SEARCH_THRESHOLD 才顯示搜尋框與「常用」分區）
+function icBuildModal($modal) {
+    const showSearch = Object.keys(individualContractConfig).length > IC_SEARCH_THRESHOLD;
+    $modal.data("showSearch", showSearch);
+    $modal.find(".icMaxQty").text(IC_MAX_QTY);
+    $modal.find(".icMaxTotal").text(IC_MAX_TOTAL);
+    $modal.find(".icSearchWrap").toggleClass("d-none", !showSearch);
+
+    const $commonRows = $modal.find(".icCommonRows");
+    const $allRows = $modal.find(".icAllRows");
+    $.each(individualContractConfig, function (icType, conf) {
+        const $row = icBuildRow(icType, conf);
+        (showSearch && conf.common ? $commonRows : $allRows).append($row);
+    });
+
+    //整列點選：未選 → 選 1 份；已選 → 取消
+    $modal.on("click", ".icRow", function (e) {
+        if ($(e.target).closest(".icCtl").length > 0) { return; }
+        const icType = icRowType(this);
+        icSetQty(icType, icSelection[icType] > 0 ? 0 : 1);
+    });
+    $modal.on("click", ".icAddBtn", function () {
+        icSetQty(icRowType(this), 1);
+    });
+    $modal.on("click", ".icPlus", function () {
+        const icType = icRowType(this);
+        icSetQty(icType, (icSelection[icType] || 0) + 1);
+    });
+    $modal.on("click", ".icMinus", function () {
+        const icType = icRowType(this);
+        icSetQty(icType, (icSelection[icType] || 0) - 1);
+    });
+    //份數輸入：只允許數字；輸入中清空或 0 先不處理，離開欄位才生效（避免輸入到一半列被取消選取）
+    $modal.on("input", ".icQtyInput", function () {
+        digitalboxHandler(this);
+        if (this.value === "" || Number(this.value) === 0) { return; }
+        icSetQty(icRowType(this), this.value);
+    });
+    $modal.on("change", ".icQtyInput", function () {
+        icSetQty(icRowType(this), this.value);
+    });
+    $modal.on("click", ".icChipRemove", function () {
+        icSetQty($(this).closest(".icChip").attr("data-ictype"), 0);
+    });
+    $modal.on("click", ".icClearAll", function () {
+        icSelection = {};
+        icRefresh("");
+    });
+    $modal.on("input", ".icSearchInput", icApplyFilter);
+    $modal.on("click", ".icSearchClear", function () {
+        $modal.find(".icSearchInput").val("").trigger("focus");
+        icApplyFilter();
+    });
+    //搜尋框按 Enter：只剩一筆符合時直接選 1 份
+    $modal.on("keydown", ".icSearchInput", function (e) {
+        if (e.key !== "Enter") { return; }
+        e.preventDefault();
+        const $hits = $modal.find(".icRow").not(".d-none");
+        if ($hits.length === 1) {
+            const icType = $hits.attr("data-ictype");
+            if (!(icSelection[icType] > 0)) { icSetQty(icType, 1); }
+            this.select();
+        }
+    });
+
+    icApplyFilter($modal);
+    icRefresh("", $modal);
+}
+
 
