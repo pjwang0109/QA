@@ -1,23 +1,41 @@
-    $(".identities").each(function () {
-        let $item = $(this);
-        let id = $item.find(".id").val();
-        let type = $item.find(".type").val();
-        let name = $item.find(".name").val();
-        let typeText = $item.find(".type option:selected").text();
+他這一段是什麼意思
+ $.each(chkArr, (idx, chkKey) => {
+                if (uintData[chkKey]) {
+                    dataIsEmpty = false;
+                }
+            })
+            if (!dataIsEmpty) {
+                piItemArr.push(uintData);
+            }
 
-        if (type === "6") {
-            gccArr.push({ id, type, name, typeText });
-        }
-    });
-
-    gccArr.sort((a, b) => a.type - b.type);
-
-
-gccArr.forEach((item, index) => {
-        let num = index + 1;
-        let id = item.id;
-        let name = item.name;
-        let typeText = item.typeText;
-        checkNum[typeText] = (checkNum[typeText] || 0) + 1;
-
-前面我懂 但是checkNum[typeText]的值 我不懂為何是數字
+原JS
+$.each($target.find(".sourceProvideDiv .del-btn[data-row]"), (i, btnEle) => {
+            const $unit = $(btnEle).closest("tr");
+            const $table = $(btnEle).closest("table");
+            const uintData = {};
+            // 資料序號
+            uintData["dataseq"] = Number($unit.find(".del-btn[data-row]").data("row")).toString() || "";
+            // 項目
+            uintData["vid"] = $unit.find("input.vid").val() || "";
+            // 統一編號
+            uintData["item"] = $unit.find("input.item").val() || "";
+            // 進貨廠商名稱
+            uintData["vname"] = $unit.find("input.vname").val() || "";
+            // 佔進貨比重
+            uintData["rratio"] = $unit.find("input.rratio").val() || "";
+            // 國別
+            uintData["nation"] = $unit.find("select.nation").val() || "";
+            // 付款條件
+            uintData["pterms"] = $unit.find("input.pterms").val() || "";
+            let dataIsEmpty = true;
+            const chkArr = ["vid", "item", "vname", "rratio", "nation", "pterms"];
+            $.each(chkArr, (idx, chkKey) => {
+                if (uintData[chkKey]) {
+                    dataIsEmpty = false;
+                }
+            })
+            if (!dataIsEmpty) {
+                piItemArr.push(uintData);
+            }
+           
+        });
