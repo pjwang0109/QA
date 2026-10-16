@@ -1,1 +1,54 @@
-$unit.find(".del-btn[data-row]").data("row")
+假如我原本有五筆資料
+當我把某一列的資料刪除時 (例如3)
+那一列的data-row是會變的
+原本:
+<button data-num="1" data-row="1" class="btn btn-danger btn-sm del-btn">
+<button data-num="1" data-row="2" class="btn btn-danger btn-sm del-btn">
+<button data-num="1" data-row="3" class="btn btn-danger btn-sm del-btn">
+<button data-num="1" data-row="4" class="btn btn-danger btn-sm del-btn">
+<button data-num="1" data-row="5" class="btn btn-danger btn-sm del-btn">
+會變成:
+<button data-num="1" data-row="1" class="btn btn-danger btn-sm del-btn">
+<button data-num="1" data-row="2" class="btn btn-danger btn-sm del-btn">
+<button data-num="1" data-row="3" class="btn btn-danger btn-sm del-btn">
+<button data-num="1" data-row="4" class="btn btn-danger btn-sm del-btn">
+
+
+原本五筆資料 dataseq=1 dataseq=2 dataseq=3 dataseq=4 dataseq=5
+當我把某一列的資料刪除時 (例如3)
+暫存後他會變成 dataseq=1 dataseq=2 dataseq=4 dataseq=5
+但我想要的是 dataseq=1 dataseq=2 dataseq=3 dataseq=4
+怎麼改
+
+
+//原物料供應情形
+        $.each($target.find(".sourceProvideDiv .del-btn[data-row]"), (i, btnEle) => {
+            const $unit = $(btnEle).closest("tr");
+            const $table = $(btnEle).closest("table");
+            const uintData = {};
+            // 資料序號
+            uintData["dataseq"] = Number($unit.find(".del-btn[data-row]").data("row")).toString() || "";
+            // 項目
+            uintData["vid"] = $unit.find("input.vid").val() || "";
+            // 統一編號
+            uintData["item"] = $unit.find("input.item").val() || "";
+            // 進貨廠商名稱
+            uintData["vname"] = $unit.find("input.vname").val() || "";
+            // 佔進貨比重
+            uintData["rratio"] = $unit.find("input.rratio").val() || "";
+            // 國別
+            uintData["nation"] = $unit.find("select.nation").val() || "";
+            // 付款條件
+            uintData["pterms"] = $unit.find("input.pterms").val() || "";
+            let dataIsEmpty = true;
+            const chkArr = ["vid", "item", "vname", "rratio", "nation", "pterms"];
+             $.each(chkArr, (idx, chkKey) => {
+                if (uintData[chkKey]) {
+                     dataIsEmpty = false;
+                 }
+             })
+             if (!dataIsEmpty) {
+                piItemArr.push(uintData);
+             }
+
+        });
