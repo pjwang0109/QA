@@ -1,1 +1,58 @@
+我的html想要這樣寫 你幫我改JS
+<!--約據-個別契約-連帶保證書（定有期間）（JOINT_GUARANTEE_FIXED_TERM）內容，外框由 ic_shell.html 提供-->
 
+<div class="form-group form-inline my-3 guaranteePersonList">
+    <!-- 第一組（預設不可刪除，且會連動擔保額度） -->
+    <div class="mt-2 guPersonSelectDiv1">
+        <span class="mr-2">立連帶保證書人：</span>
+        <select class="form-control mr-2 icGuPerson">
+            <option value="">請選擇</option>
+        </select>
+        <input type="text" class="form-control col-3 icGuPersonName" placeholder="" value="" disabled>
+        <button type="button" class="mr-2 btn btn-info addGuPersonBtnFT" onclick="addGuPersonBtnFT(this)">+</button>
+    </div>
+</div>
+
+
+<div class="form-group form-inline my-3">
+    <span class="mr-2">債務人：</span>
+    <input type="text" class="form-control col-3 icGuPersonDebtor" placeholder="" value="" disabled>
+</div>
+<div class="form-group form-inline my-3 icGuDateGroupFT">
+    <span class="mr-2">連帶保證約定期間：</span>
+    <!-- 依 ID 長度切換：8 碼為設立日期，10 碼為出生年月日；輸入上限（年 150、月 12、日依年月）由共用程式處理 -->
+    <span>約定期間至民國</span>
+    <input type="text" class="form-control mx-2 icGuDateYear" placeholder="" value="" size="3" maxlength="3" inputmode="numeric">
+    <span>年</span>
+    <input type="text" class="form-control mx-2 icGuDateMonth" placeholder="" value="" size="2" maxlength="2" inputmode="numeric">
+    <span>月</span>
+    <input type="text" class="form-control mx-2 icGuDateDay" placeholder="" value="" size="2" maxlength="2" inputmode="numeric">
+    <span>日止</span>
+</div>
+<div class="form-group form-inline my-3">
+    <span>連帶保證人擔保額度：</span>
+    <input type="text" class="form-control mx-2 col-3 icGuPersonAmount" placeholder="" value="" disabled>元
+</div>
+<div class="form-group form-inline my-3">
+    <span>四、保證人同意以  貴行
+        <input type="text" class="form-control mx-2 icGuBranchFT" placeholder="" value="">
+        部（分行）營業所在地為履行地
+    </span>
+</div>
+<div class="form-group form-inline my-3">
+    <span>五、約定管轄法院：</span>
+    <input type="text" class="form-control mx-2 col-3 icCourts" placeholder="" value="" disabled>
+    <span>地方法院</span>
+</div>
+<div class="form-group form-inline my-3">
+    <span class="mr-2">帳號</span>
+    <input type="text" class="form-control col-3 icGuPersonNum" placeholder="" value="" disabled>
+</div>
+
+<div class="form-group form-inline my-2 mt-4">
+    <span>※本約定書簽章：</span>
+    <span class="ml-1">( 章*</span>
+    <input type="text" class="form-control mx-2 seal1 col-1" placeholder="" value="">、
+    <span>簽*</span>
+    <input type="text" class="form-control mx-2 seal2 col-1" placeholder="" value="">)
+</div>
