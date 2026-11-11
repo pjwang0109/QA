@@ -1,12 +1,19 @@
 這是【連帶保證書（定有期間）】大概要的畫面
 但class不確定怎麼命名好
+好像共用的ic開頭的可以共用
+
+規則:
+【立連帶保證書人】的guPersonSelectFT 選擇後要給我連帶保證人的名字和第一個下拉選單要跟【保證人擔保額度】連動 不管之後有新增其他新的連帶保證人(addGuPersonBtnFT(this)) 【保證人擔保額度】都保持第一位選擇的資料
+.guPersonSelectFT的資料是從頁面上抓  只要 連帶保證人 帶入這個select
+
+
 
 
 <!--約據-個別契約-連帶保證書（定有期間）（JOINT_GUARANTEE_FIXED_TERM）內容，外框由 ic_shell.html 提供-->
 <div class="form-group form-inline my-3 guaranteePersonGroup icPersonGroup">
     <div class="mt-2 guPersonSelectDiv1">
         <span class="mr-2">立連帶保證書人：</span>
-        <select class="form-control mr-2 guPersonSelectFT icPerson">
+        <select class="form-control mr-2 guPersonSelectFT">
             <option value="">請選擇</option>
         </select>
         <input type="text" class="form-control col-3 guPersonNameFT icPersonName" placeholder="" value="" disabled>
