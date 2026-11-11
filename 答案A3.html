@@ -1,80 +1,141 @@
-// 共用：身分別連動綜合契約書下的負責人部分(判斷ID是否符合法人身分)
-function renderResponsibleList() {
-    let count = {};
-    let idtArr = [];
-    let $container =$(".responsibleDiv");
+/////////////////////////2連帶保證書（定有期間）START/////////////////////////
 
-    // 1. 先暫存目前畫面上已有的負責人資料 (初次載入時這裡為空)
-    let existingIDData = {};
-    $container.find(".responsible").each(function () {
-        let id = $(this).find(".code").val();
-        if (id) {
-            existingIDData[id] = {
-                responsibleName: $(this).find(".responsibleName").val() || "",
-                isExpanded: !$(this).find(".principalDiv").hasClass("hide") // 紀錄是否已展開
-            };
-        }
-    });
-
-    // 2. 清空舊畫面
-    $container.empty();
-
-    // 3. 蒐集符合的身分別資料
-    $(".identities").each(function () {
-        let $item =$(this);
-        let typeVal = $item.find(".type").val();
-        let typeText = $item.find(".type option:selected").text();
-        let name = $item.find(".name").val();
-        let id = $item.find(".id").val();
-
-        if (typeVal) {
-            idtArr.push({ "typeVal": typeVal, "name": name, "id": id, "typeText": typeText });
-        }
-    });
-
-    idtArr.sort((a, b) => a.typeVal - b.typeVal);
-
-    // 4. 重新渲染輸出
-    idtArr.forEach((item, index) => {
-        let num = index + 1;
-        let type = item.typeVal;
-        let name = item.name;
-        let id = item.id;
-        let typeText = item.typeText;
-
-        count[typeText] = (count[typeText] || 0) + 1;
-
-        if (type) {
-            // 判斷是否符合法人身分 (統編 8 碼)
-            if (id && id.length === 8) {
-                if (type === '0') {
-                    typeText = "立約人(即借款人)";
-                    count[typeText] = "";
-                }
-
-                // 取得暫存資料（若無暫存則給預設值）
-                let saved = existingIDData[id] || {};
-                let oldResName = saved.responsibleName || "";
-                let isExpanded = saved.isExpanded || false;
-                let divClass = isExpanded ? "principalDiv" : "principalDiv hide";
-
-                let $responsibleDiv = `
-                    <div id="responsible${num}" class="form-group form-inline responsible">
-                        <span class="ml-5 mr-1 rePeople">${typeText}${count[typeText]}：</span>
-                        <input type="text" class="form-control principal" style="margin-left: 47px;" value="${name}" disabled>
-                        <input type="hidden" class="code" name="code" value="${id}">
-                        
-                        <div class="${divClass}">
-                            <span class="ml-5">負責人：</span>
-                            <input type="text" class="form-control responsibleName" placeholder="" value="${oldResName}">
-                            <span>(自行輸入)</span>
-                        </div>
-                        
-                        <button type="button" class="btn btn-info principalbtn ml-5" onclick="principalBtn(this)">負責人</button>
-                    </div>`;
-
-                $container.append($responsibleDiv);
-            }
-        }
+/**
+ * 連帶保證書（定有期間）- 初始化
+ * @param {jQuery} $card 卡片元素
+ */
+function icJointGuaranteeFixedTermInit($card) {
+    // 預設帶入上方「連帶保證約定期間」的年月日（透過共用 icSetDate 寫入，順便初始化防呆紀錄）
+    const $n3 = $(".N3").first();
+    icSetDate($card, {
+        year: $n3.find(".year").val() || "",
+        month: $n3.find(".month").val() || "",
+        day: $n3.find(".day").val() || ""
     });
 }
+
+/**
+ * 連帶保證書（定有期間）- 下行資料回填 (S060001036)
+ * @param {jQuery} $card 卡片元素
+ * @param {Object} val 下行 data 物件
+ */
+function icJointGuaranteeFixedTermFill($card, val) {
+    // 1. 回填多位立連帶保證書人（假設後端格式為 val.guarantors = ["A123456789", "B223456789"] 或 [{ id: "..." }]）
+    const guarantors = val.guarantors || (val.id ? [val.id] : []);
+    guarantors.forEach((item, idx) => {
+        const personId = typeof item === "object" ? item.id : item;
+        if (idx > 0) {
+            // 第二位以上先動態長出列
+            appendGuPersonRowFT($card.find(".guaranteePersonList"));
+        }
+        // 呼叫共用 icSetPerson(卡片, 統編, 第幾組)，後續 icRefreshPageFields 會自動帶出選項與姓名
+        icSetPerson($card, personId, idx);
+    });
+
+    // 2. 回填連帶保證約定期間
+    icSetDate($card, val);
+
+    // 3. 回填其他欄位（擔保額度在 icRefreshPageFields 跑完後也會同步，這裡先帶入下行舊值防呆）
+    $card.find(".icGuPersonAmountFT").val(val.amount || "");
+    $card.find(".icGuBranchFT").val(val.branch || "");
+    $card.find(".icGuPersonNumFT").val(val.accountNo || "");
+    $card.find(".seal2").first().val(val.seal2 || "");
+}
+
+/**
+ * 連帶保證書（定有期間）- 暫存取值 (S060001037)
+ * @param {jQuery} $card 卡片元素
+ * @returns {Object} data 物件
+ */
+function icJointGuaranteeFixedTermCollect($card) {
+    // 1. 收集所有立連帶保證書人的統編/ID
+    const guarantors = [];
+    $card.find(".icPersonGroup").each(function (idx) {
+        const personId = icGetPerson($card, idx);
+        if (personId) {
+            guarantors.push(personId);
+        }
+    });
+
+    // 2. 取得約定期間日期
+    const date = icGetDate($card);
+
+    return {
+        "guarantors": guarantors,
+        "year": date.year,
+        "month": date.month,
+        "day": date.day,
+        "amount": $card.find(".icGuPersonAmountFT").val() || "",
+        "branch": $card.find(".icGuBranchFT").val() || "",
+        "accountNo": $card.find(".icGuPersonNumFT").val() || "",
+        "seal2": $card.find(".seal2").first().val() || ""
+    };
+}
+
+/**
+ * 動態產生一列新的「立連帶保證書人」
+ * @param {jQuery} $listContainer .guaranteePersonList 容器
+ */
+function appendGuPersonRowFT($listContainer) {
+    const $newRow = $(`
+        <div class="form-group form-inline my-2 icPersonGroup guPersonRow" data-types="6">
+            <span class="mr-2" style="visibility: hidden;">立連帶保證書人：</span>
+            <select class="form-control mr-2 icPerson guPersonSelectFT">
+                <option value="">請選擇</option>
+            </select>
+            <input type="text" class="form-control col-3 icPersonName guPersonNameFT" value="" disabled>
+            <button type="button" class="ml-2 btn btn-danger delGuPersonBtnFT" onclick="delGuPersonBtnFT(this)">×</button>
+        </div>
+    `);
+    $listContainer.append($newRow);
+}
+
+/**
+ * 按鈕事件：新增立連帶保證書人
+ * @param {HTMLElement} obj 新增按鈕 (this)
+ */
+function addGuPersonBtnFT(obj) {
+    const $list = $(obj).closest(".guaranteePersonList");
+    appendGuPersonRowFT($list);
+    // 呼叫共用刷新，讓新長出來的下拉選單立刻灌入連帶保證人選項
+    icRefreshPageFields();
+}
+
+/**
+ * 按鈕事件：刪除立連帶保證書人
+ * @param {HTMLElement} obj 刪除按鈕 (this)
+ */
+function delGuPersonBtnFT(obj) {
+    $(obj).closest(".guPersonRow").remove();
+}
+
+/**
+ * 同步第一位立連帶保證書人的「擔保額度」
+ * @param {jQuery} $card 卡片元素
+ */
+function syncFirstGuarantorAmountFT($card) {
+    // 永遠只抓第一組 (.first()) 的選擇值，後面新增的保證人不影響額度
+    const firstPersonId = $card.find(".icPersonGroup").first().find(".icPerson").val() || "";
+    let amount = "";
+
+    if (firstPersonId) {
+        // ⚠️ 這裡依照你上方「綜合契約書/保證人區塊」實際存放額度的 DOM 結構抓取：
+        // 範例：找到該統編對應的保證人區塊並讀取擔保額度
+        $(".guarantor-block").each(function () {
+            if ($.trim($(this).find(".id, .code").val()) === firstPersonId) {
+                amount = $(this).find(".guarantorAmount, .amount").val() || "";
+                return false;
+            }
+        });
+    }
+
+    $card.find(".icGuPersonAmountFT").val(amount);
+}
+
+// 事件委派：只針對「第一位」立連帶保證書人下拉選單變更時，連動更新擔保額度
+$(document).on("change", "#indivdualCtableDiv .indivdualC_TableList[data-ictype='JOINT_GUARANTEE_FIXED_TERM'] .icPersonGroup:first-child .icPerson", function () {
+    const $card = $(this).closest(".indivdualC_TableList");
+    syncFirstGuarantorAmountFT($card);
+});
+
+/////////////////////////2連帶保證書（定有期間）END/////////////////////////
