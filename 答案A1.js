@@ -1,7 +1,5 @@
-
-//2連帶保證書（定有期間）-init：預設帶入上方「連帶保證約定期間」與「帳號」
+//2連帶保證書（定有期間）-init：只預設帶入「連帶保證約定期間」年月日
 function icJointGuaranteeFixedTermInit($card) {
-    // 1. 預設帶入連帶保證約定期間
     const $n3 = $(".N3").first();
     icSetDate($card, {
         year: $n3.find(".year").val() || "",
@@ -9,10 +7,8 @@ function icJointGuaranteeFixedTermInit($card) {
         day: $n3.find(".day").val() || ""
     });
 
-    // 2. 新增類別時帶入帳號
-    // ⚠️ 請依實際頁面上存放「帳號」的 input class 微調下列選取器（例如 $(".accountNo").val()）
-    const accountNo = $(".accountNo").first().val() || "";
-    $card.find(".icGuAccountNo").val(accountNo);
+    // 初次建立卡片時，同步一次上方的「帳號」
+    syncGuAccountNoFT($card);
 }
 
 //2連帶保證書（定有期間）-回填（val 為下行的 data）
@@ -29,10 +25,10 @@ function icJointGuaranteeFixedTermFill($card, val) {
         icSetPerson($card, personId, idx);
     });
 
-    // 2. 回填連帶保證約定期間
+    // 2. 回填連帶保證約定期間（照下行原樣帶入）
     icSetDate($card, val);
 
-    // 3. 回填擔保額度、履行地分行、帳號、簽章
+    // 3. 回填其他欄位（債務人、法院、帳號在後續連動刷新時也會維持最新狀態）
     $card.find(".icGuPersonAmount").val(val.amount || "");
     $card.find(".guaranteeBranch").val(val.branch || "");
     $card.find(".icGuAccountNo").val(val.accountNo || "");
@@ -63,7 +59,7 @@ function icJointGuaranteeFixedTermCollect($card) {
     };
 }
 
-//動態建立保證人列 HTML（配合 HTML 的 addGuPersonBtnFT 命名）
+//動態建立保證人列 HTML
 function appendGuPersonRowFT($list) {
     const $row = $(`
         <div class="form-group form-inline my-2 icPersonGroup" data-types="6">
@@ -78,16 +74,24 @@ function appendGuPersonRowFT($list) {
     $list.append($row);
 }
 
-//按鈕事件：新增立連帶保證書人（對應 HTML onclick="addGuPersonBtnFT(this)"）
-function addGuPersonBtnFT(obj) {
+//新增立連帶保證書人
+function addGuPersonRowFT(obj) {
     const $list = $(obj).closest(".guaranteePersonList");
     appendGuPersonRowFT($list);
     icRefreshPageFields();
 }
 
-//按鈕事件：刪除立連帶保證書人
+//刪除立連帶保證書人
 function delGuPersonBtnFT(obj) {
     $(obj).closest(".icPersonGroup").remove();
+}
+
+//同步「帳號」：從上方主畫面讀取並填入卡片
+function syncGuAccountNoFT($targetCard) {
+    // ⚠️ 請依實際主畫面上存放「帳號」的 input class 替換下列選取器（例如 $(".accountNo")）
+    const accountNo = $(".accountNo").first().val() || "";
+    const $cards = $targetCard || $("#indivdualCtableDiv .indivdualC_TableList[data-ictype='JOINT_GUARANTEE_FIXED_TERM']");
+    $cards.find(".icGuAccountNo").val(accountNo);
 }
 
 //同步「第一位」立連帶保證書人的擔保額度
@@ -96,8 +100,7 @@ function syncFirstGuarantorAmountFT($card) {
     let amount = "";
 
     if (firstPersonId) {
-        // 從上方綜合契約書（連帶保證人區塊）對應統編抓取擔保額度
-        // ⚠️ 請依實際頁面上保證人區塊的外層 class 與金額 input class 微調下列選取器
+        // ⚠️ 請依實際主畫面上保證人區塊的外層 class 與金額 input class 替換下列選取器
         $("#GCC .guarantor-block, .guarantorList .guarantor-item").each(function () {
             const blockId = $.trim($(this).find(".id, .code, .guarantorId").val() || "");
             if (blockId === firstPersonId) {
@@ -110,12 +113,26 @@ function syncFirstGuarantorAmountFT($card) {
     $card.find(".icGuPersonAmount").val(amount);
 }
 
-//事件委派（檔案載入時執行一次）
+//事件委派（檔案載入時執行一次，負責即時連動）
 (function bindJointGuaranteeFixedTermEvents() {
     const cardSelector = "#indivdualCtableDiv .indivdualC_TableList[data-ictype='JOINT_GUARANTEE_FIXED_TERM']";
 
-    // 只有「第一組」立連帶保證書人變更時，才連動更新擔保額度；後續新增的保證人不影響額度
+    // 1. 只有「第一組」立連帶保證書人變更時，才連動更新擔保額度
     $(document).on("change", `${cardSelector} .guaranteePersonList .icPersonGroup:first-child .icPerson`, function () {
         syncFirstGuarantorAmountFT($(this).closest(".indivdualC_TableList"));
+    });
+
+    // 2. 上方主畫面「帳號」改變時，所有定有期間連帶保證書卡片跟著即時更新
+    // ⚠️ 請將 ".accountNo" 替換為主畫面實際的帳號輸入框選取器
+    $(document).on("input change", ".accountNo", function () {
+        syncGuAccountNoFT();
+    });
+
+    // 3. 上方主畫面「保證人擔保額度」改變時，卡片的額度也跟著即時同步
+    // ⚠️ 請將 ".guarantorAmount" 替換為主畫面實際的保證人額度輸入框選取器
+    $(document).on("input change", ".guarantorAmount", function () {
+        $(cardSelector).each(function () {
+            syncFirstGuarantorAmountFT($(this));
+        });
     });
 })();
