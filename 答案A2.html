@@ -1,61 +1,59 @@
-<!-- 約據-個別契約-連帶保證書（定有期間）（JOINT_GUARANTEE_FIXED_TERM） -->
+<!--約據-個別契約-連帶保證書（定有期間）（JOINT_GUARANTEE_FIXED_TERM）內容，外框由 ic_shell.html 提供-->
 <div class="guaranteePersonList">
-    <!-- 第一組（預設不可刪除，且會連動擔保額度） -->
-    <div class="form-group form-inline my-2 icPersonGroup guPersonRow" data-types="6">
+    <!-- 第一組（預設不可刪除，且會連動下方擔保額度；data-types="6" 限定只抓連帶保證人） -->
+    <div class="form-group form-inline my-2 icPersonGroup" data-types="6">
         <span class="mr-2">立連帶保證書人：</span>
-        <select class="form-control mr-2 icPerson guPersonSelectFT">
+        <select class="form-control mr-2 icPerson">
             <option value="">請選擇</option>
         </select>
-        <input type="text" class="form-control col-3 icPersonName guPersonNameFT" value="" disabled>
-        <button type="button" class="ml-2 btn btn-info addGuPersonBtnFT" onclick="addGuPersonBtnFT(this)">+</button>
+        <input type="text" class="form-control col-3 icPersonName" placeholder="" value="" disabled>
+        <button type="button" class="ml-2 btn btn-info" onclick="addGuPersonRow(this)">+</button>
     </div>
 </div>
 
 <div class="form-group form-inline my-3">
     <span class="mr-2">債務人：</span>
-    <!-- 加上 icBorrowerName，共用程式自動帶入借款人(身分別0) -->
-    <input type="text" class="form-control col-3 icBorrowerName icGuPersonDebtorFT" value="" disabled>
+    <input type="text" class="form-control col-3 icBorrowerName" placeholder="" value="" disabled>
 </div>
 
-<!-- 加上 icDateGroup（放在 icPersonGroup 外面，換人時不會被清空） -->
-<div class="form-group form-inline my-3 icDateGroup icGuDateGroupFT">
+<div class="form-group form-inline my-3 icDateGroup">
     <span class="mr-2">連帶保證約定期間：</span>
     <span>約定期間至民國</span>
-    <input type="text" class="form-control mx-2 icDateYear" value="" size="3" maxlength="3" inputmode="numeric">
+    <input type="text" class="form-control mx-2 icDateYear" placeholder="" value="" size="3" maxlength="3" inputmode="numeric">
     <span>年</span>
-    <input type="text" class="form-control mx-2 icDateMonth" value="" size="2" maxlength="2" inputmode="numeric">
+    <input type="text" class="form-control mx-2 icDateMonth" placeholder="" value="" size="2" maxlength="2" inputmode="numeric">
     <span>月</span>
-    <input type="text" class="form-control mx-2 icDateDay" value="" size="2" maxlength="2" inputmode="numeric">
+    <input type="text" class="form-control mx-2 icDateDay" placeholder="" value="" size="2" maxlength="2" inputmode="numeric">
     <span>日止</span>
 </div>
 
 <div class="form-group form-inline my-3">
     <span>連帶保證人擔保額度：</span>
-    <input type="text" class="form-control mx-2 col-3 icGuPersonAmountFT" value="" disabled>元
+    <input type="text" class="form-control mx-2 col-3 icGuaranteeAmount" placeholder="" value="" disabled>元
 </div>
 
 <div class="form-group form-inline my-3">
     <span>四、保證人同意以 貴行
-        <input type="text" class="form-control mx-2 icGuBranchFT" value="">
+        <input type="text" class="form-control mx-2 icBranch" placeholder="" value="">
         部（分行）營業所在地為履行地
     </span>
 </div>
 
 <div class="form-group form-inline my-3">
     <span>五、約定管轄法院：</span>
-    <input type="text" class="form-control mx-2 col-3 icCourts" value="" disabled>
+    <input type="text" class="form-control mx-2 col-3 icCourts" placeholder="" value="" disabled>
     <span>地方法院</span>
 </div>
 
 <div class="form-group form-inline my-3">
     <span class="mr-2">帳號：</span>
-    <input type="text" class="form-control col-3 icGuPersonNumFT" value="" disabled>
+    <input type="text" class="form-control col-3 icAccountNo" placeholder="" value="" disabled>
 </div>
 
 <div class="form-group form-inline my-2 mt-4">
     <span>※本約定書簽章：</span>
     <span class="ml-1">( 章*</span>
-    <input type="text" class="form-control mx-2 seal1 col-1" value="">、
+    <input type="text" class="form-control mx-2 seal1 col-1" placeholder="" value="">、
     <span>簽*</span>
-    <input type="text" class="form-control mx-2 seal2 col-1" value="">)
+    <input type="text" class="form-control mx-2 seal2 col-1" placeholder="" value="">)
 </div>
