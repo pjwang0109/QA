@@ -1,66 +1,68 @@
-這是【連帶保證書（定有期間）】大概要的畫面
-但class不確定怎麼命名好
-好像共用的ic開頭的可以共用
+這是他在授信約定書所使用的頁面共用資料 但我的連帶保證書（定有期間）的連帶保證人擔保額度 不是從 $group 取得的資料拿去共用 例如 $group.find(".icPersonName").val(match ? match.name : "");
+我是在別的區域想要取得我的連帶保證人擔保額度data可以我給你資料地 然後幫我寫一個類似的JS方法 來取得連帶保證人擔保額度嗎
 
-規則:
-【立連帶保證書人】的guPersonSelectFT 選擇後要給我連帶保證人的名字和第一個下拉選單要跟【保證人擔保額度】連動 不管之後有新增其他新的連帶保證人(addGuPersonBtnFT(this)) 【保證人擔保額度】都保持第一位選擇的資料
-.guPersonSelectFT的資料是從頁面上抓  只要 連帶保證人 帶入這個select
+.N5的#GCC 的gccMoney 這可能也會有多筆 
+但我只要當我icPerson 選到jsGuarantor連帶保證人2 要有它相對應的gccMoney 以此類推
 
+<div id="guarantor_block_${num}" class="guarantor-block mb-3" data-id="${id}">
+                <!-- 第 1 列：主額度與幣別 -->
+                <div id="guarantor${num}" class="form-group form-inline my-2 guarantor" ${paddingStyle}>
+                    ${mainTitle}
+                    <span class="mr-2 jsGuarantor">${typeText}${checkNum[typeText]}：</span>
+                    <input type="text" class="form-control principal" style="margin:0 20px;" value="${name}" disabled>
+                    <select class="form-control guaCurrency" required="required">
+                        ${currencyOptions}
+                    </select>
+                    <input type="text" class="form-control mx-2 gccMoney" placeholder=""
+                        value="${oldMoney}"
+                        onblur="set_money_Thousands(this)" onfocus="cancel_money_Thousands(this)"
+                        oninput="digitalboxHandler(this)">
+                    <input type="hidden" class="code" name="code" value="${id}">
+                    <span>元</span>
+                </div>
 
+/**
+ * 刷新一組人員：重建下拉選項並帶入欄位
+ * 這組人員記住所選的身分別元素（icPersonRow）與統編（icPersonId）：元素還在就跟著它（身分別的 ID 被修改也不會斷）；
+ * 元素不在了再用統編找；都找不到（身分別被刪除）就回到「請選擇」
+ */
 
+function icRefreshPersonGroup($group, list) {
+    const typesAttr = $group.attr("data-types");
+    const types = typesAttr ? typesAttr.split(",") : null;
+    const options = types ? $.grep(list, function (item) { return types.indexOf(item.type) >= 0; }) : list;
 
-<!--約據-個別契約-連帶保證書（定有期間）（JOINT_GUARANTEE_FIXED_TERM）內容，外框由 ic_shell.html 提供-->
-<div class="form-group form-inline my-3 guaranteePersonGroup icPersonGroup">
-    <div class="mt-2 guPersonSelectDiv1">
-        <span class="mr-2">立連帶保證書人：</span>
-        <select class="form-control mr-2 guPersonSelectFT">
-            <option value="">請選擇</option>
-        </select>
-        <input type="text" class="form-control col-3 guPersonNameFT icPersonName" placeholder="" value="" disabled>
-        <button type="button" class="mr-2 btn btn-info addguPersonBtnFT" onclick="addGuPersonBtnFT(this)">+</button>
-    </div>
-</div>
+    const row = $group.data("icPersonRow");
+    const id = $group.data("icPersonId");
+    let idx = -1;
+    if (row) {
+        idx = options.findIndex(function (item) { return item.el === row; });
+    }
+    if (idx < 0 && id) {
+        idx = options.findIndex(function (item) { return item.id === id; });
+    }
+    const match = idx >= 0 ? options[idx] : null;
+    $group.data("icPersonRow", match ? match.el : null);
+    $group.data("icPersonId", match ? match.id : "");
 
+    //選項有變才重建，避免使用者展開選單時被重繪
+    const $select = $group.find(".icPerson").first();
+    const signature = $.map(options, function (item) { return item.id + "\u0001" + item.label; }).join("\u0002");
+    if ($select.data("icSignature") !== signature) {
+        $select.find("option").not(":first").remove();
+        $.each(options, function (i, item) {
+            $select.append($("<option></option>").val(item.id).text(item.label));
+        });
+        $select.data("icSignature", signature);
+    }
+    $select.data("icOptions", options);
+    $select.prop("selectedIndex", idx + 1);//用位置選取，同一統編出現在兩筆身分別時也能選到正確那筆
 
-<div class="form-group form-inline my-3">
-    <span class="mr-2">債務人：</span>
-    <input type="text" class="form-control col-3 icGuPersonDebtorFT" placeholder="" value="" disabled>
-</div>
-<div class="form-group form-inline my-3 icGuDateGroupFT">
-    <span class="mr-2">連帶保證約定期間：</span>
-    <!-- 依 ID 長度切換：8 碼為設立日期，10 碼為出生年月日；輸入上限（年 150、月 12、日依年月）由共用程式處理 -->
-    <span>約定期間至民國</span>
-    <input type="text" class="form-control mx-2 icDateYear" placeholder="" value="" size="3" maxlength="3" inputmode="numeric">
-    <span>年</span>
-    <input type="text" class="form-control mx-2 icDateMonth" placeholder="" value="" size="2" maxlength="2" inputmode="numeric">
-    <span>月</span>
-    <input type="text" class="form-control mx-2 icDateDay" placeholder="" value="" size="2" maxlength="2" inputmode="numeric">
-    <span>日止</span>
-</div>
-<div class="form-group form-inline my-3">
-    <span>連帶保證人擔保額度：</span>
-    <input type="text" class="form-control mx-2 col-3 icGuPersonAmountFT" placeholder="" value="" disabled>元
-</div>
-<div class="form-group form-inline my-3">
-    <span>四、保證人同意以  貴行
-        <input type="text" class="form-control mx-2 icGuBranchFT" placeholder="" value="">
-        部（分行）營業所在地為履行地
-    </span>
-</div>
-<div class="form-group form-inline my-3">
-    <span>五、約定管轄法院：</span>
-    <input type="text" class="form-control mx-2 col-3 icCourts" placeholder="" value="" disabled>
-    <span>地方法院</span>
-</div>
-<div class="form-group form-inline my-3">
-    <span class="mr-2">帳號</span>
-    <input type="text" class="form-control col-3 icGuPersonNumFT" placeholder="" value="" disabled>
-</div>
-
-<div class="form-group form-inline my-2 mt-4">
-    <span>※本約定書簽章：</span>
-    <span class="ml-1">( 章*</span>
-    <input type="text" class="form-control mx-2 seal1 col-1" placeholder="" value="">、
-    <span>簽*</span>
-    <input type="text" class="form-control mx-2 seal2 col-1" placeholder="" value="">)
-</div>
+    const idLength = match ? match.id.length : 0;
+    $group.find(".icPersonIdLabel").text(idLength == 8 ? "營利事業統一編號：" : idLength == 10 ? "國民身分證統一編號：" : "營利事業統一編號／國民身分證統一編號：");
+    $group.find(".icPersonDateLabel").text(idLength == 8 ? "設立日期：" : idLength == 10 ? "出生年月日：" : "設立日期／出生年月日：");
+    $group.find(".icPersonName").val(match ? match.name : "");
+    $group.find(".icPersonResponsible").val(match ? match.responsible : "");
+    $group.find(".icPersonAddress").val(match ? match.address : "");
+    $group.find(".icPersonId").val(match ? match.id : "");
+}
