@@ -1,12 +1,39 @@
-function icBindPageFieldEvents() {
-    //使用者修改身分別、負責人、其他共同條款 → 刷新卡片的共用欄位
-    $(document).on("input change", "#genderDiv input, #genderDiv select, .responsibleDiv .responsibleName, #otherCommonTermsDiv .courts, #otherCommonTermsDiv .phone, #otherCommonTermsDiv .fax", icScheduleRefresh);
-    //使用者換人
-    $(document).on("change", "#indivdualCtableDiv .icPerson", icOnPersonChange);
-    //民國日期
-    $(document).on("focusin", IC_DATE_SELECTOR, icOnDateFocus);
-    $(document).on("input", IC_DATE_SELECTOR, icOnDateInput);
-    $(document).on("change", "#indivdualCtableDiv .icDateYear, #indivdualCtableDiv .icDateMonth", icOnYearMonthChange);
+//1授信約定書-init：預設->簽章「章*4、簽*2」（讀取時會以 S060001036 的 seal1、seal2 覆蓋，空值也照填）
+function icCreditAgreementInit($card) {
+    $card.find(".seal1").first().val("4");
+    $card.find(".seal2").first().val("2");
 }
 
-這在幹嘛
+//1授信約定書-回填（val 為下行的 data：id 立約定書人統編/ID、year/month/day 設立日期或出生年月日、seal2 簽*）
+function icCreditAgreementFill($card, val) {
+    icSetPerson($card, val.id);
+    icSetDate($card, val);
+    $card.find(".seal2").first().val(val.seal2 || "");
+}
+
+//1授信約定書-暫存取值（S060001037 的 data）
+function icCreditAgreementCollect($card) {
+    const date = icGetDate($card);
+    return {
+        "id": icGetPerson($card),
+        "year": date.year,
+        "month": date.month,
+        "day": date.day,
+        "seal2": $card.find(".seal2").first().val() || ""
+    };
+}
+
+因為她的 [授信約定書]是這樣寫的 我可以用類似的寫法寫[連帶保證書（定有期間）]嗎
+
+我在一次告訴你要的規則
+1.新增新的類別時 連帶保證約定期間的icDateYear icDateMonth icDateDay 預設帶入頁面.N3裡面已存在的年月日 分別是.year .month .day 只有這個會寫在icJointGuaranteeFixedTermInit方法裡面
+
+2.也算是預設 但因為會跟著頁面有的資料改變而更新 所以不會寫在icJointGuaranteeFixedTermInit方法裡面，像是icBorrowerName icCourts icGuAccountNo
+
+3.當我點選第一筆【立連帶保證書人】icPerson時，【身分別】(icPersonName)、【連帶保證人擔保額度】(icGuPersonAmount) 會連動我頁面的資料 但僅限於第一個點選的資料作連動 後續若因為addGuPersonBtn 有新增多筆 身分時 只有【身分別】(icPersonName)會根據所選的人連動 ，而【連帶保證人擔保額度】(icGuPersonAmount) 會保持原第一筆資料所選的人異動
+
+4.
+
+
+
+
