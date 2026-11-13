@@ -1,18 +1,319 @@
-這一段在幹嘛 然後我的return 要改成以下那六個 主要id的部分會有多筆 我這樣寫可以嗎
+...上方忽略 跟原本一樣
 
+
+//動態建立保證人列 HTML（第二筆起附帶刪除按鈕）
+function appendGuPersonRow($list) {
+    const $row = $(`
+        <div class="form-group form-inline my-2 icPersonGroup" data-types="6">
+            <span class="mr-2" style="visibility: hidden;">立連帶保證書人：</span>
+            <select class="form-control mr-2 icPerson">
+                <option value="">請選擇</option>
+            </select>
+            <input type="text" class="form-control col-3 icPersonName" value="" disabled>
+            <button type="button" class="ml-2 btn btn-danger" onclick="delGuPersonBtn(this)">×</button>
+        </div>
+    `);
+    $list.append($row);
+}
+
+//按鈕事件：新增立連帶保證書人
+function addGuPersonBtn(obj) {
+    const $list = $(obj).closest(".guaranteePersonList");
+    appendGuPersonRow($list);
+    // 觸發共用刷新，讓新加入的 .icPerson 下拉選單自動填入連帶保證人選項
+    icRefreshPageFields();
+}
+
+//按鈕事件：刪除立連帶保證書人
+function delGuPersonBtn(obj) {
+    $(obj).closest(".icPersonGroup").remove();
+}
+
+/**
+ * 依選取的連帶保證人選項，從 .N5 #GCC 取得對應的擔保額度（gccMoney）
+ * 優先用「顯示名稱（如 連帶保證人2）+ 統編」雙重精準比對，避免同統編重複出現時抓錯筆
+ * @param {Object} optionItem icOptions 裡的物件 { id, label, name, ... }
+ * @returns {string} 擔保額度（含千分位字串，無資料回傳空字串）
+ */
+function icIdentityGuaranteeMoney(optionItem) {
+    if (!optionItem) { return ""; }
+    let money = "";
+    const targetLabel = $.trim(optionItem.label || "");
+    const targetId = $.trim(optionItem.id || "");
+
+    // 1. 優先用「角色名稱＋序號」與「統編」雙重比對
+    $(".N5 #GCC .guarantor-block").each(function () {
+        const $block = $(this);
+        const blockId = $.trim($block.attr("data-id") || $block.find("input.code").val() || "");
+        const labelText = $.trim($block.find(".jsGuarantor").first().text()).replace(/[：:]$/, "");
+
+        if (blockId === targetId && labelText === targetLabel) {
+            money = $.trim($block.find("input.gccMoney").first().val() || "");
+            return false;
+        }
+    });
+
+    // 2. 防呆備援：若標題文字格式不同沒對到，退回用統編抓第一筆符合的
+    if (money === "" && targetId) {
+        $(".N5 #GCC .guarantor-block").each(function () {
+            const $block = $(this);
+            const blockId = $.trim($block.attr("data-id") || $block.find("input.code").val() || "");
+            if (blockId === targetId) {
+                money = $.trim($block.find("input.gccMoney").first().val() || "");
+                return false;
+            }
+        });
+    }
+
+    return money;
+}
+
+//刷新單張卡片的「連帶保證人擔保額度」（永遠只認第一筆保證人）
+function icRefreshGuAmount($card) {
+    const $firstSelect = $card.find(".guaranteePersonList .icPersonGroup").first().find(".icPerson");
+    const selectEl = $firstSelect[0];
+    const options = $firstSelect.data("icOptions") || [];
+    const selectedItem = (selectEl && selectEl.selectedIndex > 0) ? options[selectEl.selectedIndex - 1] : null;
+
+    $card.find(".icGuPersonAmount").val(icIdentityGuaranteeMoney(selectedItem));
+}
+
+//事件委派綁定（檔案載入時執行一次，負責動態連動）
+function icBindGuFixedTermEvents() {
+    const cardSelector = "#indivdualCtableDiv .indivdualC_TableList[data-ictype='JOINT_GUARANTEE_FIXED_TERM']";
+
+    // 1. 切換「第一筆」立連帶保證書人時，更新擔保額度（第二筆以後變更不影響額度）
+    $(document).on("change", `${cardSelector} .guaranteePersonList .icPersonGroup:first-child .icPerson`, function () {
+        icRefreshGuAmount($(this).closest(".indivdualC_TableList"));
+    });
+
+    // 2. 上方 .N5 #GCC 的擔保額度（.gccMoney）修改或千分位格式化後，同步更新卡片額度
+    $(document).on("input blur change", ".N5 #GCC input.gccMoney", function () {
+        $(cardSelector).each(function () {
+            icRefreshGuAmount($(this));
+        });
+    });
+
+    // 3. 上方身分別區塊異動（導致連帶保證人1、2重新編號或刪除）時，延遲 120ms 待共用選單重繪後同步額度
+    $(document).on("input change", "#genderDiv input, #genderDiv select", function () {
+        setTimeout(function () {
+            $(cardSelector).each(function () {
+                icRefreshGuAmount($(this));
+            });
+        }, 120);
+    });
+
+    // 4. 上方主畫面「帳號」改變時，同步更新所有卡片的 .icGuAccountNo
+    // ⚠️ 請將 ".accountNo" 替換為主畫面上帳號 input 的實際選取器
+    $(document).on("input change", ".accountNo", function () {
+        const accountNo = $(this).val() || "";
+        $(`${cardSelector} .icGuAccountNo`).val(accountNo);
+    });
+}
+icBindGuFixedTermEvents();
+
+/////////////////////////個別契約-類別START/////////////////////////
+//本票及授權書-init：額度代號 Checkbox、第一個發票人選單
+function icCashiersInit($card) {
+    //與貸放條件(核貸通知書)連動：貸放條件有幾個額度代號這邊就要有幾個
+    const $quotaCheckbox = $card.find(".quotaCheckbox");
+    $quotaCheckbox.find("label").remove();
+    $.each($(".accBDetailTbody"), function (i, accBDetail) {
+        let quotaCode = $(accBDetail).find(".code").val();
+        let currencyVal = $(accBDetail).find(".currency option:selected").val();
+        let moneyVal = $(accBDetail).find(".money").val();
+        let $div = `<label class="form-check-label mr-3">
+                        <input type="checkbox" class="form-check-input quota quota${quotaCode}" value="${quotaCode}" currency="${currencyVal}" money="${moneyVal}" onclick="quotaControl(this)">${quotaCode}
+                    </label>`;
+        $quotaCheckbox.append($div);
+    });
+    identitiesSelect($card.attr("data-num"), 1);//本票關係人邏輯 取出ID並塞入選單方法
+}
+
+//本票及授權書-回填（val 為下行的 data）
+function icCashiersFill($card, val) {
+    const num = $card.attr("data-num");
+    let $identitiesAllDiv = $card.find(".identitiesAllDiv");
+
+    //發票人或共同發票人開始
+    $.each(val.identities, function (i, v) {
+        if (i > 0) {
+            //判斷如果大於一筆時
+            i++;
+            let $div = `<div class="mt-2 identitiesSelectDiv${i}">
+            <input type="hidden" class="identitiesNo" name="no" value="${v.code}">
+            <select class="form-control mr-2 identitiesRoleSelect">
+                <option value="">請選擇</option>
+                <option value="1">發票人</option>
+                <option value="2">共同發票人</option>
+            </select>
+            <select class="form-control mr-2 identitiesSelect">
+                <option value="">請選擇</option>
+            </select>
+            <button type="button" class="btn btn-danger mr-2" onclick="delIdentitiescBtn(this)">×</button>
+            </div>`;
+            $identitiesAllDiv.append($div);
+            identitiesSelect(num, i); //取出ID並塞入選單方法
+            $identitiesAllDiv.find(`.identitiesSelectDiv${i}`).find(".identitiesRoleSelect").val(v.type);
+            $identitiesAllDiv.find(`.identitiesSelectDiv${i}`).find(".identitiesSelect").val(v.name);
+        } else {
+            //第一筆
+            $identitiesAllDiv.find(`.identitiesSelectDiv1`).find(".identitiesRoleSelect").val(v.type);
+            $identitiesAllDiv.find(`.identitiesSelectDiv1`).find(".identitiesSelect").val(v.name);
+            $identitiesAllDiv.find(`.identitiesSelectDiv1`).find(".identitiesNo").val(v.code);
+        }
+    });
+    //發票人或共同發票人結束
+
+    let quota_Class = $card.find(".quota");
+    //本票及授權書-選擇額度
+    $.each(val.quota, function (item, quotaVal) {
+        $.each(quota_Class, function (item, quota) {
+            let screenVal = $(quota).val();
+            if (screenVal == quotaVal) {
+                $(quota).prop("checked", true);
+            }
+        })
+    })
+    //本票及授權書-幣別
+    let $quotaChecked = $card.find(".quota:checked");
+    $.each($quotaChecked, function (i, input) {
+        let currency = input.getAttribute("currency");
+        $card.find(".indivdualCurrency").val(currency);
+    });
+    $card.find(".amount").val(val.amount);//幣別金額
+    $card.find("#rateType").val(val.type);//利率型式
+    //本票及授權書-延遲利息計收費方式勾選項目
+    let mode_Class = $card.find(".delay_interest");
+    $.each(val.mode, function (item, modeVal) {
+        $.each(mode_Class, function (item, mode) {
+            let screenVal = $(mode).val();
+            if (screenVal == modeVal) {
+                $(mode).prop("checked", true);
+            }
+        })
+    })
+    $card.find(".interest").val(val.interest);//延遲利息%
+    $card.find(".other").val(val.other);//其他
+    $card.find(".seal2").val(val.seal2);//授權書簽章
+}
+
+//本票及授權書-暫存取值（S060001037 的 data）
+//由 saveOpJSON 原本的本票取值搬來，欄位順序 quota, amount, type, mode, interest, other, seal2, identities 不可變動（S060000005 轉回 cashiers 時沿用此順序）
+//data 內 quota:額度Type, amount:金額, type:利率型式, mode:延遲利息計收方式(複選), interest:加碼年息, other:其他, seal2:授權書簽章, identities:發票人
+function icCashiersCollect($card) {
+    const classIndividualArr = [".quota", ".amount", ".type", ".delay_interest", ".interest", ".other", ".interest", ".seal2", ".identities"];
+    const $thisbody = $card.find('.card-body');
+    const individualObj = new Object;
+    $.each(classIndividualArr, function (item, classIndivdual) {
+        const dataIndividual = classIndivdual.replace('.', '');
+        const classVal = $card.find(classIndivdual).val() || "";
+        switch (dataIndividual) {
+            case "quota":  //額度
+                let quotaList = new Array;
+                $thisbody.eq(0).find('.quota:checked').map(function () {
+                    let number = $.trim($(this).attr('value'));
+                    quotaList.push(number);
+                });
+                individualObj[dataIndividual] = quotaList;
+                break;
+            case "delay_interest":  //延遲利息計收費方式
+                let modeList = new Array;
+                $thisbody.eq(0).find('.delay_interest:checked').map(function () {
+                    let number = $.trim($(this).attr('value'));
+                    modeList.push(number);
+                });
+                individualObj["mode"] = modeList;
+                break;
+            case "identities":  //發票人 共同發票人 (暫存 將頁面的塞入)
+                let identitiesList = new Array;
+                $.each($thisbody.find(".identitiesAllDiv div"), (index, tab) => {
+                    let tmpIdentitiesObj = {};
+                    tmpIdentitiesObj.code = $(tab).find(".identitiesNo").val();
+                    tmpIdentitiesObj.type = $(tab).find(".identitiesRoleSelect").val();
+                    tmpIdentitiesObj.name = $(tab).find(".identitiesSelect").val();
+                    identitiesList.push(tmpIdentitiesObj);
+                })
+                individualObj[dataIndividual] = identitiesList;
+                break;
+            default:
+                individualObj[dataIndividual] = ckUnd(classVal);
+        }
+    });
+    return individualObj;
+}
+
+//1授信約定書-init：預設->簽章「章*4、簽*2」（讀取時會以 S060001036 的 seal1、seal2 覆蓋，空值也照填）
+function icCreditAgreementInit($card) {
+    $card.find(".seal1").first().val("4");
+    $card.find(".seal2").first().val("2");
+}
+
+//1授信約定書-回填（val 為下行的 data：id 立約定書人統編/ID、year/month/day 設立日期或出生年月日、seal2 簽*）
+function icCreditAgreementFill($card, val) {
+    console.log("取出授信約定書val",val);
+    icSetPerson($card, val.id);
+    icSetDate($card, val);
+    $card.find(".seal2").first().val(val.seal2 || "");
+}
+
+//1授信約定書-暫存取值（S060001037 的 data）
+function icCreditAgreementCollect($card) {
+    const date = icGetDate($card);
+    return {
+        "id": icGetPerson($card),
+        "year": date.year,
+        "month": date.month,
+        "day": date.day,
+        "seal2": $card.find(".seal2").first().val() || ""
+    };
+}
+
+//2連帶保證書（定有期間）-init：預設帶入上方 .N3的 「連帶保證約定期間」（只放一次性預設值）
+function icJointGuaranteeFixedTermInit($card) {
+    const $n3 = $(".N3");
+    icSetDate($card, {
+        year: $n3.find(".year").val() || "",
+        month: $n3.find(".month").val() || "",
+        day: $n3.find(".day").val() || ""
+    });
+}
+
+//2連帶保證書（定有期間）-回填（val 為下行的 data）
+function icJointGuaranteeFixedTermFill($card, val) {
+    const $list = $card.find(".guaranteePersonList");
+
+    //回填多位立連帶保證書人（相容陣列 ["ID1", "ID2"] 或單筆字串 "ID1"）
+    const idList = Array.isArray(val.id) ? val.id : (val.id ? [val.id] : []);
+    idList.forEach(function (personId, idx) {
+        if (idx > 0) {
+            appendGuPersonRow($list);
+        }
+        icSetPerson($card, personId, idx);
+    });
+
+    //回填連帶保證約定期間
+    icSetDate($card, val);
+
+    //回填履行地分行與簽章
+    $card.find(".guaranteeBranch").val(val.branch || "");
+    $card.find(".seal2").first().val(val.seal2 || "");
+}
+
+//2連帶保證書（定有期間）-暫存取值（S060001037 的 data）
 function icJointGuaranteeFixedTermCollect($card) {
-const guarantors = [];
+    const idList = [];
     $card.find(".guaranteePersonList .icPersonGroup").each(function (idx) {
         const personId = icGetPerson($card, idx);
         if (personId) {
-            guarantors.push(personId);
+            idList.push(personId);
         }
     });
 
     const date = icGetDate($card);
 
     return {
-        "id": icGetPerson($card),
+        "id": idList,
         "year": date.year,
         "month": date.month,
         "day": date.day,
@@ -21,82 +322,11 @@ const guarantors = [];
     };
 }
 
-
-//人員-取值：回傳所選身分別的統編/ID，先依頁面現況刷新一次，確保是最新的
-function icGetPerson($card, groupIndex) {
-    const $group = $card.find(".icPersonGroup").eq(groupIndex || 0);
-    icRefreshPersonGroup($group, icIdentityList());
-    return $group.data("icPersonId") || "";
+//6股東債權居次同意書-暫存取值：借款人只是顯示（由共用欄位帶入），後端的 data 為空物件
+function icShareholderSubordConsentCollect($card) {
+    return {};
 }
 
-另外這個原有的icGetPerson方法 我是否不能使用再個別契約-連帶保證書（定有期間） 因為我的html並沒有icPersonId
-若有需要寫另一個js請幫我寫
 
-附上我的html
-<!-- 約據-個別契約-連帶保證書（定有期間）（JOINT_GUARANTEE_FIXED_TERM）內容，外框由 ic_shell.html 提供 -->
-
-<!-- ic 開頭的 class 是共用欄位：由頁面上的資料帶入，說明見 individualContractConfig.js 的「個別契約-共用欄位」 -->
-<!-- 點選並連動: 當我點選【立連帶保證書人】時，【身分別】(icPersonName)、【連帶保證人擔保額度】(icGuPersonAmount) -->
-
-<!-- 初始預設init:【連帶保證約定期間】(icDateYear、icDateMonth、icDateDay) -->
-<!-- 新增類別時，直接帶入:【債務人】(icBorrowerName)、【約定管轄法院】(icCourts)、【帳號】(icGuAccountNo) -->
-
-<div class="guaranteePersonList">
-    <!-- 第一組（預設不可刪除，且會連動擔保額度） -->
-    <div class="form-group form-inline my-2 icPersonGroup" data-types="6">
-        <span class="mr-2">立連帶保證書人：</span>
-        <select class="form-control mr-2 icPerson">
-            <option value="">請選擇</option>
-        </select>
-        <input type="text" class="form-control col-3 icPersonName" value="" disabled>
-        <button type="button" class="ml-2 btn btn-info addGuPersonBtn" onclick="addGuPersonBtnFT(this)">+</button>
-    </div>
-</div>
-
-<div class="form-group form-inline my-3">
-    <span class="mr-2">債務人：</span>
-    <!-- 加上 icBorrowerName，共用程式自動帶入借款人(身分別0) -->
-    <input type="text" class="form-control col-3 icBorrowerName" value="" disabled>
-</div>
-
-<div class="form-group form-inline my-3 icDateGroup">
-    <span class="mr-2">連帶保證約定期間：</span>
-    <span>約定期間至民國</span>
-    <input type="text" class="form-control mx-2 icDateYear" value="" size="3" maxlength="3" inputmode="numeric">
-    <span>年</span>
-    <input type="text" class="form-control mx-2 icDateMonth" value="" size="2" maxlength="2" inputmode="numeric">
-    <span>月</span>
-    <input type="text" class="form-control mx-2 icDateDay" value="" size="2" maxlength="2" inputmode="numeric">
-    <span>日止</span>
-</div>
-
-<div class="form-group form-inline my-3">
-    <span>連帶保證人擔保額度：</span>
-    <input type="text" class="form-control mx-2 col-3 icGuPersonAmount" value="" disabled>元
-</div>
-
-<div class="form-group form-inline my-3">
-    <span>四、保證人同意以 貴行
-        <input type="text" class="form-control mx-2 guaranteeBranch" value="">
-        部（分行）營業所在地為履行地
-    </span>
-</div>
-
-<div class="form-group form-inline my-3">
-    <span>五、約定管轄法院：</span>
-    <input type="text" class="form-control mx-2 col-3 icCourts" value="" disabled>
-    <span>地方法院</span>
-</div>
-
-<div class="form-group form-inline my-3">
-    <span class="mr-2">帳號：</span>
-    <input type="text" class="form-control col-3 icGuAccountNo" value="" disabled>
-</div>
-
-<div class="form-group form-inline my-2 mt-4">
-    <span>※本約定書簽章：</span>
-    <span class="ml-1">( 章*</span>
-    <input type="text" class="form-control mx-2 seal1 col-1" value="">、
-    <span>簽*</span>
-    <input type="text" class="form-control mx-2 seal2 col-1" value="">)
-</div>
+連帶保證書（定有期間）的相關程式 我想這樣排順序可以嗎
+/////////////////////////個別契約-類別END/////////////////////////
