@@ -1,9 +1,3 @@
-我在一次告訴你要的規則
-1.新增新的類別時 連帶保證約定期間的icDateYear icDateMonth icDateDay 預設帶入頁面.N3裡面已存在的年月日 分別是.year .month .day 只有這個會寫在icJointGuaranteeFixedTermInit方法裡面
-
-2.也算是預設 但因為會跟著頁面有的資料改變而更新 所以不會寫在icJointGuaranteeFixedTermInit方法裡面，像是icBorrowerName icCourts icGuAccountNo
-
-3.當我點選第一筆【立連帶保證書人】icPerson時，【身分別】(icPersonName)、【連帶保證人擔保額度】(icGuPersonAmount) 會連動我頁面的資料 但僅限於第一個點選的資料作連動 後續若因為addGuPersonBtn 有新增多筆 身分時 只有【身分別】(icPersonName)會根據所選的人連動 ，而【連帶保證人擔保額度】(icGuPersonAmount) 會保持原第一筆資料所選的人異動
 
 
 
