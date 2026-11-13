@@ -1,1 +1,22 @@
+這一段在幹嘛 然後我的return 要改成以下那六個 主要id的部分會有多筆 我這樣寫可以嗎
 
+function icJointGuaranteeFixedTermCollect($card) {
+const guarantors = [];
+    $card.find(".guaranteePersonList .icPersonGroup").each(function (idx) {
+        const personId = icGetPerson($card, idx);
+        if (personId) {
+            guarantors.push(personId);
+        }
+    });
+
+    const date = icGetDate($card);
+
+    return {
+        "id": icGetPerson($card),
+        "year": date.year,
+        "month": date.month,
+        "day": date.day,
+        "branch": $card.find(".guaranteeBranch").val() || "",
+        "seal2": $card.find(".seal2").first().val() || ""
+    };
+}
