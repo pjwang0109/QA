@@ -1,1 +1,21 @@
+這是共用頁面資料的方法吧?
+但因為我的 icGuAccountNo 是在 $('.opCenterAccountId').val()找到的值 那我可以寫在這個方法裡去共用嗎
 
+//刷新所有卡片的共用欄位（沒有用到共用欄位時不做事）
+function icRefreshPageFields() {
+    const $tableDiv = $("#indivdualCtableDiv");
+    const $groups = $tableDiv.find(".icPersonGroup");
+    const $fields = $tableDiv.find(".icBorrowerName, .icCourts, .icPhone, .icFax");
+    if ($groups.length == 0 && $fields.length == 0) { return; }
+    icWatchPageFields();
+    const list = icIdentityList();
+    $groups.each(function () {
+        icRefreshPersonGroup($(this), list);
+    });
+    const borrower = list.find(function (item) { return item.type == "0"; });
+    $tableDiv.find(".icBorrowerName").val(borrower ? borrower.name : "");
+    const $source = $("#otherCommonTermsDiv");
+    $tableDiv.find(".icCourts").val($source.find(".courts").first().val() || "");
+    $tableDiv.find(".icPhone").val($source.find(".phone").first().val() || "");
+    $tableDiv.find(".icFax").val($source.find(".fax").first().val() || "");
+}
