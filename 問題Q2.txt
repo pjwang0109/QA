@@ -1,4 +1,6 @@
-//添加千分位符號
-function set_money_Thousands(obj) {
-    return obj.value = money_Thousands(obj.value);
-}
+
+當.gccMoney被改時 我的.icGuPersonAmount的金額因為連動 千分位會跑掉
+那要怎麼改 JS
+我原本的 .gccMoney有onblur="set_money_Thousands(this)"
+
+這個set_money_Thousands方法是可以幫我添加千分位符號
